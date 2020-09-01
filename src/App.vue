@@ -38,25 +38,47 @@
     </v-app-bar>
 
     <v-main>
-      <!-- <TreeView/> -->
-
-      <TreeCard />
+      <TreeCard class="my-4"
+                :content="contentMap" />
     </v-main>
   </v-app>
 </template>
 
 <script>
-// import HelloWorld from './components/HelloWorld';
-import TreeCard from './components/TreeCard';
+import {
+  mapState,
+  mapGetters,
+} from 'vuex';
+
+import {
+  // GET_CONFIG,
+  GET_TREE_CONTENT,
+} from '@/store/mutationsConsts';
+
+import TreeCard from '@/components/TreeCard';
 
 export default {
   name: 'App',
-
+  beforeMount() {
+    // this.$store.dispatch(GET_CONFIG);
+    this.$store.dispatch(GET_TREE_CONTENT);
+  },
+  computed: {
+    ...mapGetters([
+      'contentURL',
+      'contentMap',
+      ]),
+    ...mapState([
+      'configLoading',
+      'configError',
+      'content',
+      'contentLoading',
+      'contentError',
+    ]),
+  },
   components: {
-    // HelloWorld,
     TreeCard,
   },
-
   data: () => ({
     //
   }),
