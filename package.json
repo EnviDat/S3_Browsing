@@ -1,0 +1,62 @@
+{
+  "name": "s3_browsing",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Web app for browsing through S3 XML and provide it's links.",
+  "author": {
+    "name": "Dominik Haas-Artho"
+  },
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "test": "test"
+  },
+  "main": "main.js",
+  "dependencies": {
+    "core-js": "^3.6.5",
+    "vue": "^3.0.0-rc.9",
+    "vuetify": "^2.3.0-beta.10"
+  },
+  "devDependencies": {
+    "@vue/cli": "^4.5.4",
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-plugin-eslint": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
+    "@vue/compiler-sfc": "^3.0.0-0",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^6.7.2",
+    "eslint-plugin-vue": "^7.0.0-0"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/vue3-essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "babel-eslint"
+    },
+    "rules": {}
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "_id": "s3_browsing@0.0.1",
+  "keywords": [
+    "s3",
+    "browsing",
+    "s3",
+    "xml",
+    "vue",
+    "vue",
+    "3"
+  ],
+  "license": "MIT",
+  "readme": "ERROR: No README data found!"
+}
