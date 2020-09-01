@@ -3,7 +3,7 @@
  * @author Dominik Haas-Artho
  *
  * Created at     : 2020-09-01 11:27:52
- * Last modified  : 2020-09-01 11:33:00
+ * Last modified  : 2020-09-01 12:25:13
  *
  * This file is subject to the terms and conditions defined in
  * file 'LICENSE.txt', which is part of this source code package.
@@ -37,7 +37,7 @@ if (isProd) {
 console.log(`starting ${version} with use of testdata '${useTestData}' on ${process.env.NODE_ENV}`);
 
 module.exports = {
-  // transpileDependencies: ['vuetify'],
+  transpileDependencies: ['vuetify'],
   // publicPath: './',
   // assetsDir: './static',
   runtimeCompiler: true,
