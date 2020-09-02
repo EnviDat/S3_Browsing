@@ -25,7 +25,12 @@
           </v-row>
         </v-col>
 
-        <v-col v-if="contentBucketName"
+        <v-col v-if="loading"
+                style="text-align: center;">
+          <span class="text-sm-h5 text-subtitle-1">{{ loadingText }}</span>
+        </v-col>
+
+        <v-col v-if="!loading && contentBucketName"
                 style="text-align: center;">
           <span class="text-sm-h5 text-subtitle-1">Bucket: {{ contentBucketName }}</span>
         </v-col>
@@ -53,7 +58,7 @@
 
     <v-main>
       <v-container class="fill-height" fluid>
-        <v-row v-if="contentLoading " >
+        <v-row v-if="loading " >
           <v-col cols="12"
                   sm="3">
             <PlaceholderCard />
@@ -65,7 +70,7 @@
           </v-col>
         </v-row>
 
-        <v-row v-if="!contentLoading">
+        <v-row v-if="!loading">
 
           <v-col v-if="content && content.ListBucketResult"
                   cols="12"
@@ -104,7 +109,7 @@ import {
 } from 'vuex';
 
 import {
-  // GET_CONFIG,
+  GET_CONFIG,
   GET_TREE_CONTENT,
 } from '@/store/mutationsConsts';
 
@@ -115,11 +120,12 @@ import PlaceholderCard from '@/components/PlaceholderCard';
 
 import '../node_modules/skeleton-placeholder/dist/bone.min.css';
 
+const configURL = process.env.VUE_APP_CONFIG_URL;
+
 export default {
   name: 'App',
   beforeMount() {
-    // this.$store.dispatch(GET_CONFIG);
-    this.$store.dispatch(GET_TREE_CONTENT);
+    this.$store.dispatch(GET_CONFIG, configURL);
   },
   computed: {
     ...mapGetters([
@@ -134,6 +140,27 @@ export default {
       'contentLoading',
       'contentError',
     ]),
+    loading() {
+      return this.configLoading || this.contentLoading;
+    },
+    loadingText() {
+      if (this.configLoading) {
+        return `Loading config from ${configURL}`;
+      } 
+      
+      if (this.contentLoading) {
+        return `Loading S3 Bucket from ${this.contentURL}`;
+      }
+
+      return 'Loading should be finished...';
+    },
+  },
+  watch: {
+    configLoading() {
+      if (!this.configLoading && this.contentURL) {
+        this.$store.dispatch(GET_TREE_CONTENT);
+      }
+    },
   },
   components: {
     TreeCard,
