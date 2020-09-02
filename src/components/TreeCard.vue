@@ -1,7 +1,7 @@
 <template>
   <v-card style="transition: .3s all;"
           :class="fullWidth ? 'mx-4' : 'mx-auto'"
-          :max-width="fullWidth ? '100%' : 750" >
+          :max-width="fullWidth ? '100%' : 700" >
 
     <v-sheet class="pa-4"
             :color="hasContent ? 'blue' : 'error'">
@@ -35,7 +35,7 @@
                       dark
                       icon
                       @click="fullWidth = !fullWidth" >
-            <v-icon>mdi-arrow-expand-horizontal</v-icon>
+            <v-icon>{{ fullWidth ? 'mdi-arrow-collapse-horizontal' : 'mdi-arrow-expand-horizontal' }}</v-icon>
           </v-btn>
         </v-col>
       </v-row>
