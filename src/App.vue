@@ -18,7 +18,7 @@
                 </v-avatar>
             </v-col>
 
-            <v-col >
+            <v-col class="hidden-xs-only" >
               <span class="ml-4 text-h5">{{ appTitle }}</span>      
             </v-col>
 
@@ -27,7 +27,7 @@
 
         <v-col v-if="contentBucketName"
                 style="text-align: center;">
-          <span class="text-h5">Bucket: {{ contentBucketName }}</span>
+          <span class="text-sm-h5 text-subtitle-1">Bucket: {{ contentBucketName }}</span>
         </v-col>
 
         <v-col >
@@ -52,8 +52,28 @@
     </v-app-bar>
 
     <v-main>
-      <TreeCard class="my-4"
-                :content="contentMap" />
+      <v-container class="fill-height" fluid>
+        <v-row>
+
+          <v-col v-if="content && content.ListBucketResult"
+                  cols="12"
+                  sm="3">
+            <BucketCard :name="content.ListBucketResult.Name"
+                        :url="contentURL"
+                        :prefix="content.ListBucketResult.Prefix"
+                        :maxKeys="content.ListBucketResult.MaxKeys"
+                        :delimiter="content.ListBucketResult.Delimiter"
+                        :isTruncated="content.ListBucketResult.IsTruncated === 'true' ? true : false"
+                        :marker="content.ListBucketResult.Marker" />
+          </v-col>
+
+          <v-col cols="12"
+                  sm="9" >
+            <TreeCard :content="contentMap" />
+          </v-col>
+
+        </v-row>
+      </v-container>
     </v-main>
 
     <v-footer>
@@ -78,6 +98,7 @@ import {
 
 import TreeCard from '@/components/TreeCard';
 import IconButton from '@/components/IconButton';
+import BucketCard from '@/components/BucketCard';
 
 export default {
   name: 'App',
@@ -102,6 +123,7 @@ export default {
   components: {
     TreeCard,
     IconButton,
+    BucketCard,
   },
   data: () => ({
     appTitle: 'File Browser',

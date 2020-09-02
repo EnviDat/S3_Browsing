@@ -1,8 +1,5 @@
 <template>
-  <v-card style="transition: .3s all;"
-          :class="fullWidth ? 'mx-4' : 'mx-auto'"
-          :max-width="fullWidth ? '100%' : 700" >
-
+  <v-card max-height="100%">
     <v-sheet class="pa-4"
             :color="hasContent ? 'blue' : 'error'">
 
@@ -30,19 +27,11 @@
                       label="Case sensitive search" />
         </v-col>
 
-        <v-col class="shrink">
-          <v-btn v-model="fullWidth"
-                      dark
-                      icon
-                      @click="fullWidth = !fullWidth" >
-            <v-icon>{{ fullWidth ? 'mdi-arrow-collapse-horizontal' : 'mdi-arrow-expand-horizontal' }}</v-icon>
-          </v-btn>
-        </v-col>
       </v-row>
 
     </v-sheet>
 
-    <v-card-text style="max-height: 75vh; overflow:auto; ">
+    <v-card-text :style="`max-height: ${height}; overflow:auto;`">
       <TreeView :items="items"
                 :search="search"
                 :caseSensitive="caseSensitive"
@@ -77,6 +66,10 @@ export default {
   name: 'TreeCard',
   props: {
     content: Map,
+    height: {
+      type: String,
+      default: '75vh',
+    },
   },
   data: () => ({
     caseSensitive: false,
