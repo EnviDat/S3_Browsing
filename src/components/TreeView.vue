@@ -18,97 +18,95 @@
       </v-icon>
     </template>
 
-    <!-- <template v-slot:label="{ item }">
-      {{ item.name }}
-    </template> -->
+    <template v-slot:label="{ item }">
+
+      <v-row no-gutters
+              align="center">
+        <v-col>
+          {{ item.name }}
+        </v-col>
+      
+        <v-col v-if="item.file"
+                class="shrink px-1" >
+
+          <IconButton icon="mdi-content-copy"
+                      tooltipText="Copy Link"
+                      @click="catchCopyClick(item.name)" />
+        </v-col>
+        <v-col v-if="item.file"
+                class="shrink px-1" >
+
+          <IconButton icon="mdi-cloud-download"
+                      tooltipText="Download file"
+                      :url="item.url" />
+        </v-col>
+
+        <v-col v-if="item.file"
+                class="shrink px-1 caption" >
+          {{ item.size }}
+        </v-col>
+
+      </v-row>
+    </template>
 
   </v-treeview>
 </template>
 
 <script>
-  export default {
-    name: 'TreeView',
-    props: {
-      items: Array,
-      search: String,
-      caseSensitive: Boolean,
+import IconButton from './IconButton';
+
+export default {
+  name: 'TreeView',
+  props: {
+    items: Array,
+    search: String,
+    caseSensitive: Boolean,
+  },
+  computed: {
+  },
+  methods: {
+    filter() {
+      return this.caseSensitive
+        ? (item, search, textKey) => item[textKey].indexOf(search) > -1
+        : undefined;
     },
-    computed: {
+    catchCopyClick(url) {
+      this.copyTextToClipboard(url);
     },
-    methods: {
-      filter() {
-        return this.caseSensitive
-          ? (item, search, textKey) => item[textKey].indexOf(search) > -1
-          : undefined;
-      },      
+    copyTextToClipboard(text) {
+      // if (!navigator.clipboard) {
+      //   this.fallbackCopyTextToClipboard(text);
+      //   return;
+      // }
+      navigator.clipboard.writeText(text).then(() => {
+        // console.log('Async: Copying to clipboard was successful!');
+        this.$emit('showSnack', { text: this.copySnackText, success: true });
+      }, (err) => {
+        this.$emit('showSnack', { text: err, success: false });
+        // console.error('Async: Could not copy text: ', err);
+      });
     },
-    data: () => ({
-      open: [],
-      files: {
-        html: 'mdi-language-html5',
-        js: 'mdi-nodejs',
-        json: 'mdi-json',
-        md: 'mdi-markdown',
-        pdf: 'file-pdf',
-        png: 'mdi-file-image',
-        tiff: 'mdi-file-image',
-        tif: 'mdi-file-image',
-        txt: 'mdi-file-document-outline',
-        xls: 'mdi-file-excel',
-      },
-      tree: [],
-      // items: [
-      //   {
-      //     name: '.git',
-      //   },
-      //   {
-      //     name: 'node_modules',
-      //   },
-      //   {
-      //     name: 'public',
-      //     children: [
-      //       {
-      //         name: 'static',
-      //         children: [{
-      //           name: 'logo.png',
-      //           file: 'png',
-      //         }],
-      //       },
-      //       {
-      //         name: 'favicon.ico',
-      //         file: 'png',
-      //       },
-      //       {
-      //         name: 'index.html',
-      //         file: 'html',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     name: '.gitignore',
-      //     file: 'txt',
-      //   },
-      //   {
-      //     name: 'babel.config.js',
-      //     file: 'js',
-      //   },
-      //   {
-      //     name: 'package.json',
-      //     file: 'json',
-      //   },
-      //   {
-      //     name: 'README.md',
-      //     file: 'md',
-      //   },
-      //   {
-      //     name: 'vue.config.js',
-      //     file: 'js',
-      //   },
-      //   {
-      //     name: 'yarn.lock',
-      //     file: 'txt',
-      //   },
-      // ],
-    }),
-  };
+  },
+  data: () => ({
+    copySnackText: 'Url copied to clipboard',
+    open: [],
+    files: {
+      html: 'mdi-language-html5',
+      js: 'mdi-nodejs',
+      json: 'mdi-json',
+      md: 'mdi-markdown',
+      pdf: 'file-pdf',
+      png: 'mdi-file-image',
+      tiff: 'mdi-file-image',
+      tif: 'mdi-file-image',
+      txt: 'mdi-file-document-outline',
+      xls: 'mdi-file-excel',
+      nc: 'mdi-file',
+    },
+    tree: [],
+  }),
+  components: {
+    IconButton,
+  },
+};
 </script>
