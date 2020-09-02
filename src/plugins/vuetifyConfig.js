@@ -5,7 +5,7 @@
  * @author Dominik Haas-Artho
  *
  * Created at     : 2019-10-23 16:11:52 
- * Last modified  : 2020-09-01 12:16:14
+ * Last modified  : 2020-09-02 10:12:55
  *
  * This file is subject to the terms and conditions defined in
  * file 'LICENSE.txt', which is part of this source code package.
@@ -34,7 +34,7 @@ export const lightColorblind = {
   secondary: '#35a89d',
   highlight: '#71c5bd',
   info: '#92e5ef',
-  success: '#8ae0de',
+  success: '#4CAF50',
   warning: '#ffc107',
   error: '#ff847b',
   errorHighlight: '#ffb060', // red lighten-4
