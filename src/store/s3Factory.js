@@ -42,6 +42,7 @@ export function getS3Map(list, baseUrl) {
       id: i,
       name: dirKey,
       children: [],
+      lastModified: s3.LastModified,
     };
 
     const url = dirKey === fileKey ? dirKey : `${dirKey}/${fileKey}`;
@@ -56,6 +57,7 @@ export function getS3Map(list, baseUrl) {
       file: fileExt,
       size: humanFileSize(s3.Size),
       url: `${baseUrl}${url}`,
+      lastModified: s3.LastModified,
     });
 
     fileObj.childs = fileObj.children.length.toString();

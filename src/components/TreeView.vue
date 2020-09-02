@@ -3,7 +3,6 @@
   <v-treeview v-model="tree"
               :search="search"
               :items="items"
-              activatable
               item-key="name"
               open-on-click >
 
