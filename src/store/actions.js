@@ -3,7 +3,7 @@
  * @author Dominik Haas-Artho
  *
  * Created at     : 2019-10-23 16:34:51 
- * Last modified  : 2020-09-01 17:40:13
+ * Last modified  : 2020-09-02 16:43:04
  *
  * This file is subject to the terms and conditions defined in
  * file 'LICENSE.txt', which is part of this source code package.
@@ -21,10 +21,8 @@ import {
   GET_TREE_CONTENT_ERROR,
 } from '@/store/mutationsConsts';
 
-const configURL = process.env.VUE_APP_CONFIG_URL;
-
 export default {
-  [GET_CONFIG]({ commit }) {
+  [GET_CONFIG]({ commit }, configURL) {
     if (configURL && configURL !== 'NULL') {
 
       commit(GET_CONFIG);
