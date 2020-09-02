@@ -1,40 +1,43 @@
 <template>
   <v-app>
-    <v-app-bar
-      app
-      color="primary"
-      dark
-    >
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
+    <v-app-bar app
+                color="secondary"
+                dark >
 
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
-      </div>
+      <v-row no-gutters
+              align="center">
+        <v-col>
 
-      <v-spacer></v-spacer>
+          <v-row no-gutters
+              align="center" >
+            <v-col class="shrink">
+                <v-avatar color="red"
+                          class="text-h5">
+                  {{ appAvatarText }}
+                </v-avatar>
+            </v-col>
 
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
+            <v-col >
+              <span class="ml-4 text-h5">{{ appTitle }}</span>          
+            </v-col>
+
+          </v-row>
+        </v-col>
+
+        <v-spacer></v-spacer>
+
+        <v-col class="shrink" >
+          <v-btn icon >
+            <v-icon>mdi-help-circle</v-icon>
+          </v-btn>
+        </v-col>
+
+      </v-row>
+
+      <!-- <div class="d-flex align-center">
+
+      </div> -->
+
     </v-app-bar>
 
     <v-main>
@@ -80,7 +83,8 @@ export default {
     TreeCard,
   },
   data: () => ({
-    //
+    appTitle: 'File Browser',
+    appAvatarText: 'S3',
   }),
 };
 </script>
