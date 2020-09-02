@@ -1,5 +1,27 @@
 /* eslint-disable no-console */
-export function getS3Map(list) {
+
+// source: https://stackoverflow.com/questions/16023824/how-do-i-format-bytes-to-human-readable-text-in-javascript
+function humanFileSize(bytes) {
+  // const thresh = si ? 1000 : 1024;
+  const thresh = 1024;
+
+  if (bytes < thresh) return `${bytes} B`;
+
+  // const units = si ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+
+  const units = ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+  
+  let u = -1;
+
+  do {
+    bytes /= thresh;
+    ++u;
+  } while (bytes >= thresh);
+
+  return `${bytes.toFixed(1)} ${units[u]}`;
+}
+
+export function getS3Map(list, baseUrl) {
   const s3Map = new Map();
 
   for (let i = 0; i < list.length; i++) {
@@ -16,23 +38,29 @@ export function getS3Map(list) {
       dirKey = dirValues.join('/');
     }
 
-    const children = [];
-
     let fileObj = {
       id: i,
       name: dirKey,
-      children,
+      children: [],
+      lastModified: s3.LastModified,
     };
+
+    const url = dirKey === fileKey ? dirKey : `${dirKey}/${fileKey}`;
 
     if (s3Map.has(dirKey)) {
       fileObj = s3Map.get(dirKey);
     }
-
+    
     fileObj.children.push({
       id: `${fileObj.id}${i}`,
       name: fileKey,
       file: fileExt,
+      size: humanFileSize(s3.Size),
+      url: `${baseUrl}${url}`,
+      lastModified: s3.LastModified,
     });
+
+    fileObj.childs = fileObj.children.length.toString();
 
     // console.log(`${dirKey} with key ${fileKey} with value ${fileObj.children.length}`);
     s3Map.set(dirKey, fileObj);

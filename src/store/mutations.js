@@ -4,7 +4,7 @@
  * @author Dominik Haas-Artho
  *
  * Created at     : 2019-10-23 16:34:51 
- * Last modified  : 2020-09-01 20:28:52
+ * Last modified  : 2020-09-02 09:47:26
  *
  * This file is subject to the terms and conditions defined in
  * file 'LICENSE.txt', which is part of this source code package.
@@ -46,7 +46,7 @@ export default {
   [GET_TREE_CONTENT_SUCCESS](state, payload) {
     state.content = payload;
 
-    const map = getS3Map(this.getters.contentList);
+    const map = getS3Map(this.getters.contentList, this.getters.contentURL);
 
     state.contentLoading = false;
     this._vm.$set(state, 'contentMap', map);
