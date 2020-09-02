@@ -5,7 +5,8 @@
                 dark >
 
       <v-row no-gutters
-              align="center">
+              align="center"
+              justify="space-between">
         <v-col>
 
           <v-row no-gutters
@@ -18,25 +19,35 @@
             </v-col>
 
             <v-col >
-              <span class="ml-4 text-h5">{{ appTitle }}</span>          
+              <span class="ml-4 text-h5">{{ appTitle }}</span>      
             </v-col>
 
           </v-row>
         </v-col>
 
-        <v-spacer></v-spacer>
+        <v-col v-if="contentBucketName"
+                style="text-align: center;">
+          <span class="text-h5">Bucket: {{ contentBucketName }}</span>
+        </v-col>
 
-        <v-col class="shrink" >
-          <v-btn icon >
-            <v-icon>mdi-help-circle</v-icon>
-          </v-btn>
+        <v-col >
+          <v-row no-gutters justify="end">
+            <v-col class="shrink" >
+
+              <IconButton icon="mdi-help-circle"
+                          tooltipText="About the S3 Browsing" />
+
+            </v-col>
+            <v-col class="shrink" >
+
+              <IconButton icon="mdi-code-tags"
+                          tooltipText="Source Code on GitHub"
+                          url="https://github.com/EnviDat/S3_Browsing" />
+            </v-col>
+          </v-row>
         </v-col>
 
       </v-row>
-
-      <!-- <div class="d-flex align-center">
-
-      </div> -->
 
     </v-app-bar>
 
@@ -44,6 +55,13 @@
       <TreeCard class="my-4"
                 :content="contentMap" />
     </v-main>
+
+    <v-footer>
+      <v-spacer></v-spacer>
+      <div class="caption" >Developed by the <a href="https://www.envidat.ch/"
+          target="_blank" >EnviDat</a> team
+      </div>
+    </v-footer>
   </v-app>
 </template>
 
@@ -59,6 +77,7 @@ import {
 } from '@/store/mutationsConsts';
 
 import TreeCard from '@/components/TreeCard';
+import IconButton from '@/components/IconButton';
 
 export default {
   name: 'App',
@@ -70,6 +89,7 @@ export default {
     ...mapGetters([
       'contentURL',
       'contentMap',
+      'contentBucketName',
       ]),
     ...mapState([
       'configLoading',
@@ -81,6 +101,7 @@ export default {
   },
   components: {
     TreeCard,
+    IconButton,
   },
   data: () => ({
     appTitle: 'File Browser',

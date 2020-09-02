@@ -32,6 +32,9 @@ export default new Vuex.Store({
     contentList() {
       return state.content?.ListBucketResult?.Contents;
     },
+    contentBucketName() {
+      return state.content?.ListBucketResult?.Name;
+    },
     contentMap() {
       return state.contentMap;
     },
