@@ -53,7 +53,19 @@
 
     <v-main>
       <v-container class="fill-height" fluid>
-        <v-row>
+        <v-row v-if="contentLoading " >
+          <v-col cols="12"
+                  sm="3">
+            <PlaceholderCard />
+          </v-col>
+
+          <v-col cols="12"
+                  sm="9">
+            <PlaceholderCard />
+          </v-col>
+        </v-row>
+
+        <v-row v-if="!contentLoading">
 
           <v-col v-if="content && content.ListBucketResult"
                   cols="12"
@@ -99,6 +111,9 @@ import {
 import TreeCard from '@/components/TreeCard';
 import IconButton from '@/components/IconButton';
 import BucketCard from '@/components/BucketCard';
+import PlaceholderCard from '@/components/PlaceholderCard';
+
+import '../node_modules/skeleton-placeholder/dist/bone.min.css';
 
 export default {
   name: 'App',
@@ -124,6 +139,7 @@ export default {
     TreeCard,
     IconButton,
     BucketCard,
+    PlaceholderCard,
   },
   data: () => ({
     appTitle: 'File Browser',
