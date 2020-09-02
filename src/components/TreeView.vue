@@ -7,14 +7,14 @@
               item-key="name"
               open-on-click >
 
-    <template v-slot:prepend="{ item, open }">
+    <template v-slot:prepend="{ item, open }" >
 
-      <v-icon v-if="!item.file">
-        {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
+      <v-icon v-if="item.file">
+        {{ files[item.file] }}
       </v-icon>
         
       <v-icon v-else>
-        {{ files[item.file] }}
+        {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
       </v-icon>
     </template>
 
@@ -25,7 +25,7 @@
         <v-col>
           {{ item.name }}
         </v-col>
-      
+
         <v-col v-if="item.file"
                 class="shrink px-1" >
 
@@ -45,6 +45,14 @@
                 class="shrink px-1 caption" >
           {{ item.size }}
         </v-col>
+
+        <v-col v-if="!item.file"
+                cols="1"
+                class="shrink"  >
+          <v-badge color="primary"
+                    class="white--text" 
+                    :content="item.childs" />
+        </v-col>        
 
       </v-row>
     </template>

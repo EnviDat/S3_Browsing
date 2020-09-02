@@ -38,12 +38,10 @@ export function getS3Map(list, baseUrl) {
       dirKey = dirValues.join('/');
     }
 
-    const children = [];
-
     let fileObj = {
       id: i,
       name: dirKey,
-      children,
+      children: [],
     };
 
     const url = dirKey === fileKey ? dirKey : `${dirKey}/${fileKey}`;
@@ -59,6 +57,8 @@ export function getS3Map(list, baseUrl) {
       size: humanFileSize(s3.Size),
       url: `${baseUrl}${url}`,
     });
+
+    fileObj.childs = fileObj.children.length.toString();
 
     // console.log(`${dirKey} with key ${fileKey} with value ${fileObj.children.length}`);
     s3Map.set(dirKey, fileObj);
