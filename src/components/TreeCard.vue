@@ -1,7 +1,6 @@
 <template>
-  <v-card max-height="100%">
-    <v-sheet class="pa-4"
-            :color="hasContent ? 'blue' : 'error'">
+  <v-card height="100%">
+    <v-sheet class="pa-4" color="primary">
 
       <v-row no-gutters>
         <v-col>
