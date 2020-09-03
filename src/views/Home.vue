@@ -42,7 +42,8 @@
 
       <v-col cols="12"
               sm="9"  >
-        <TreeCard :content="contentMap" />
+        <TreeCard :content="contentMap"
+                @showSnack="catchShowSnack" />
       </v-col>
 
     </v-row>
@@ -134,6 +135,9 @@ export default {
 
         this.urlPrefix = params?.prefix || null;
       }
+    },
+    catchShowSnack(snackMsgObj) {
+      this.$emit('showSnack', snackMsgObj);
     },
   },
   components: {

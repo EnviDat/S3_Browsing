@@ -37,24 +37,6 @@
                 @showSnack="catchShowSnack" />
     </v-card-text>
 
-    <v-snackbar v-model="snackbar"
-                :timeout="timeout"
-                top
-                right
-                :color="snackColor"
-                elevation="5" >
-      {{ snackText }}
-
-      <template v-slot:action="{ attrs }">
-        <v-btn color="white"
-                icon
-                v-bind="attrs"
-                @click="snackbar = false" >
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
-      </template>
-    </v-snackbar>
-
   </v-card>
 </template>
 
@@ -73,10 +55,6 @@ export default {
   data: () => ({
     caseSensitive: false,
     search: '',
-    snackbar: false,
-    snackText: '',
-    snackColor: 'success',
-    timeout: 2500,
     fullWidth: false,
   }),
   computed: {
@@ -97,9 +75,7 @@ export default {
   },
   methods: {
     catchShowSnack(snackMsgObj) {
-      this.snackbar = true;
-      this.snackText = snackMsgObj.text;
-      this.snackColor = snackMsgObj.success ? 'success' : 'error';
+      this.$emit('showSnack', snackMsgObj);
     },
   },
   components: {

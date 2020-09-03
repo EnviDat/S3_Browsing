@@ -57,8 +57,27 @@
     </v-app-bar>
 
     <v-main>
-      <router-view/>
+      <router-view @showSnack="catchShowSnack" />
+      
     </v-main>
+
+    <v-snackbar v-model="snackbar"
+                :timeout="timeout"
+                top
+                right
+                :color="snackColor"
+                elevation="5" >
+      {{ snackText }}
+
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white"
+                icon
+                v-bind="attrs"
+                @click="snackbar = false" >
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </template>
+    </v-snackbar>
 
     <v-footer>
       <v-spacer></v-spacer>
@@ -108,6 +127,11 @@ export default {
     },
   },
   methods: {
+    catchShowSnack(snackMsgObj) {
+      this.snackbar = true;
+      this.snackText = snackMsgObj.text;
+      this.snackColor = snackMsgObj.success ? 'success' : 'error';
+    },
   },
   components: {
     IconButton,
@@ -115,6 +139,10 @@ export default {
   data: () => ({
     appTitle: 'File Browser',
     appAvatarText: 'S3',
+    snackbar: false,
+    snackText: '',
+    snackColor: 'success',
+    timeout: 2500,
   }),
 };
 </script>
