@@ -113,8 +113,7 @@ export default {
   watch: {
     configLoading() {
       if (!this.configLoading && this.contentUrl) {
-        // this.$store.dispatch(GET_S3_CONTENT, { url: this.contentUrl, prefix: this.urlPrefix });
-        this.$store.dispatch(GET_S3_CONTENT, { url: this.contentUrl });
+        this.$store.dispatch(GET_S3_CONTENT, { url: this.contentUrl, prefix: this.urlPrefix });
       }
     },
   },
