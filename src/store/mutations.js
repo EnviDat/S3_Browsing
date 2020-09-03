@@ -14,9 +14,9 @@ import {
   GET_CONFIG,
   GET_CONFIG_SUCCESS,
   GET_CONFIG_ERROR,
-  GET_TREE_CONTENT,
-  GET_TREE_CONTENT_SUCCESS,
-  GET_TREE_CONTENT_ERROR,
+  GET_S3_CONTENT,
+  GET_S3_CONTENT_SUCCESS,
+  GET_S3_CONTENT_ERROR,
 } from '@/store/mutationsConsts';
 
 import { getS3Map } from './s3Factory';
@@ -37,13 +37,13 @@ export default {
     // const notificationObj = getSpecificApiError('Config could not ge loaded!', reason);
     // this.commit(ADD_USER_NOTIFICATION, notificationObj);
   },
-  [GET_TREE_CONTENT](state) {
+  [GET_S3_CONTENT](state) {
     state.content = null;
     this._vm.$set(state, 'contentMap', null);
     state.contentLoading = true;
     state.contentError = null;
   },
-  [GET_TREE_CONTENT_SUCCESS](state, payload) {
+  [GET_S3_CONTENT_SUCCESS](state, payload) {
     state.content = payload;
 
     const map = getS3Map(this.getters.contentList, this.getters.contentUrl);
@@ -51,7 +51,7 @@ export default {
     state.contentLoading = false;
     this._vm.$set(state, 'contentMap', map);
   },
-  [GET_TREE_CONTENT_ERROR](state, reason) {
+  [GET_S3_CONTENT_ERROR](state, reason) {
     state.contentLoading = false;
     state.contentError = reason;
     // const notificationObj = getSpecificApiError('Config could not ge loaded!', reason);

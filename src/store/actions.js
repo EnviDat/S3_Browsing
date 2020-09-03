@@ -16,9 +16,9 @@ import {
   GET_CONFIG,
   GET_CONFIG_SUCCESS,
   GET_CONFIG_ERROR,
-  GET_TREE_CONTENT,
-  GET_TREE_CONTENT_SUCCESS,
-  GET_TREE_CONTENT_ERROR,
+  GET_S3_CONTENT,
+  GET_S3_CONTENT_SUCCESS,
+  GET_S3_CONTENT_ERROR,
 } from '@/store/mutationsConsts';
 
 const useTestData = !!(process.env.VUE_APP_USE_TESTDATA && process.env.VUE_APP_USE_TESTDATA === 'true');
@@ -68,9 +68,9 @@ export default {
         });
     }
   },
-  [GET_TREE_CONTENT]({ commit }, contentParams) {
+  [GET_S3_CONTENT]({ commit }, contentParams) {
     
-    commit(GET_TREE_CONTENT);
+    commit(GET_S3_CONTENT);
     
     const baseUrl = contentParams.url;
     let getParams = '';
@@ -107,18 +107,18 @@ export default {
             trim: true,
           })
             .then((xml) => {
-              commit(GET_TREE_CONTENT_SUCCESS, xml);
+              commit(GET_S3_CONTENT_SUCCESS, xml);
             })
             .catch((reason) => {
-              commit(GET_TREE_CONTENT_ERROR, reason);
+              commit(GET_S3_CONTENT_ERROR, reason);
             });
         } else {
-          commit(GET_TREE_CONTENT_ERROR, `Got content respose in unexpected type ${typeof (response.data)}`);
+          commit(GET_S3_CONTENT_ERROR, `Got content respose in unexpected type ${typeof (response.data)}`);
         }
         
       })
       .catch((reason) => {
-        commit(GET_TREE_CONTENT_ERROR, reason);
+        commit(GET_S3_CONTENT_ERROR, reason);
       });
   },
 };
