@@ -64,7 +64,11 @@ export default {
           commit(GET_CONFIG_SUCCESS, config);
         })
         .catch((reason) => {
-          commit(GET_CONFIG_ERROR, reason);
+          if (reason?.response?.status === 404) {
+            commit(GET_CONFIG_SUCCESS, null);
+          } else {
+            commit(GET_CONFIG_ERROR, reason);
+          }
         });
     }
   },
