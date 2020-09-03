@@ -46,7 +46,7 @@ export default {
   [GET_TREE_CONTENT_SUCCESS](state, payload) {
     state.content = payload;
 
-    const map = getS3Map(this.getters.contentList, this.getters.contentURL);
+    const map = getS3Map(this.getters.contentList, this.getters.contentUrl);
 
     state.contentLoading = false;
     this._vm.$set(state, 'contentMap', map);

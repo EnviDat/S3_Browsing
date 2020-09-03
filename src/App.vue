@@ -129,7 +129,7 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'contentURL',
+      'contentUrl',
       'contentMap',
       'contentBucketName',
       ]),
@@ -149,7 +149,7 @@ export default {
       } 
       
       if (this.contentLoading) {
-        return `Loading S3 Bucket from ${this.contentURL}`;
+        return `Loading S3 Bucket from ${this.contentUrl}`;
       }
 
       return 'Loading should be finished...';

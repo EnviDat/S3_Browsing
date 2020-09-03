@@ -20,8 +20,8 @@ const state = {
 export default new Vuex.Store({
   state,
   getters: {
-    contentURL() {
-      const configUrl = state.config?.contentUrl || state.config?.contenturl;
+    contentUrl() {
+      const configUrl = state.config?.contentUrl || state.config?.contentUrl;
 
       if (configUrl) {
         return configUrl;
