@@ -3,7 +3,7 @@
  * @author Dominik Haas-Artho
  *
  * Created at     : 2019-10-23 16:34:51 
- * Last modified  : 2020-09-02 16:43:04
+ * Last modified  : 2020-09-03 12:47:41
  *
  * This file is subject to the terms and conditions defined in
  * file 'LICENSE.txt', which is part of this source code package.
@@ -20,6 +20,28 @@ import {
   GET_TREE_CONTENT_SUCCESS,
   GET_TREE_CONTENT_ERROR,
 } from '@/store/mutationsConsts';
+
+const useTestData = !!(process.env.VUE_APP_USE_TESTDATA && process.env.VUE_APP_USE_TESTDATA === 'true');
+
+function buildParameterString(params) {
+
+  const keys = Object.keys(params);
+
+  if (keys.length > 0) {
+    let urlParams = '?';
+
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      urlParams += `${key}=${params[key]}&`;      
+    }
+
+    urlParams = urlParams.substr(0, urlParams.length - 1);
+
+    return urlParams;
+  }
+
+  return '';
+}
 
 export default {
   [GET_CONFIG]({ commit }, configURL) {
@@ -46,13 +68,36 @@ export default {
         });
     }
   },
-  [GET_TREE_CONTENT]({ commit }) {
+  [GET_TREE_CONTENT]({ commit }, contentParams) {
     
     commit(GET_TREE_CONTENT);
     
-    const contentURL = this.getters.contentURL;
+    const baseUrl = contentParams.url;
+    let getParams = '';
 
-    axios.get(contentURL)
+    if (contentParams.prefix) {
+      getParams = buildParameterString({ prefix: contentParams.prefix });
+    }
+
+    let requestUrl = `${baseUrl}${getParams}`;
+
+    if (useTestData) {
+      const splits = baseUrl.split('.');
+      const testUrl = splits[1];      
+      let testParams = contentParams.prefix;
+
+      if (testParams) {
+        testParams = testParams.replaceAll('_', '-');
+        testParams = testParams.replaceAll('/', '_');
+        testParams += `.${splits[splits.length - 1]}`;
+
+        requestUrl = `.${testUrl}_${testParams}`;
+      } else {
+        requestUrl = contentParams.url;
+      }
+    }
+
+    axios.get(requestUrl)
       .then((response) => {
 
         if (typeof (response.data) === 'string') {
