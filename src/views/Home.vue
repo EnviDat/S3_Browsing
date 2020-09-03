@@ -1,6 +1,6 @@
 <template>
-  <v-container class="fill-height"
-                fluid>
+  <v-container fluid>
+
     <v-row v-if="loading" >
       <v-col cols="12"
               sm="3">
