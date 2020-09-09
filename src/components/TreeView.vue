@@ -1,8 +1,26 @@
 <template>
 
-  <v-treeview v-model="tree"
+        <v-treeview :items="items"
+                    :load-children="fetchSubkeys"
+                    :open.sync="open"
+                    color="warning" >
+                    <!-- :active.sync="active"
+                    activatable -->
+
+          <template v-slot:prepend="{ item }">
+          <!-- <template v-slot:prepend="{ item, active }"> -->
+            <!-- {{ active ? 'active' : 'inactive' }} -->
+            <v-icon v-if="item.children && item.children.length > 0">mdi-folder</v-icon>
+            <v-icon v-if="!item.children || item.children.length <= 0">mdi-file</v-icon>
+          </template>
+
+        </v-treeview>
+
+  <!-- <v-treeview v-model="tree"
+              :active.sync="active"
               :search="search"
               :items="items"
+              :load-children="fetchSubkeys"
               item-key="name"
               open-on-click >
 
@@ -56,11 +74,13 @@
       </v-row>
     </template>
 
-  </v-treeview>
+  </v-treeview> -->
 </template>
 
 <script>
 import IconButton from './IconButton';
+
+const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export default {
   name: 'TreeView',
@@ -93,11 +113,17 @@ export default {
         // console.error('Async: Could not copy text: ', err);
       });
     },
+    async fetchSubkeys(item) {
+      console.log(`started fetchSubkeys ${item.name}`);
+      await pause(1500);
+      console.log('finished fetchSubkeys');
+    },
   },
   data: () => ({
     copySnackText: 'Url copied to clipboard',
+    active: [],
     open: [],
-    files: {
+    fileExtentions: {
       html: 'mdi-language-html5',
       js: 'mdi-nodejs',
       json: 'mdi-json',
