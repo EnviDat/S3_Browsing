@@ -31,8 +31,7 @@
     </v-sheet>
 
     <v-card-text :style="`max-height: ${height}; overflow:auto;`">
-      <TreeView :items="items"
-                :search="search"
+      <TreeView :search="search"
                 :caseSensitive="caseSensitive"
                 @showSnack="catchShowSnack" />
     </v-card-text>
@@ -41,12 +40,12 @@
 </template>
 
 <script>
+
 import TreeView from './TreeView';
 
 export default {
   name: 'TreeCard',
   props: {
-    content: Map,
     height: {
       type: String,
       default: '75vh',
@@ -58,15 +57,6 @@ export default {
     fullWidth: false,
   }),
   computed: {
-    hasContent() {
-      return this.content && this.content.size > 0;
-    },
-    values() {
-      return this.hasContent ? this.content.values() : null;
-    },
-    items() {
-      return this.values ? [...this.values] : [];
-    },
     // filter() {
     //   return this.caseSensitive
     //     ? (item, search, textKey) => item[textKey].indexOf(search) > -1

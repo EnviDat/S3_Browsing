@@ -42,8 +42,7 @@
 
       <v-col cols="12"
               sm="9"  >
-        <TreeCard :content="contentMap"
-                @showSnack="catchShowSnack" />
+        <TreeCard @showSnack="catchShowSnack" />
       </v-col>
 
     </v-row>
@@ -72,8 +71,6 @@ export default {
   name: 'Home',
   beforeMount() {
     this.$store.dispatch(GET_CONFIG, configURL);
-    
-    this.extractUrlParameters();
   },
   computed: {
     ...mapGetters([
@@ -88,7 +85,8 @@ export default {
       'contentError',
     ]),
     loading() {
-      return this.configLoading || this.contentLoading;
+      // return this.configLoading || this.contentLoading;
+      return this.configLoading;
     },
     hasError() {
       return this.configError || this.contentError;
@@ -97,14 +95,14 @@ export default {
       if (this.configError) {
         return {
           title: 'Config Error ',
-          message: `Error loading config from ${configURL}`,
+          message: `Error loading config from ${configURL}. ${this.configError}`,
         };
       } 
       
       if (this.contentError) {
         return {
           title: 'Bucket Content Error ',
-          message: `Error loading S3 Bucket from ${this.contentUrl}`,
+          message: `Error loading S3 Bucket from ${this.contentUrl}. ${this.contentError}`,
         };
       }
 
@@ -114,27 +112,14 @@ export default {
   watch: {
     configLoading() {
       if (!this.configLoading && this.contentUrl) {
-        this.$store.dispatch(GET_S3_CONTENT, { url: this.contentUrl, prefix: this.urlPrefix });
+        // initial call
+        this.$store.dispatch(GET_S3_CONTENT, { url: this.contentUrl });
       }
     },
   },
   methods: {
     catchBucketInfoExpand() {
       this.bucketInfoExpanded = !this.bucketInfoExpanded;
-    },
-    extractUrlParameters() {
-      // this.urlPrefix = 'chelsa/chelsa_V1/chelsa_cruts/prec/';
-      // return;
-      // eslint-disable-next-line no-unreachable
-      let params = this.$route.query;
-
-      this.urlPrefix = params?.prefix || null;
-
-      if (!this.urlPrefix) {
-        params = this.$route.params;
-
-        this.urlPrefix = params?.prefix || null;
-      }
     },
     catchShowSnack(snackMsgObj) {
       this.$emit('showSnack', snackMsgObj);

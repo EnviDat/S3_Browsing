@@ -10,8 +10,8 @@
           <template v-slot:prepend="{ item }">
           <!-- <template v-slot:prepend="{ item, active }"> -->
             <!-- {{ active ? 'active' : 'inactive' }} -->
-            <v-icon v-if="item.children && item.children.length > 0">mdi-folder</v-icon>
-            <v-icon v-if="!item.children || item.children.length <= 0">mdi-file</v-icon>
+            <v-icon v-if="item && item.children && item.children.length > 0">mdi-folder</v-icon>
+            <v-icon v-if="item && !item.children || item.children.length <= 0">mdi-file</v-icon>
           </template>
 
         </v-treeview>
@@ -78,20 +78,64 @@
 </template>
 
 <script>
+import {
+  mapState,
+  mapGetters,
+} from 'vuex';
+
+import {
+  GET_S3_CONTENT,
+} from '@/store/mutationsConsts';
+
 import IconButton from './IconButton';
 
-const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+// const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export default {
   name: 'TreeView',
   props: {
-    items: Array,
     search: String,
     caseSensitive: Boolean,
   },
+  beforeMount() {
+    this.extractUrlParameters();
+  },
   computed: {
+    ...mapGetters([
+      'contentUrl',
+      'contentMap',
+    ]),
+    ...mapState([
+      // 'configLoading',
+      // 'configError',
+      'content',
+      'contentLoading',
+      // 'contentError',
+    ]),
+    values() {
+      // return this.contentMap ? this.contentMap.values() : null;
+      return this.contentMap ? Object.values(this.contentMap) : null;
+    },
+    items() {
+      // return this.values ? [...this.values] : [];
+      return this.values ? this.values : [];
+    },
   },
   methods: {
+    extractUrlParameters() {
+      // this.urlPrefix = 'chelsa/chelsa_V1/chelsa_cruts/prec/';
+      // return;
+      // eslint-disable-next-line no-unreachable
+      let params = this.$route.query;
+
+      this.urlPrefix = params?.prefix || null;
+
+      if (!this.urlPrefix) {
+        params = this.$route.params;
+
+        this.urlPrefix = params?.prefix || null;
+      }
+    },
     filter() {
       return this.caseSensitive
         ? (item, search, textKey) => item[textKey].indexOf(search) > -1
@@ -114,15 +158,32 @@ export default {
       });
     },
     async fetchSubkeys(item) {
-      console.log(`started fetchSubkeys ${item.name}`);
-      await pause(1500);
-      console.log('finished fetchSubkeys');
+      // console.log(`started fetchSubkeys ${item.directory}`);
+
+      const prefix = item.directory;
+      // await pause(1500);
+      await this.$store.dispatch(GET_S3_CONTENT, {
+        url: this.contentUrl,
+        prefix,
+      });
+
+      // console.log('finished fetchSubkeys');
     },
   },
+  // watch: {
+  //   configLoading() {
+  //       console.log(`got configLoading ${this.configLoading}`);
+
+  //     if (!this.configLoading && this.contentUrl) {
+  //       this.loadS3Content(this.contentUrl, '', '/');
+  //     }
+  //   },
+  // },
   data: () => ({
     copySnackText: 'Url copied to clipboard',
     active: [],
     open: [],
+    defaultDelimiter: '/',
     fileExtentions: {
       html: 'mdi-language-html5',
       js: 'mdi-nodejs',

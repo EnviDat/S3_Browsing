@@ -36,7 +36,8 @@ export default new Vuex.Store({
       return state.content?.ListBucketResult?.Name || 'Nothing loaded';
     },
     contentMap() {
-      return state.contentMap;
+      // return state.contentMap?.size > 0 ? state.contentMap : null;
+      return state.contentMap && Object.keys(state.contentMap).length > 0 ? state.contentMap : null;
     },
   },
   mutations,

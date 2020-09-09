@@ -19,7 +19,11 @@ import {
   GET_S3_CONTENT_ERROR,
 } from '@/store/mutationsConsts';
 
-import { getS3Map } from './s3Factory';
+import {
+  getS3Map,
+  convertPrefixToMap,
+  mergeS3Maps,
+} from './s3Factory';
 
 export default {
   [GET_CONFIG](state) {
@@ -39,14 +43,29 @@ export default {
   },
   [GET_S3_CONTENT](state) {
     state.content = null;
-    this._vm.$set(state, 'contentMap', null);
+    // this._vm.$set(state, 'contentMap', null);
     state.contentLoading = true;
     state.contentError = null;
   },
   [GET_S3_CONTENT_SUCCESS](state, payload) {
-    state.content = payload;
+    // state.content = payload;
 
-    const map = getS3Map(this.getters.contentList, this.getters.contentUrl);
+    const contentList = payload?.ListBucketResult?.Contents;
+    const prefixList = payload?.ListBucketResult?.CommonPrefixes;
+    const parent = payload?.ListBucketResult?.Prefix;
+
+    let map = null;
+
+    if (!contentList) {
+      map = convertPrefixToMap(prefixList, this.getters.contentUrl);
+    } else {
+      map = getS3Map(contentList, this.getters.contentUrl);
+    }
+
+    if (state.contentMap) {
+      // merge map
+      map = mergeS3Maps(state.contentMap, map, parent);
+    }
 
     state.contentLoading = false;
     this._vm.$set(state, 'contentMap', map);

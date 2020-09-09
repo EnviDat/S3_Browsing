@@ -72,16 +72,25 @@ export default {
         });
     }
   },
-  [GET_S3_CONTENT]({ commit }, contentParams) {
+  async [GET_S3_CONTENT]({ commit }, contentParams) {
     
     commit(GET_S3_CONTENT);
     
     const baseUrl = contentParams.url;
     let getParams = '';
 
-    if (contentParams.prefix) {
-      getParams = buildParameterString({ prefix: contentParams.prefix });
+    // remove url so it won't be part of the url parameters
+    delete contentParams.url;
+
+    if (!contentParams.delimiter) {
+      contentParams.delimiter = '/';
     }
+
+    if (!contentParams['max-keys']) {
+      contentParams['max-keys'] = 100000;
+    }
+
+    getParams = buildParameterString(contentParams);
 
     let requestUrl = `${baseUrl}${getParams}`;
 
@@ -101,7 +110,7 @@ export default {
       }
     }
 
-    axios.get(requestUrl)
+    await axios.get(requestUrl)
       .then((response) => {
 
         if (typeof (response.data) === 'string') {
