@@ -4,7 +4,7 @@
  * @author Dominik Haas-Artho
  *
  * Created at     : 2019-10-23 16:34:51 
- * Last modified  : 2020-09-02 09:47:26
+ * Last modified  : 2020-09-10 08:21:37
  *
  * This file is subject to the terms and conditions defined in
  * file 'LICENSE.txt', which is part of this source code package.
@@ -50,8 +50,14 @@ export default {
   [GET_S3_CONTENT_SUCCESS](state, payload) {
     // state.content = payload;
 
-    const contentList = payload?.ListBucketResult?.Contents;
-    const prefixList = payload?.ListBucketResult?.CommonPrefixes;
+    let contentList = payload?.ListBucketResult?.Contents;
+    if (contentList && !(contentList instanceof Array)) {
+      contentList = [contentList];
+    }
+    let prefixList = payload?.ListBucketResult?.CommonPrefixes;
+    if (prefixList && !(prefixList instanceof Array)) {
+      prefixList = [prefixList];
+    }
     const parent = payload?.ListBucketResult?.Prefix;
 
     let map = null;
