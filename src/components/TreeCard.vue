@@ -16,24 +16,37 @@
 
       <v-row no-gutters
               align="center"
+              justify="end"
               class="pt-2">
-        <v-col >
+        <!-- <v-col >
           <v-checkbox v-model="caseSensitive"
                       style="margin-top: 0px !important"
                       dark
                       dense
                       hide-details
                       label="Case sensitive search" />
-        </v-col>
+        </v-col> -->
 
+        <v-col class="shrink">
+          <IconButton icon="mdi-arrow-collapse-vertical"
+                      dark
+                      tooltipText="Collapse all folders"
+                      @click="catchCollapseAll" />
+          <!-- <v-btn icon
+                  dark
+                  @click="catchCollapseAll">
+            <v-icon>mdi-arrow-collapse-vertical</v-icon>
+          </v-btn> -->
+        </v-col>
       </v-row>
 
     </v-sheet>
 
     <v-card-text :style="`max-height: ${height}; overflow:auto;`">
       <TreeView :search="search"
-                :caseSensitive="caseSensitive"
-                @showSnack="catchShowSnack" />
+                :allCollapsed="allCollapsed"
+                @showSnack="catchShowSnack"
+                @collapsed="catchCollapsed" />
     </v-card-text>
 
   </v-card>
@@ -41,6 +54,7 @@
 
 <script>
 
+import IconButton from './IconButton';
 import TreeView from './TreeView';
 
 export default {
@@ -55,6 +69,7 @@ export default {
     caseSensitive: false,
     search: '',
     fullWidth: false,
+    allCollapsed: false,
   }),
   computed: {
     // filter() {
@@ -67,9 +82,16 @@ export default {
     catchShowSnack(snackMsgObj) {
       this.$emit('showSnack', snackMsgObj);
     },
+    catchCollapseAll() {
+      this.allCollapsed = true;
+    },
+    catchCollapsed() {
+      this.allCollapsed = false;
+    },
   },
   components: {
     TreeView,
+    IconButton,
   },
 };
 </script>

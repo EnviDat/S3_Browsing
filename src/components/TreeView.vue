@@ -1,9 +1,11 @@
 <template>
-  <v-treeview :items="items"
+  <v-treeview v-model="tree"
+              :items="items"
               :load-children="fetchSubkeys"
               :open.sync="open"
               :search="search"
               item-key="name"
+              expand-icon="mdi-chevron-down"
               open-on-click >
 
     <template v-slot:prepend="{ item, open }" >
@@ -21,6 +23,7 @@
 
       <v-row no-gutters
               align="center">
+
         <v-col class="pl-2 pr-4 shrink">
           {{ item.name }}
         </v-col>
@@ -32,6 +35,7 @@
                       tooltipText="Copy Link"
                       @click="catchCopyClick(item.fileUrl)" />
         </v-col>
+
         <v-col v-if="item.isFile"
                 class="shrink px-1" >
 
@@ -76,6 +80,7 @@ export default {
   props: {
     search: String,
     caseSensitive: Boolean,
+    allCollapsed: Boolean,
   },
   beforeMount() {
     this.extractUrlParameters();
@@ -108,11 +113,6 @@ export default {
 
         this.urlPrefix = params?.prefix || null;
       }
-    },
-    filter() {
-      return this.caseSensitive
-        ? (item, search, textKey) => item[textKey].indexOf(search) > -1
-        : undefined;
     },
     catchCopyClick(url) {
       this.copyTextToClipboard(url);
@@ -147,18 +147,29 @@ export default {
       item.open = true;
     },
   },
+  watch: {
+    allCollapsed() {
+      if (this.allCollapsed) {
+        this.open = [];
+        this.$emit('collapsed');
+      }
+    },
+  },
   data: () => ({
+    tree: [],
     copySnackText: 'Url copied to clipboard',
     active: [],
     open: [],
-    defaultDelimiter: '/',
     fileExtentions: {
+      csv: 'mdi-text-box',
+      doc: 'mdi-file-word-box',
       html: 'mdi-language-html5',
       js: 'mdi-nodejs',
       json: 'mdi-json',
       md: 'mdi-markdown',
       pdf: 'file-pdf',
       png: 'mdi-file-image',
+      ppt: 'mdi-file-powerpoint-box',
       jpeg: 'mdi-file-image',
       jpg: 'mdi-file-image',
       tiff: 'mdi-file-image',

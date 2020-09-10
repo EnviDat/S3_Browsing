@@ -169,7 +169,7 @@ export function mergeMapEntry(existing, newEntry, delimiter = '/') {
       const parentPath = splits[2];
       parentDirectory = `${parentPath}${delimiter}`;
 
-      console.log(`Traverse for ${newEntry.id} checking: ${existing.name}`);
+      // console.log(`Traverse for ${newEntry.id} checking: ${existing.name}`);
 
       if (existing.name === parentDirectory) {
         const existingChild = existing.children.findIndex((el) => el.name === newEntry.name);
