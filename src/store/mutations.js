@@ -48,7 +48,7 @@ export default {
     state.contentError = null;
   },
   [GET_S3_CONTENT_SUCCESS](state, payload) {
-    // state.content = payload;
+    state.content = payload;
 
     let contentList = payload?.ListBucketResult?.Contents;
     if (contentList && !(contentList instanceof Array)) {

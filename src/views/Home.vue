@@ -70,6 +70,8 @@ const configURL = process.env.VUE_APP_CONFIG_URL;
 export default {
   name: 'Home',
   beforeMount() {
+    this.extractUrlParameters();
+
     this.$store.dispatch(GET_CONFIG, configURL);
   },
   computed: {
@@ -113,7 +115,7 @@ export default {
     configLoading() {
       if (!this.configLoading && this.contentUrl) {
         // initial call
-        this.$store.dispatch(GET_S3_CONTENT, { url: this.contentUrl });
+        this.$store.dispatch(GET_S3_CONTENT, { url: this.contentUrl, prefix: this.urlPrefix });
       }
     },
   },
@@ -123,6 +125,17 @@ export default {
     },
     catchShowSnack(snackMsgObj) {
       this.$emit('showSnack', snackMsgObj);
+    },
+    extractUrlParameters() {
+      let params = this.$route.query;
+
+      this.urlPrefix = params?.prefix || '';
+
+      if (!this.urlPrefix) {
+        params = this.$route.params;
+
+        this.urlPrefix = params?.prefix || '';
+      }
     },
   },
   components: {
