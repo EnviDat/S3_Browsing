@@ -3,7 +3,7 @@
  * @author Dominik Haas-Artho
  *
  * Created at     : 2019-10-23 16:34:51 
- * Last modified  : 2020-09-01 17:40:13
+ * Last modified  : 2020-09-03 12:47:41
  *
  * This file is subject to the terms and conditions defined in
  * file 'LICENSE.txt', which is part of this source code package.
@@ -16,15 +16,35 @@ import {
   GET_CONFIG,
   GET_CONFIG_SUCCESS,
   GET_CONFIG_ERROR,
-  GET_TREE_CONTENT,
-  GET_TREE_CONTENT_SUCCESS,
-  GET_TREE_CONTENT_ERROR,
+  GET_S3_CONTENT,
+  GET_S3_CONTENT_SUCCESS,
+  GET_S3_CONTENT_ERROR,
 } from '@/store/mutationsConsts';
 
-const configURL = process.env.VUE_APP_CONFIG_URL;
+const useTestData = !!(process.env.VUE_APP_USE_TESTDATA && process.env.VUE_APP_USE_TESTDATA === 'true');
+
+function buildParameterString(params) {
+
+  const keys = Object.keys(params);
+
+  if (keys.length > 0) {
+    let urlParams = '?';
+
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      urlParams += `${key}=${params[key]}&`;      
+    }
+
+    urlParams = urlParams.substr(0, urlParams.length - 1);
+
+    return urlParams;
+  }
+
+  return '';
+}
 
 export default {
-  [GET_CONFIG]({ commit }) {
+  [GET_CONFIG]({ commit }, configURL) {
     if (configURL && configURL !== 'NULL') {
 
       commit(GET_CONFIG);
@@ -44,17 +64,53 @@ export default {
           commit(GET_CONFIG_SUCCESS, config);
         })
         .catch((reason) => {
-          commit(GET_CONFIG_ERROR, reason);
+          if (reason?.response?.status === 404) {
+            commit(GET_CONFIG_SUCCESS, null);
+          } else {
+            commit(GET_CONFIG_ERROR, reason);
+          }
         });
     }
   },
-  [GET_TREE_CONTENT]({ commit }) {
+  async [GET_S3_CONTENT]({ commit }, contentParams) {
     
-    commit(GET_TREE_CONTENT);
+    commit(GET_S3_CONTENT);
     
-    const contentURL = this.getters.contentURL;
+    const baseUrl = contentParams.url;
+    let getParams = '';
 
-    axios.get(contentURL)
+    // remove url so it won't be part of the url parameters
+    delete contentParams.url;
+
+    if (!contentParams.delimiter) {
+      contentParams.delimiter = '/';
+    }
+
+    if (!contentParams['max-keys']) {
+      contentParams['max-keys'] = 100000;
+    }
+
+    getParams = buildParameterString(contentParams);
+
+    let requestUrl = `${baseUrl}${getParams}`;
+
+    if (useTestData) {
+      const splits = baseUrl.split('.');
+      const testUrl = splits[1];      
+      let testParams = contentParams.prefix;
+
+      if (testParams) {
+        testParams = testParams.replaceAll('_', '-');
+        testParams = testParams.replaceAll('/', '_');
+        testParams += `.${splits[splits.length - 1]}`;
+
+        requestUrl = `.${testUrl}_${testParams}`;
+      } else {
+        requestUrl = contentParams.url;
+      }
+    }
+
+    await axios.get(requestUrl)
       .then((response) => {
 
         if (typeof (response.data) === 'string') {
@@ -64,18 +120,18 @@ export default {
             trim: true,
           })
             .then((xml) => {
-              commit(GET_TREE_CONTENT_SUCCESS, xml);
+              commit(GET_S3_CONTENT_SUCCESS, xml);
             })
             .catch((reason) => {
-              commit(GET_TREE_CONTENT_ERROR, reason);
+              commit(GET_S3_CONTENT_ERROR, reason);
             });
         } else {
-          commit(GET_TREE_CONTENT_ERROR, `Got content respose in unexpected type ${typeof (response.data)}`);
+          commit(GET_S3_CONTENT_ERROR, `Got content respose in unexpected type ${typeof (response.data)}`);
         }
         
       })
       .catch((reason) => {
-        commit(GET_TREE_CONTENT_ERROR, reason);
+        commit(GET_S3_CONTENT_ERROR, reason);
       });
   },
 };

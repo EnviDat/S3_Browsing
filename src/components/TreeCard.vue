@@ -1,7 +1,6 @@
 <template>
-  <v-card max-height="100%">
-    <v-sheet class="pa-4"
-            :color="hasContent ? 'blue' : 'error'">
+  <v-card height="100%">
+    <v-sheet class="pa-4" color="primary">
 
       <v-row no-gutters>
         <v-col>
@@ -17,55 +16,50 @@
 
       <v-row no-gutters
               align="center"
+              justify="end"
               class="pt-2">
-        <v-col >
+        <!-- <v-col >
           <v-checkbox v-model="caseSensitive"
                       style="margin-top: 0px !important"
                       dark
                       dense
                       hide-details
                       label="Case sensitive search" />
-        </v-col>
+        </v-col> -->
 
+        <v-col class="shrink">
+          <IconButton icon="mdi-arrow-collapse-vertical"
+                      dark
+                      tooltipText="Collapse all folders"
+                      @click="catchCollapseAll" />
+          <!-- <v-btn icon
+                  dark
+                  @click="catchCollapseAll">
+            <v-icon>mdi-arrow-collapse-vertical</v-icon>
+          </v-btn> -->
+        </v-col>
       </v-row>
 
     </v-sheet>
 
     <v-card-text :style="`max-height: ${height}; overflow:auto;`">
-      <TreeView :items="items"
-                :search="search"
-                :caseSensitive="caseSensitive"
-                @showSnack="catchShowSnack" />
+      <TreeView :search="search"
+                :allCollapsed="allCollapsed"
+                @showSnack="catchShowSnack"
+                @collapsed="catchCollapsed" />
     </v-card-text>
-
-    <v-snackbar v-model="snackbar"
-                :timeout="timeout"
-                top
-                right
-                :color="snackColor"
-                elevation="5" >
-      {{ snackText }}
-
-      <template v-slot:action="{ attrs }">
-        <v-btn color="white"
-                icon
-                v-bind="attrs"
-                @click="snackbar = false" >
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
-      </template>
-    </v-snackbar>
 
   </v-card>
 </template>
 
 <script>
+
+import IconButton from './IconButton';
 import TreeView from './TreeView';
 
 export default {
   name: 'TreeCard',
   props: {
-    content: Map,
     height: {
       type: String,
       default: '75vh',
@@ -74,22 +68,10 @@ export default {
   data: () => ({
     caseSensitive: false,
     search: '',
-    snackbar: false,
-    snackText: '',
-    snackColor: 'success',
-    timeout: 2500,
     fullWidth: false,
+    allCollapsed: false,
   }),
   computed: {
-    hasContent() {
-      return this.content && this.content.size > 0;
-    },
-    values() {
-      return this.hasContent ? this.content.values() : null;
-    },
-    items() {
-      return this.values ? [...this.values] : [];
-    },
     // filter() {
     //   return this.caseSensitive
     //     ? (item, search, textKey) => item[textKey].indexOf(search) > -1
@@ -98,13 +80,18 @@ export default {
   },
   methods: {
     catchShowSnack(snackMsgObj) {
-      this.snackbar = true;
-      this.snackText = snackMsgObj.text;
-      this.snackColor = snackMsgObj.success ? 'success' : 'error';
+      this.$emit('showSnack', snackMsgObj);
+    },
+    catchCollapseAll() {
+      this.allCollapsed = true;
+    },
+    catchCollapsed() {
+      this.allCollapsed = false;
     },
   },
   components: {
     TreeView,
+    IconButton,
   },
 };
 </script>

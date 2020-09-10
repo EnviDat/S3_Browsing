@@ -1,7 +1,11 @@
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
+
 import Vue from 'vue';
 import App from './App';
 import vuetify from './plugins/vuetify';
 import store from './store/store';
+import router from './router';
 
 Vue.config.productionTip = false;
 
@@ -11,5 +15,6 @@ new Vue({
   vuetify,
   components: { App },
   store,
+  router,
   template: '<App/>',
 });

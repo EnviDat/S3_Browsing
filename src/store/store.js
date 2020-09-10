@@ -20,8 +20,8 @@ const state = {
 export default new Vuex.Store({
   state,
   getters: {
-    contentURL() {
-      const configUrl = state.config?.contentUrl || state.config?.contenturl;
+    contentUrl() {
+      const configUrl = state.config?.contentUrl || state.config?.contentUrl;
 
       if (configUrl) {
         return configUrl;
@@ -33,10 +33,11 @@ export default new Vuex.Store({
       return state.content?.ListBucketResult?.Contents;
     },
     contentBucketName() {
-      return state.content?.ListBucketResult?.Name;
+      return state.content?.ListBucketResult?.Name || 'Nothing loaded';
     },
     contentMap() {
-      return state.contentMap;
+      // return state.contentMap?.size > 0 ? state.contentMap : null;
+      return state.contentMap && Object.keys(state.contentMap).length > 0 ? state.contentMap : null;
     },
   },
   mutations,

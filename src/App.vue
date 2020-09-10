@@ -25,7 +25,12 @@
           </v-row>
         </v-col>
 
-        <v-col v-if="contentBucketName"
+        <v-col v-if="loading"
+                style="text-align: center;">
+          <span class="text-sm-h5 text-subtitle-1">{{ loadingText }}</span>
+        </v-col>
+
+        <v-col v-if="!loading && contentBucketName"
                 style="text-align: center;">
           <span class="text-sm-h5 text-subtitle-1">Bucket: {{ contentBucketName }}</span>
         </v-col>
@@ -52,41 +57,27 @@
     </v-app-bar>
 
     <v-main>
-      <v-container class="fill-height" fluid>
-        <v-row v-if="contentLoading " >
-          <v-col cols="12"
-                  sm="3">
-            <PlaceholderCard />
-          </v-col>
-
-          <v-col cols="12"
-                  sm="9">
-            <PlaceholderCard />
-          </v-col>
-        </v-row>
-
-        <v-row v-if="!contentLoading">
-
-          <v-col v-if="content && content.ListBucketResult"
-                  cols="12"
-                  sm="3">
-            <BucketCard :name="content.ListBucketResult.Name"
-                        :url="contentURL"
-                        :prefix="content.ListBucketResult.Prefix"
-                        :maxKeys="content.ListBucketResult.MaxKeys"
-                        :delimiter="content.ListBucketResult.Delimiter"
-                        :isTruncated="content.ListBucketResult.IsTruncated === 'true' ? true : false"
-                        :marker="content.ListBucketResult.Marker" />
-          </v-col>
-
-          <v-col cols="12"
-                  sm="9" >
-            <TreeCard :content="contentMap" />
-          </v-col>
-
-        </v-row>
-      </v-container>
+      <router-view @showSnack="catchShowSnack" />
+      
     </v-main>
+
+    <v-snackbar v-model="snackbar"
+                :timeout="timeout"
+                top
+                right
+                :color="snackColor"
+                elevation="5" >
+      {{ snackText }}
+
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white"
+                icon
+                v-bind="attrs"
+                @click="snackbar = false" >
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </template>
+    </v-snackbar>
 
     <v-footer>
       <v-spacer></v-spacer>
@@ -103,47 +94,55 @@ import {
   mapGetters,
 } from 'vuex';
 
-import {
-  // GET_CONFIG,
-  GET_TREE_CONTENT,
-} from '@/store/mutationsConsts';
-
-import TreeCard from '@/components/TreeCard';
 import IconButton from '@/components/IconButton';
-import BucketCard from '@/components/BucketCard';
-import PlaceholderCard from '@/components/PlaceholderCard';
 
 import '../node_modules/skeleton-placeholder/dist/bone.min.css';
 
+const configURL = process.env.VUE_APP_CONFIG_URL;
+
 export default {
   name: 'App',
-  beforeMount() {
-    // this.$store.dispatch(GET_CONFIG);
-    this.$store.dispatch(GET_TREE_CONTENT);
-  },
   computed: {
     ...mapGetters([
-      'contentURL',
-      'contentMap',
+      'contentUrl',
       'contentBucketName',
       ]),
     ...mapState([
       'configLoading',
-      'configError',
-      'content',
       'contentLoading',
-      'contentError',
     ]),
+    loading() {
+      return this.configLoading || this.contentLoading;
+    },
+    loadingText() {
+      if (this.configLoading) {
+        return `Loading config from ${configURL}`;
+      } 
+      
+      if (this.contentLoading) {
+        return `Loading S3 Bucket from ${this.contentUrl}`;
+      }
+
+      return 'Loading should be finished...';
+    },
+  },
+  methods: {
+    catchShowSnack(snackMsgObj) {
+      this.snackbar = true;
+      this.snackText = snackMsgObj.text;
+      this.snackColor = snackMsgObj.success ? 'success' : 'error';
+    },
   },
   components: {
-    TreeCard,
     IconButton,
-    BucketCard,
-    PlaceholderCard,
   },
   data: () => ({
     appTitle: 'File Browser',
     appAvatarText: 'S3',
+    snackbar: false,
+    snackText: '',
+    snackColor: 'success',
+    timeout: 2500,
   }),
 };
 </script>

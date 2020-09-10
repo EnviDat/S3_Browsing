@@ -3,7 +3,7 @@
  * @author Dominik Haas-Artho
  *
  * Created at     : 2020-09-01 11:27:52
- * Last modified  : 2020-09-01 12:25:13
+ * Last modified  : 2020-09-02 17:15:40
  *
  * This file is subject to the terms and conditions defined in
  * file 'LICENSE.txt', which is part of this source code package.
@@ -17,7 +17,7 @@ dotenv.config();
 process.env.VUE_APP_VERSION = require('./package.json').version;
 
 const version = process.env.VUE_APP_VERSION;
-const useTestData = process.env.VUE_APP_USE_TESTDATA && process.env.VUE_APP_USE_TESTDATA === 'true' ? true : false;
+const useTestData = !!(process.env.VUE_APP_USE_TESTDATA && process.env.VUE_APP_USE_TESTDATA === 'true');
 const isProd = process.env.NODE_ENV === 'production';
 
 if (isProd) {
@@ -38,8 +38,8 @@ console.log(`starting ${version} with use of testdata '${useTestData}' on ${proc
 
 module.exports = {
   transpileDependencies: ['vuetify'],
-  // publicPath: './',
-  // assetsDir: './static',
+  publicPath: './',
+  assetsDir: './static',
   runtimeCompiler: true,
   css: {
     sourceMap: true,

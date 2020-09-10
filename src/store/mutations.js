@@ -4,7 +4,7 @@
  * @author Dominik Haas-Artho
  *
  * Created at     : 2019-10-23 16:34:51 
- * Last modified  : 2020-09-02 09:47:26
+ * Last modified  : 2020-09-10 08:21:37
  *
  * This file is subject to the terms and conditions defined in
  * file 'LICENSE.txt', which is part of this source code package.
@@ -14,12 +14,16 @@ import {
   GET_CONFIG,
   GET_CONFIG_SUCCESS,
   GET_CONFIG_ERROR,
-  GET_TREE_CONTENT,
-  GET_TREE_CONTENT_SUCCESS,
-  GET_TREE_CONTENT_ERROR,
+  GET_S3_CONTENT,
+  GET_S3_CONTENT_SUCCESS,
+  GET_S3_CONTENT_ERROR,
 } from '@/store/mutationsConsts';
 
-import { getS3Map } from './s3Factory';
+import {
+  getS3Map,
+  convertPrefixToMap,
+  mergeS3Maps,
+} from './s3Factory';
 
 export default {
   [GET_CONFIG](state) {
@@ -37,21 +41,42 @@ export default {
     // const notificationObj = getSpecificApiError('Config could not ge loaded!', reason);
     // this.commit(ADD_USER_NOTIFICATION, notificationObj);
   },
-  [GET_TREE_CONTENT](state) {
+  [GET_S3_CONTENT](state) {
     state.content = null;
-    this._vm.$set(state, 'contentMap', null);
+    // this._vm.$set(state, 'contentMap', null);
     state.contentLoading = true;
     state.contentError = null;
   },
-  [GET_TREE_CONTENT_SUCCESS](state, payload) {
-    state.content = payload;
+  [GET_S3_CONTENT_SUCCESS](state, payload) {
+    // state.content = payload;
 
-    const map = getS3Map(this.getters.contentList, this.getters.contentURL);
+    let contentList = payload?.ListBucketResult?.Contents;
+    if (contentList && !(contentList instanceof Array)) {
+      contentList = [contentList];
+    }
+    let prefixList = payload?.ListBucketResult?.CommonPrefixes;
+    if (prefixList && !(prefixList instanceof Array)) {
+      prefixList = [prefixList];
+    }
+    const parent = payload?.ListBucketResult?.Prefix;
+
+    let map = null;
+
+    if (!contentList) {
+      map = convertPrefixToMap(prefixList, this.getters.contentUrl);
+    } else {
+      map = getS3Map(contentList, this.getters.contentUrl);
+    }
+
+    if (state.contentMap) {
+      // merge map
+      map = mergeS3Maps(state.contentMap, map, parent);
+    }
 
     state.contentLoading = false;
     this._vm.$set(state, 'contentMap', map);
   },
-  [GET_TREE_CONTENT_ERROR](state, reason) {
+  [GET_S3_CONTENT_ERROR](state, reason) {
     state.contentLoading = false;
     state.contentError = reason;
     // const notificationObj = getSpecificApiError('Config could not ge loaded!', reason);

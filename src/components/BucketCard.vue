@@ -1,19 +1,24 @@
 <template>
 
   <v-card max-height="100%">
+
     <v-card-title primary-title>
       <v-row no-gutters align="center">
-        <v-col>
+        <v-col v-if="expanded">
           {{ title }}
         </v-col>
         <v-col class="shrink"
                 cols="1">
-          <v-icon>mdi-information</v-icon>
+          <v-btn icon
+                  @click="$emit('expand')">
+            <v-icon>mdi-information</v-icon>
+          </v-btn>
         </v-col>
       </v-row>
     </v-card-title>
 
-    <v-card-text :style="`max-height: ${height}; overflow:auto;`">
+    <v-card-text v-if="expanded"
+                  :style="`max-height: ${height}; overflow:auto;`">
       <v-text-field :value="name"
                     label="name"
                     id="0"
@@ -65,6 +70,10 @@
 export default {
   name: 'BucketCard',
   props: {
+    expanded: {
+      type: Boolean,
+      default: true,
+    },
     name: String,
     url: String,
     prefix: String,
