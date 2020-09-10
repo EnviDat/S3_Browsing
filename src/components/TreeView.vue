@@ -82,9 +82,6 @@ export default {
     caseSensitive: Boolean,
     allCollapsed: Boolean,
   },
-  beforeMount() {
-    this.extractUrlParameters();
-  },
   computed: {
     ...mapGetters([
       'contentUrl',
@@ -103,17 +100,6 @@ export default {
     },
   },
   methods: {
-    extractUrlParameters() {
-      let params = this.$route.query;
-
-      this.urlPrefix = params?.prefix || null;
-
-      if (!this.urlPrefix) {
-        params = this.$route.params;
-
-        this.urlPrefix = params?.prefix || null;
-      }
-    },
     catchCopyClick(url) {
       this.copyTextToClipboard(url);
     },

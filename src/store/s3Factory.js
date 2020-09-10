@@ -214,7 +214,7 @@ export function mergeS3Maps(mainMap, newMap, parent, delimiter = '/') {
 
   const directParent = extractKeyInfos(parent);
 
-  const mainEntry = mainMap[directParent.root] || null;
+  const mainEntry = mainMap[parent] || null;
 
   if (mainEntry) {
 

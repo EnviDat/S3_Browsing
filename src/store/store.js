@@ -29,9 +29,6 @@ export default new Vuex.Store({
 
       return state.fallbackContentUrl;
     },
-    contentList() {
-      return state.content?.ListBucketResult?.Contents;
-    },
     contentBucketName() {
       return state.content?.ListBucketResult?.Name || 'Nothing loaded';
     },
