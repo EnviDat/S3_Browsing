@@ -21,7 +21,7 @@ export default new Vuex.Store({
   state,
   getters: {
     contentUrl() {
-      const configUrl = state.config?.contentUrl || state.config?.contentUrl;
+      const configUrl = state.config?.contentUrl || state.config?.contentURL;
 
       if (configUrl) {
         return configUrl;
