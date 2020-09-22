@@ -22,19 +22,29 @@
     <template v-slot:label="{ item }">
 
       <v-row no-gutters
-              align="center">
+              align="center"
+              :class="item.isFile ? 'justify-end' : ''" >
 
-        <v-col class="pl-2 pr-4 shrink">
+        <v-col class="pl-2 pr-4"
+              :class="item.isFile ? '' : 'shrink'">
           {{ item.name }}
         </v-col>
 
-        <v-col v-if="item.isFile"
+        <!-- <v-col v-if="!item.isFile"
                 class="shrink px-1" >
 
-          <IconButton icon="mdi-content-copy"
-                      tooltipText="Copy Link"
-                      @click="catchCopyClick(item.fileUrl)" />
+          <IconButton icon="mdi-zip-box"
+                      tooltipText="Bulk download"
+                      @click="saveDirectoyViaMemoryFile(item)" />
         </v-col>
+
+        <v-col v-if="!item.isFile"
+                class="shrink px-1" >
+
+          <IconButton icon="mdi-cloud-download-outline"
+                      tooltipText="Open via FTP"
+                      :url="item.ftpUrl" />
+        </v-col> -->
 
         <v-col v-if="item.isFile"
                 class="shrink px-1" >
@@ -49,7 +59,7 @@
           {{ item.size }}
         </v-col>
 
-        <v-col v-if="!item.isFile"
+        <v-col v-if="!item.isFile && item.childs !== '?'"
                 cols="1"
                 class="shrink"  >
           <v-badge color="primary"
