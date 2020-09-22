@@ -9,6 +9,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "test:unit": "vue-cli-service test:unit",
+    "test:debug": "node --inspect-brk=9229 ./node_modules/jest/bin/jest.js --no-cache --runInBand",
     "lint": "vue-cli-service lint",
     "test": "test"
   },
@@ -32,9 +34,11 @@
     "@vue/cli-plugin-babel": "^4.5.4",
     "@vue/cli-plugin-eslint": "^4.4.6",
     "@vue/cli-plugin-router": "^4.4.6",
+    "@vue/cli-plugin-unit-jest": "^4.5.6",
     "@vue/cli-plugin-vuex": "^4.4.6",
     "@vue/cli-service": "^4.4.6",
     "@vue/eslint-config-airbnb": "^5.1.0",
+    "@vue/test-utils": "^1.0.3",
     "babel-eslint": "^10.1.0",
     "eslint": "^7.8.0",
     "eslint-plugin-vue": "^6.2.2",
@@ -85,7 +89,18 @@
       "vuetify/grid-unknown-attributes": "error",
       "vuetify/no-legacy-grid": "error",
       "vue/no-unused-components": "warn"
-    }
+    },
+    "overrides": [
+      {
+        "files": [
+          "**/__tests__/*.{j,t}s?(x)",
+          "**/tests/unit/**/*.spec.{j,t}s?(x)"
+        ],
+        "env": {
+          "jest": true
+        }
+      }
+    ]
   },
   "browserslist": [
     "> 0.2%",

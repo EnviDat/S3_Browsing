@@ -30,6 +30,9 @@ function createDirectoryEntry(keyInfos, baseUrl, delimiter, childs = null) {
   splits.reverse();
   const directoryName = `${splits[1]}${delimiter}`;
   const absolutePath = `${baseUrl}${keyInfos.directory}`;
+  const ftpUrl = absolutePath;
+  ftpUrl.replace('https', 'sftp');
+  ftpUrl.replace('http', 'ftp');
 
   return {
     root: keyInfos.root,
@@ -37,6 +40,7 @@ function createDirectoryEntry(keyInfos, baseUrl, delimiter, childs = null) {
     name: directoryName,
     isFile: false,
     fileUrl: absolutePath,
+    ftpUrl,
     id: absolutePath,
     children,
     childs: childrenLength,
@@ -206,25 +210,60 @@ export function mergeMapEntry(existing, newEntry, delimiter = '/') {
 }
 
 /**
+ *
+ * @param {Object} map
+ * @param {Object} searchDirectory
+ */
+export function getEntryWithSameRoot(map, searchDirectory) {
+  const keys = Object.keys(map);
+
+  for (let i = 0; i < keys.length; i++) {
+    const entry = map[keys[i]];
+
+    if (entry.root === searchDirectory.root) {
+      return entry;
+    }
+
+    if (entry.children.length > 0) {
+      for (let j = 0; j < entry.children.length; j++) {
+        const child = entry.children[j];
+        const foundEntry = getEntryWithSameRoot(child, searchDirectory);
+        if (foundEntry) {
+          return foundEntry;
+        }
+      }
+    }
+  }
+
+  return null;
+}
+
+/**
  * 
  * @param {Object} mainMap 
- * @param {Object} newMap
+ * @param {Object} newMap 
+ * @param {string} parent 
+ * @param {string} delimiter 
  */
 export function mergeS3Maps(mainMap, newMap, parent, delimiter = '/') {
 
   const directParent = extractKeyInfos(parent);
 
-  const mainEntry = mainMap[parent] || null;
+  let mainEntry = mainMap[directParent.root] || mainMap[directParent.directory] || null;
+
+  if (!mainEntry) {
+    mainEntry = getEntryWithSameRoot(mainMap, directParent);
+  }
 
   if (mainEntry) {
 
     const newMapKeys = Object.keys(newMap);
-    const mergedKeys = [];
+    // const mergedKeys = [];
 
     newMapKeys.forEach((key) => {
       const merged = mergeMapEntry(mainEntry, newMap[key], delimiter);
 
-      mergedKeys.push(`key: ${key} merged: ${merged}`);
+      // mergedKeys.push(`key: ${key} merged: ${merged}`);
     });
 
     // console.log({ mergedKeys });
