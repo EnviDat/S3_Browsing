@@ -214,20 +214,22 @@ export function mergeMapEntry(existing, newEntry, delimiter = '/') {
  * @param {Object} map
  * @param {Object} searchDirectory
  */
-export function getEntryWithSameRoot(map, searchDirectory) {
+export function getParentEntry(map, searchDirectory) {
   const keys = Object.keys(map);
 
   for (let i = 0; i < keys.length; i++) {
     const entry = map[keys[i]];
 
-    if (entry.root === searchDirectory.root) {
+    if (searchDirectory.directory.includes(entry.directory)) {
       return entry;
     }
 
     if (entry.children.length > 0) {
       for (let j = 0; j < entry.children.length; j++) {
         const child = entry.children[j];
-        const foundEntry = getEntryWithSameRoot(child, searchDirectory);
+
+        const foundEntry = getParentEntry(child, searchDirectory);
+
         if (foundEntry) {
           return foundEntry;
         }
@@ -252,7 +254,7 @@ export function mergeS3Maps(mainMap, newMap, parent, delimiter = '/') {
   let mainEntry = mainMap[directParent.root] || mainMap[directParent.directory] || null;
 
   if (!mainEntry) {
-    mainEntry = getEntryWithSameRoot(mainMap, directParent);
+    mainEntry = getParentEntry(mainMap, directParent);
   }
 
   if (mainEntry) {
