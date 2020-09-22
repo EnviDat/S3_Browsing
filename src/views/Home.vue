@@ -22,10 +22,9 @@
       </v-col>
     </v-row>
 
-    <v-row v-if="!loading && !contentError" >
+    <v-row v-if="!contentError" >
 
-      <v-col v-if="content && content.ListBucketResult"
-              cols="12"
+      <v-col cols="12"
               :sm="bucketInfoExpanded ? 3 : ''"
               :class="bucketInfoExpanded ? '' : 'shrink'">
 
@@ -37,6 +36,7 @@
                     :delimiter="content.ListBucketResult.Delimiter"
                     :isTruncated="content.ListBucketResult.IsTruncated === 'true' ? true : false"
                     :marker="content.ListBucketResult.Marker"
+                    :loading="loading || !(content && content.ListBucketResult)"
                     @expand="catchBucketInfoExpand" />
       </v-col>
 

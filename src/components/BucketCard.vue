@@ -10,6 +10,7 @@
         <v-col class="shrink"
                 cols="1">
           <v-btn icon
+                  :disabled="loading"
                   @click="$emit('expand')">
             <v-icon>mdi-information</v-icon>
           </v-btn>
@@ -85,6 +86,7 @@ export default {
       type: String,
       default: '75vh',
     },
+    loading: Boolean,
   },
   data: () => ({
     title: 'List Bucket Infos',
