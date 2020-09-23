@@ -24,7 +24,7 @@
 
     <v-row v-if="!contentError" >
 
-      <v-col cols="12"
+      <!-- <v-col cols="12"
               :sm="bucketInfoExpanded ? 3 : ''"
               :class="bucketInfoExpanded ? '' : 'shrink'">
 
@@ -38,7 +38,7 @@
                     :marker="content.ListBucketResult.Marker"
                     :loading="loading || !(content && content.ListBucketResult)"
                     @expand="catchBucketInfoExpand" />
-      </v-col>
+      </v-col> -->
 
       <v-col cols="12"
               sm="9"  >
@@ -61,7 +61,7 @@ import {
 } from '@/store/mutationsConsts';
 
 import TreeCard from '@/components/TreeCard';
-import BucketCard from '@/components/BucketCard';
+// import BucketCard from '@/components/BucketCard';
 import PlaceholderCard from '@/components/PlaceholderCard';
 import NotificationCard from '@/components/NotificationCard';
 
@@ -140,7 +140,7 @@ export default {
   },
   components: {
     TreeCard,
-    BucketCard,
+    // BucketCard,
     PlaceholderCard,
     NotificationCard,
   },
