@@ -181,7 +181,7 @@ export default {
       js: 'mdi-nodejs',
       json: 'mdi-json',
       md: 'mdi-markdown',
-      pdf: 'file-pdf',
+      pdf: 'mdi-pdf-box',
       png: 'mdi-file-image',
       ppt: 'mdi-file-powerpoint-box',
       jpeg: 'mdi-file-image',
