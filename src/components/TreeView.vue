@@ -96,6 +96,7 @@ export default {
     ...mapGetters([
       'contentUrl',
       'contentMap',
+      'defaultMaxKeys',
     ]),
     ...mapState([
       'content',
@@ -138,6 +139,7 @@ export default {
       await this.$store.dispatch(GET_S3_CONTENT, {
         url: this.contentUrl,
         prefix,
+        'max-keys': this.defaultMaxKeys,
       });
 
       item.open = true;
