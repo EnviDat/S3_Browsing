@@ -27,12 +27,12 @@
 
         <v-col v-if="loading"
                 style="text-align: center;">
-          <span class="text-sm-h6 text-subtitle-1">{{ loadingText }}</span>
+          <span class="text-sm-body-1 text-body-2">{{ loadingText }}</span>
         </v-col>
 
         <v-col v-if="!loading && contentBucketName"
                 style="text-align: center;">
-          <span class="text-sm-h6 text-subtitle-1">Bucket: {{ contentBucketName }}</span>
+          <span class="text-sm-body-1 text-body-2">Bucket: {{ contentBucketName }}</span>
         </v-col>
 
         <v-col >
