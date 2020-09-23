@@ -49,6 +49,22 @@
         <v-col v-if="item.isFile"
                 class="shrink px-1" >
 
+          <IconButton icon="mdi-content-copy"
+                      tooltipText="Copy link to clipboard"
+                      @click="catchCopyClick(item.fileUrl)" />
+        </v-col>
+
+        <v-col v-if="item.isFile && item.fileExt === 'html'"
+                class="shrink px-1" >
+
+          <IconButton icon="mdi-open-in-new"
+                      tooltipText="Open file"
+                      :url="item.fileUrl" />
+        </v-col>
+
+        <v-col v-if="item.isFile && item.fileExt !== 'html'"
+                class="shrink px-1" >
+
           <IconButton icon="mdi-cloud-download"
                       tooltipText="Download file"
                       :url="item.fileUrl" />
