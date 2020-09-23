@@ -18,8 +18,13 @@
                 </v-avatar>
             </v-col>
 
-            <v-col class="hidden-xs-only" >
-              <span class="ml-4 text-h5">{{ appTitle }}</span>      
+            <v-col class="hidden-xs-only ml-4" >
+              <v-row no-gutters>
+                <v-col class="text-h5">{{ appTitle }}</v-col>      
+              </v-row>
+              <v-row no-gutters>
+                <v-col style="line-height: 0.5rem; font-size: 0.5rem !important;" class="text-body-2">{{ version }}</v-col>
+              </v-row>
             </v-col>
 
           </v-row>
@@ -27,12 +32,12 @@
 
         <v-col v-if="loading"
                 style="text-align: center;">
-          <span class="text-sm-h5 text-subtitle-1">{{ loadingText }}</span>
+          <span class="text-sm-body-1 text-body-2">{{ loadingText }}</span>
         </v-col>
 
         <v-col v-if="!loading && contentBucketName"
                 style="text-align: center;">
-          <span class="text-sm-h5 text-subtitle-1">Bucket: {{ contentBucketName }}</span>
+          <span class="text-sm-body-1 text-body-2">Bucket: {{ contentBucketName }}</span>
         </v-col>
 
         <v-col >
@@ -143,6 +148,7 @@ export default {
     snackText: '',
     snackColor: 'success',
     timeout: 2500,
+    version: process.env.VUE_APP_VERSION,
   }),
 };
 </script>

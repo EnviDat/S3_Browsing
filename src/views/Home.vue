@@ -22,10 +22,9 @@
       </v-col>
     </v-row>
 
-    <v-row v-if="!loading && !contentError" >
+    <v-row v-if="!contentError" >
 
-      <v-col v-if="content && content.ListBucketResult"
-              cols="12"
+      <!-- <v-col cols="12"
               :sm="bucketInfoExpanded ? 3 : ''"
               :class="bucketInfoExpanded ? '' : 'shrink'">
 
@@ -37,8 +36,9 @@
                     :delimiter="content.ListBucketResult.Delimiter"
                     :isTruncated="content.ListBucketResult.IsTruncated === 'true' ? true : false"
                     :marker="content.ListBucketResult.Marker"
+                    :loading="loading || !(content && content.ListBucketResult)"
                     @expand="catchBucketInfoExpand" />
-      </v-col>
+      </v-col> -->
 
       <v-col cols="12"
               sm="9"  >
@@ -61,7 +61,7 @@ import {
 } from '@/store/mutationsConsts';
 
 import TreeCard from '@/components/TreeCard';
-import BucketCard from '@/components/BucketCard';
+// import BucketCard from '@/components/BucketCard';
 import PlaceholderCard from '@/components/PlaceholderCard';
 import NotificationCard from '@/components/NotificationCard';
 
@@ -104,7 +104,7 @@ export default {
       if (this.contentError) {
         return {
           title: 'Bucket Content Error ',
-          message: `Error loading S3 Bucket from ${this.contentUrl}. ${this.contentError}`,
+          message: `Error loading S3 Bucket from ${this.contentUrl}. ${this.contentError} ${this.contentError.stack}`,
         };
       }
 
@@ -140,7 +140,7 @@ export default {
   },
   components: {
     TreeCard,
-    BucketCard,
+    // BucketCard,
     PlaceholderCard,
     NotificationCard,
   },

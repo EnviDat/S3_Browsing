@@ -30,6 +30,9 @@ function createDirectoryEntry(keyInfos, baseUrl, delimiter, childs = null) {
   splits.reverse();
   const directoryName = `${splits[1]}${delimiter}`;
   const absolutePath = `${baseUrl}${keyInfos.directory}`;
+  const ftpUrl = absolutePath;
+  ftpUrl.replace('https', 'sftp');
+  ftpUrl.replace('http', 'ftp');
 
   return {
     root: keyInfos.root,
@@ -37,9 +40,11 @@ function createDirectoryEntry(keyInfos, baseUrl, delimiter, childs = null) {
     name: directoryName,
     isFile: false,
     fileUrl: absolutePath,
+    ftpUrl,
     id: absolutePath,
     children,
     childs: childrenLength,
+    fileExt: '',
   };
 }
 
@@ -60,7 +65,7 @@ function createFileEntry(keyInfos, baseUrl, size, lastModified) {
   };
 }
 
-export function extractKeyInfos(key, baseUrl, delimiter = '/') {
+export function extractKeyInfos(key, delimiter = '/') {
   if (!key) { return null; }
 
   let dirKey = key;
@@ -69,7 +74,10 @@ export function extractKeyInfos(key, baseUrl, delimiter = '/') {
   // example: chelsa/chelsa_V1/chelsa_cmip5_ts/CHELSAcmip5ts_pr_ACCESS1-3_historical_1850-1869.nc
   const fileSplits = key.split(delimiter);
   // example: CHELSAcmip5ts_pr_ACCESS1-3_historical_1850-1869.nc
-  const root = `${fileSplits[0]}${delimiter}`;
+  let root = `${delimiter}`;
+  if (fileSplits.length > 1) {
+    root = `${fileSplits[0]}${delimiter}`;
+  }
   const splitPos = isFile ? fileSplits.length - 1 : fileSplits.length - 2;
   let fileKey = key;
 
@@ -106,11 +114,19 @@ export function extractKeyInfos(key, baseUrl, delimiter = '/') {
 
 export function getS3Map(list, baseUrl, delimiter = '/') {
   const map = {};
+
+  if (!list) {
+    return map;
+  }
+
+  if (!(list instanceof Array)) {
+    throw new Error('list has to be an Array (instanceof Array) !');
+  }
   
   for (let i = 0; i < list.length; i++) {
     const s3 = list[i];
 
-    const keyInfos = extractKeyInfos(s3.Key, baseUrl);
+    const keyInfos = extractKeyInfos(s3.Key, delimiter);
 
     const fileEntry = createFileEntry(keyInfos, baseUrl, humanFileSize(s3.Size), s3.LastModified);
 
@@ -136,11 +152,18 @@ export function getS3Map(list, baseUrl, delimiter = '/') {
 
 export function convertPrefixToMap(prefixList, baseUrl, delimiter = '/') {
   const map = {};
+  if (!prefixList) {
+    return map;
+  }
+
+  if (!(prefixList instanceof Array)) {
+    throw new Error('prefixList has to be an Array (instanceof Array) !');
+  }
 
   for (let i = 0; i < prefixList.length; i++) {
     const prefix = prefixList[i]?.Prefix ? prefixList[i]?.Prefix : prefixList[i];
 
-    const keyInfos = extractKeyInfos(prefix, baseUrl);
+    const keyInfos = extractKeyInfos(prefix, delimiter);
 
     if (!map[keyInfos.directory]) {
       const dirEntry = createDirectoryEntry(keyInfos, baseUrl, delimiter);
@@ -152,22 +175,39 @@ export function convertPrefixToMap(prefixList, baseUrl, delimiter = '/') {
   return map;
 }
 
+export function getParentPath(entry, delimiter = '/') {
+  if (typeof entry === 'string') {
+    // it's only a key
+    entry = extractKeyInfos(entry, delimiter);
+  }
+
+  const splits = entry.directory.split(delimiter);
+
+  if (splits.length > 2) {
+    splits.reverse();
+    const parentPath = splits[2];
+    return `${parentPath}${delimiter}`;
+  }
+
+  if (entry.isFile) {
+    return entry.directory;
+  }
+
+  return null;
+}
+
 export function mergeMapEntry(existing, newEntry, delimiter = '/') {
   if (existing.root === newEntry.root) {
 
     if (newEntry.directory === existing.directory
       && newEntry.name === existing.name) {
       
-      existing.children = newEntry.children;
+      existing.children = [...existing.children, ...newEntry.children];
       existing.childs = existing.children.length.toString();
       
     } else if (newEntry.directory.includes(existing.directory)) {
       
-      let parentDirectory = newEntry.directory;
-      const splits = newEntry.directory.split('/');
-      splits.reverse();
-      const parentPath = splits[2];
-      parentDirectory = `${parentPath}${delimiter}`;
+      const parentDirectory = getParentPath(newEntry, delimiter);
 
       // console.log(`Traverse for ${newEntry.id} checking: ${existing.name}`);
 
@@ -179,6 +219,7 @@ export function mergeMapEntry(existing, newEntry, delimiter = '/') {
         } else {
           existing.children.push(newEntry);
         }
+
         existing.childs = existing.children.length.toString();
 
         return true;
@@ -206,29 +247,77 @@ export function mergeMapEntry(existing, newEntry, delimiter = '/') {
 }
 
 /**
+ *
+ * @param {Object} map
+ * @param {Object} searchDirectory
+ */
+export function getParentEntry(map, searchDirectory) {
+  const keys = Object.keys(map);
+
+  for (let i = 0; i < keys.length; i++) {
+    // const entry = map[keys[i]];
+    const key = keys[i];
+
+    if (searchDirectory.directory.includes(key)) {
+      return map[key];
+    }
+  }
+
+  return null;
+}
+
+/**
  * 
  * @param {Object} mainMap 
- * @param {Object} newMap
+ * @param {Object} newMap 
+ * @param {string} parent 
+ * @param {string} delimiter 
  */
 export function mergeS3Maps(mainMap, newMap, parent, delimiter = '/') {
+  if (!mainMap || Object.keys(mainMap).length <= 0) {
+    return newMap;
+  }
+
+  if (!newMap || Object.keys(newMap).length <= 0) {
+    return mainMap;
+  }
 
   const directParent = extractKeyInfos(parent);
 
-  const mainEntry = mainMap[parent] || null;
+  let mainEntry = directParent ? mainMap[directParent.root] || mainMap[directParent.directory] : null;
+
+  if (!mainEntry && directParent) {
+    mainEntry = getParentEntry(mainMap, directParent);
+  }
+
+  // const mergedKeys = [];
+  const newMapKeys = Object.keys(newMap);
 
   if (mainEntry) {
-
-    const newMapKeys = Object.keys(newMap);
-    const mergedKeys = [];
 
     newMapKeys.forEach((key) => {
       const merged = mergeMapEntry(mainEntry, newMap[key], delimiter);
 
-      mergedKeys.push(`key: ${key} merged: ${merged}`);
+      // mergedKeys.push(`key: "${key}"" merged: ${merged}`);
     });
 
-    // console.log({ mergedKeys });
+  } else {
+
+    newMapKeys.forEach((key) => {
+      const existingEntry = mainMap[key];
+      let merged = false;
+      if (existingEntry) {
+        merged = mergeMapEntry(existingEntry, newMap[key], delimiter);
+      } else {
+        mainMap[key] = newMap[key];
+        merged = true;
+      }
+
+      // mergedKeys.push(`key: "${key}" merged: ${merged}`);
+    });
   }
+
+  // console.log({ mergedKeys });
 
   return mainMap;
 }

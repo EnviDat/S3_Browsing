@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListBucketResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+    <Name>envicloud</Name>
+    <Prefix>chelsa/chelsa_V1/</Prefix>
+    <MaxKeys>10000</MaxKeys>
+    <Delimiter>/</Delimiter>
+    <IsTruncated>false</IsTruncated>
+    <CommonPrefixes>
+        <Prefix>chelsa/chelsa_V1/chelsa_cmip5_ts/</Prefix>
+    </CommonPrefixes>
+    <CommonPrefixes>
+        <Prefix>chelsa/chelsa_V1/chelsa_cruts/</Prefix>
+    </CommonPrefixes>
+    <CommonPrefixes>
+        <Prefix>chelsa/chelsa_V1/chelsa_trace/</Prefix>
+    </CommonPrefixes>
+    <CommonPrefixes>
+        <Prefix>chelsa/chelsa_V1/climatologies/</Prefix>
+    </CommonPrefixes>
+    <CommonPrefixes>
+        <Prefix>chelsa/chelsa_V1/cmip5/</Prefix>
+    </CommonPrefixes>
+    <CommonPrefixes>
+        <Prefix>chelsa/chelsa_V1/exchelsa/</Prefix>
+    </CommonPrefixes>
+    <CommonPrefixes>
+        <Prefix>chelsa/chelsa_V1/pmip3/</Prefix>
+    </CommonPrefixes>
+    <CommonPrefixes>
+        <Prefix>chelsa/chelsa_V1/regional/</Prefix>
+    </CommonPrefixes>
+    <CommonPrefixes>
+        <Prefix>chelsa/chelsa_V1/timeseries/</Prefix>
+    </CommonPrefixes>
+    <Marker></Marker>
+</ListBucketResult>

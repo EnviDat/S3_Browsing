@@ -22,21 +22,47 @@
     <template v-slot:label="{ item }">
 
       <v-row no-gutters
-              align="center">
+              align="center"
+              :class="item.isFile ? 'justify-end' : ''" >
 
-        <v-col class="pl-2 pr-4 shrink">
+        <v-col class="pl-2 pr-4"
+              :class="item.isFile ? '' : 'shrink'">
           {{ item.name }}
         </v-col>
+
+        <!-- <v-col v-if="!item.isFile"
+                class="shrink px-1" >
+
+          <IconButton icon="mdi-zip-box"
+                      tooltipText="Bulk download"
+                      @click="saveDirectoyViaMemoryFile(item)" />
+        </v-col>
+
+        <v-col v-if="!item.isFile"
+                class="shrink px-1" >
+
+          <IconButton icon="mdi-cloud-download-outline"
+                      tooltipText="Open via FTP"
+                      :url="item.ftpUrl" />
+        </v-col> -->
 
         <v-col v-if="item.isFile"
                 class="shrink px-1" >
 
           <IconButton icon="mdi-content-copy"
-                      tooltipText="Copy Link"
+                      tooltipText="Copy link to clipboard"
                       @click="catchCopyClick(item.fileUrl)" />
         </v-col>
 
-        <v-col v-if="item.isFile"
+        <v-col v-if="item.isFile && item.fileExt === 'html'"
+                class="shrink px-1" >
+
+          <IconButton icon="mdi-open-in-new"
+                      tooltipText="Open file"
+                      :url="item.fileUrl" />
+        </v-col>
+
+        <v-col v-if="item.isFile && item.fileExt !== 'html'"
                 class="shrink px-1" >
 
           <IconButton icon="mdi-cloud-download"
@@ -49,7 +75,7 @@
           {{ item.size }}
         </v-col>
 
-        <v-col v-if="!item.isFile"
+        <v-col v-if="!item.isFile && item.childs !== '?'"
                 cols="1"
                 class="shrink"  >
           <v-badge color="primary"
@@ -86,6 +112,7 @@ export default {
     ...mapGetters([
       'contentUrl',
       'contentMap',
+      'defaultMaxKeys',
     ]),
     ...mapState([
       'content',
@@ -128,6 +155,7 @@ export default {
       await this.$store.dispatch(GET_S3_CONTENT, {
         url: this.contentUrl,
         prefix,
+        'max-keys': this.defaultMaxKeys,
       });
 
       item.open = true;
@@ -153,7 +181,7 @@ export default {
       js: 'mdi-nodejs',
       json: 'mdi-json',
       md: 'mdi-markdown',
-      pdf: 'file-pdf',
+      pdf: 'mdi-pdf-box',
       png: 'mdi-file-image',
       ppt: 'mdi-file-powerpoint-box',
       jpeg: 'mdi-file-image',

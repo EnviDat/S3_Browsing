@@ -4,7 +4,7 @@
  * @author Dominik Haas-Artho
  *
  * Created at     : 2019-10-23 16:34:51 
- * Last modified  : 2020-09-10 08:21:37
+ * Last modified  : 2020-09-23 11:03:23
  *
  * This file is subject to the terms and conditions defined in
  * file 'LICENSE.txt', which is part of this source code package.
@@ -60,16 +60,12 @@ export default {
     }
     const parent = payload?.ListBucketResult?.Prefix;
 
-    let map = null;
+    const prefixMap = convertPrefixToMap(prefixList, this.getters.contentUrl);
+    const contentMap = getS3Map(contentList, this.getters.contentUrl);
 
-    if (!contentList) {
-      map = convertPrefixToMap(prefixList, this.getters.contentUrl);
-    } else {
-      map = getS3Map(contentList, this.getters.contentUrl);
-    }
+    let map = mergeS3Maps(prefixMap, contentMap, parent);
 
     if (state.contentMap) {
-      // merge map
       map = mergeS3Maps(state.contentMap, map, parent);
     }
 

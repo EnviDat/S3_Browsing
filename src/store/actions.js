@@ -3,7 +3,7 @@
  * @author Dominik Haas-Artho
  *
  * Created at     : 2019-10-23 16:34:51 
- * Last modified  : 2020-09-03 12:47:41
+ * Last modified  : 2020-09-23 13:14:55
  *
  * This file is subject to the terms and conditions defined in
  * file 'LICENSE.txt', which is part of this source code package.
@@ -80,14 +80,11 @@ export default {
     let getParams = '';
 
     // remove url so it won't be part of the url parameters
+    const testdataUrl = contentParams.url;
     delete contentParams.url;
 
     if (!contentParams.delimiter) {
       contentParams.delimiter = '/';
-    }
-
-    if (!contentParams['max-keys']) {
-      contentParams['max-keys'] = 100000;
     }
 
     getParams = buildParameterString(contentParams);
@@ -106,7 +103,7 @@ export default {
 
         requestUrl = `.${testUrl}_${testParams}`;
       } else {
-        requestUrl = contentParams.url;
+        requestUrl = testdataUrl;
       }
     }
 
