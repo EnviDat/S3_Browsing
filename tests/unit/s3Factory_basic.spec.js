@@ -13,6 +13,10 @@ import config from '../../public/testdata/config.json';
 
 const baseUrl = config.contentUrl || config.contentURL || '';
 const delimiter = config.delimiter || '/';
+const xmlParseOptions = {
+  explicitArray: false,
+  trim: true,
+};
 
 function getXmlStringFromFile(fileName) {
   const filePath = resolve(__dirname, `../../public/testdata/${fileName}`);
@@ -27,32 +31,83 @@ describe('S3 Factory basic calls starting from root', () => {
   const s3Root = getXmlStringFromFile(fileName);
   let prefixMap = null;
 
-  it(`- convertPrefixToMap() with ${fileName}`, async () => {
+  it('- reading XML file and returing a string', () => {
     expect(typeof s3Root).toBe('string');
+  });
 
-    let prefixList = null;
+  let rootXml = null;
+  let prefixList = null;
+  let contentList = null;
+  let parent = null;
+  
+  it(`- parsing xml of file ${fileName}`, async () => {
+    rootXml = await xml2js.parseStringPromise(s3Root, xmlParseOptions);
 
-    const xml = await xml2js.parseStringPromise(s3Root, { explicitArray: false, trim: true });
+    prefixList = rootXml?.ListBucketResult?.CommonPrefixes;
+    contentList = rootXml?.ListBucketResult?.Contents;
+    parent = rootXml?.ListBucketResult?.Prefix;
 
-    prefixList = xml?.ListBucketResult?.CommonPrefixes;
     expect(prefixList).not.toBe(undefined);
-    expect(prefixList).toBeInstanceOf(Array);
+
+    expect(contentList).not.toBe(undefined);
+
+    expect(parent).not.toBe(undefined);
+  });
+
+  it(`- convertPrefixToMap() and mergeS3Maps() with mixed content of ${fileName}`, () => {
+
+    expect(() => {
+      getS3Map('contentList', baseUrl, delimiter);
+    }).toThrow(Error);
+
+    expect(() => {
+      convertPrefixToMap('prefixList', baseUrl, delimiter);
+    }).toThrow(Error);
+
+    prefixList = rootXml?.ListBucketResult?.CommonPrefixes;
+    contentList = rootXml?.ListBucketResult?.Contents;
+    parent = rootXml?.ListBucketResult?.Prefix;
+
+    let map = {};
+
+    if (contentList) {
+
+      if (!(contentList instanceof Array)) {
+        contentList = [contentList];
+      }
+
+      map = getS3Map(contentList, baseUrl, delimiter);
+
+      const keys = Object.keys(map);
+      expect(keys.length).toBeGreaterThan(0);
+    }
+
+    if (prefixList) {
+
+      if (!(prefixList instanceof Array)) {
+        prefixList = [prefixList];
+      }
+    }
 
     prefixMap = convertPrefixToMap(prefixList, baseUrl, delimiter);
+    const prefixKeys = Object.keys(prefixMap);
+    expect(prefixKeys.length).toBeGreaterThan(0);
+
+    prefixMap = mergeS3Maps(prefixMap, map, parent);
+    const mergedPrefixKeys = Object.keys(prefixMap);
+    expect(mergedPrefixKeys.length).toBeGreaterThan(0);
+    expect(mergedPrefixKeys.length).toBeGreaterThan(prefixKeys.length);
   }); 
 
   fileName = 's3_envicloud_chelsa_cmip5_ts_content.xml';
   const s3Content = getXmlStringFromFile(fileName);
   let contentMap = null;
-  let parent = null;
   let contentParent = null;
   
   it(`- getS3Map() with ${fileName}`, async () => {
     expect(typeof s3Content).toBe('string');
 
-    let contentList = null;
-
-    const xml = await xml2js.parseStringPromise(s3Content, { explicitArray: false, trim: true });
+    const xml = await xml2js.parseStringPromise(s3Content, xmlParseOptions);
 
     contentList = xml?.ListBucketResult?.Contents;
     parent = xml?.ListBucketResult?.Prefix;
@@ -71,9 +126,7 @@ describe('S3 Factory basic calls starting from root', () => {
   it(`- mergeS3Maps() ${fileName} prefix files `, async () => {
     expect(typeof s3PrefixChelsa).toBe('string');
 
-    let prefixList = null;
-
-    const xml = await xml2js.parseStringPromise(s3PrefixChelsa, { explicitArray: false, trim: true });
+    const xml = await xml2js.parseStringPromise(s3PrefixChelsa, xmlParseOptions);
 
     prefixList = xml?.ListBucketResult?.CommonPrefixes;
     parent = xml?.ListBucketResult?.Prefix;
@@ -101,9 +154,7 @@ describe('S3 Factory basic calls starting from root', () => {
   it(`- mergeS3Maps() ${fileName} prefix files `, async () => {
     expect(typeof s3PrefixChelsaV1).toBe('string');
 
-    let prefixList = null;
-
-    const xml = await xml2js.parseStringPromise(s3PrefixChelsaV1, { explicitArray: false, trim: true });
+    const xml = await xml2js.parseStringPromise(s3PrefixChelsaV1, xmlParseOptions);
 
     prefixList = xml?.ListBucketResult?.CommonPrefixes;
     parent = xml?.ListBucketResult?.Prefix;
@@ -150,102 +201,6 @@ describe('S3 Factory basic calls starting from root', () => {
     expect(chelsaV1Dir.children.length).toBeGreaterThan(0);
 
     const chelsaV1Cmip5Dir = chelsaV1Dir.children[0];
-    expect(chelsaV1Cmip5Dir).not.toBe(undefined);
-    expect(chelsaV1Cmip5Dir.children.length).toBeGreaterThan(0);
-  });
-
-});
-
-describe('S3 Factory starting directly on a prefix', () => {
-
-  let fileName = 's3_envicloud_chelsa_cmip5_ts_content.xml';
-  const s3Content = getXmlStringFromFile(fileName);
-  let parent = null;
-
-  fileName = 's3_envicloud_chelsa_prefix.xml';
-  const s3PrefixChelsa = getXmlStringFromFile(fileName);
-  let mergedMap = null;
-
-  it(`- convertPrefixToMap() ${fileName} prefix files `, async () => {
-    expect(typeof s3PrefixChelsa).toBe('string');
-
-    let prefixList = null;
-
-    const xml = await xml2js.parseStringPromise(s3PrefixChelsa, { explicitArray: false, trim: true });
-
-    prefixList = xml?.ListBucketResult?.CommonPrefixes;
-    parent = xml?.ListBucketResult?.Prefix;
-
-    expect(prefixList).not.toBe(undefined);
-    expect(prefixList).toBeInstanceOf(Array);
-
-    mergedMap = convertPrefixToMap(prefixList, baseUrl, delimiter);
-
-    const mergedValues = Object.values(mergedMap);
-    const firstDir = mergedValues[0];
-
-    expect(firstDir).not.toBe(undefined);
-    expect(firstDir.children.length).toBe(0);
-  });
-
-  fileName = 's3_envicloud_chelsaV1_prefix.xml';
-  const s3PrefixChelsaV1 = getXmlStringFromFile(fileName);
-
-  it(`- mergeS3Maps() ${fileName} prefix files `, async () => {
-    expect(typeof s3PrefixChelsaV1).toBe('string');
-
-    let prefixList = null;
-
-    const xml = await xml2js.parseStringPromise(s3PrefixChelsaV1, { explicitArray: false, trim: true });
-
-    prefixList = xml?.ListBucketResult?.CommonPrefixes;
-    parent = xml?.ListBucketResult?.Prefix;
-
-    expect(prefixList).not.toBe(undefined);
-    expect(prefixList).toBeInstanceOf(Array);
-
-    const prefixChelsaMap = convertPrefixToMap(prefixList, baseUrl, delimiter);
-    mergedMap = mergeS3Maps(mergedMap, prefixChelsaMap, parent);
-
-    const mergedValues = Object.values(mergedMap);
-    const chelsaDir = mergedValues[0];
-
-    expect(chelsaDir).not.toBe(undefined);
-    expect(chelsaDir.children.length).toBeGreaterThan(0);
-
-    const chelsaV1Dir = chelsaDir.children[0];
-    expect(chelsaV1Dir).not.toBe(undefined);
-    expect(chelsaV1Dir.children.length).toBe(0);
-  });
-
-  let contentMap = null;
-  it(`- mergeS3Maps() with contentMap from ${fileName}`, async () => {
-    expect(typeof s3Content).toBe('string');
-
-    let contentList = null;
-
-    const xml = await xml2js.parseStringPromise(s3Content, { explicitArray: false, trim: true });
-
-    contentList = xml?.ListBucketResult?.Contents;
-    parent = xml?.ListBucketResult?.Prefix;
-
-    expect(contentList).not.toBe(undefined);
-    expect(contentList).toBeInstanceOf(Array);
-
-    contentMap = getS3Map(contentList, baseUrl, delimiter);
-
-    const contentKeys = Object.keys(contentMap);
-    expect(contentKeys.length).toBeGreaterThan(0);
-
-    mergedMap = mergeS3Maps(mergedMap, contentMap, parent);
-
-    const mergedValues = Object.values(mergedMap);
-    const chelsaDir = mergedValues[0];
-
-    expect(chelsaDir).not.toBe(undefined);
-    expect(chelsaDir.children.length).toBeGreaterThan(0);
-
-    const chelsaV1Cmip5Dir = chelsaDir.children[0];
     expect(chelsaV1Cmip5Dir).not.toBe(undefined);
     expect(chelsaV1Cmip5Dir.children.length).toBeGreaterThan(0);
   });
