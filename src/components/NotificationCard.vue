@@ -1,6 +1,5 @@
 <template>
-  <v-card height="165"
-          class="elevation-3"
+  <v-card class="elevation-3"
           :color="color">
 
     <v-card-title >
@@ -31,7 +30,7 @@
  * @author Dominik Haas-Artho
  *
  * Created at     : 2019-10-23 14:11:27
- * Last modified  : 2020-09-02 17:42:13
+ * Last modified  : 2020-09-23 11:57:54
  *
  * This file is subject to the terms and conditions defined in
  * file 'LICENSE.txt', which is part of this source code package.

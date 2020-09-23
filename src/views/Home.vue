@@ -104,7 +104,7 @@ export default {
       if (this.contentError) {
         return {
           title: 'Bucket Content Error ',
-          message: `Error loading S3 Bucket from ${this.contentUrl}. ${this.contentError}`,
+          message: `Error loading S3 Bucket from ${this.contentUrl}. ${this.contentError} ${this.contentError.stack}`,
         };
       }
 
