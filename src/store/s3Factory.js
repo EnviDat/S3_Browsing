@@ -100,6 +100,7 @@ export function extractKeyInfos(key, delimiter = '/') {
     const fileExtSplits = fileKey.split('.');
     if (fileExtSplits.length > 0) {
       fileExt = fileExtSplits[fileExtSplits.length - 1];
+      fileExt = fileExt.toLowerCase();
     }
   }
 
