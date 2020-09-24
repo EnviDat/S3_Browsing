@@ -18,6 +18,8 @@ const xmlParseOptions = {
   explicitArray: false,
   trim: true,
 };
+const mergedTime = [];
+let before = null;
 
 function getXmlStringFromFile(fileName) {
   const filePath = resolve(__dirname, `../../public/testdata/${fileName}`);
@@ -75,7 +77,10 @@ describe('S3 Factory starting directly on a prefix', () => {
     expect(prefixList).toBeInstanceOf(Array);
 
     const prefixChelsaMap = convertPrefixToMap(prefixList, baseUrl, delimiter);
+
+    before = performance.now();
     mergedMap = mergeS3Maps(mergedMap, prefixChelsaMap, parent);
+    mergedTime.push((performance.now() - before));
 
     const mergedValues = Object.values(mergedMap);
     const chelsaDir = mergedValues[0];
@@ -107,7 +112,9 @@ describe('S3 Factory starting directly on a prefix', () => {
     const contentKeys = Object.keys(contentMap);
     expect(contentKeys.length).toBeGreaterThan(0);
 
+    before = performance.now();
     mergedMap = mergeS3Maps(mergedMap, contentMap, parent);
+    mergedTime.push((performance.now() - before));
 
     const mergedValues = Object.values(mergedMap);
     const chelsaDir = mergedValues[0];
@@ -146,7 +153,10 @@ describe('S3 Factory testing subfunctions with prefixes', () => {
 
     const prefixMapV1 = convertPrefixToMap(prefixList, baseUrl, delimiter);
     const contentMapV1 = getS3Map(contentList, baseUrl, delimiter);
+
+    before = performance.now();
     mainMap = mergeS3Maps(prefixMapV1, contentMapV1, parent, delimiter);
+    mergedTime.push((performance.now() - before));
 
     xml = await xml2js.parseStringPromise(s3PrefixCruts, xmlParseOptions);
     prefixList = xml?.ListBucketResult?.CommonPrefixes;
@@ -155,9 +165,14 @@ describe('S3 Factory testing subfunctions with prefixes', () => {
 
     const prefixMapCruts = convertPrefixToMap(prefixList, baseUrl, delimiter);
     const contentMapCruts = getS3Map(contentList, baseUrl, delimiter);
-    const mergedMapCruts = mergeS3Maps(prefixMapCruts, contentMapCruts, parent, delimiter);
 
+    before = performance.now();
+    const mergedMapCruts = mergeS3Maps(prefixMapCruts, contentMapCruts, parent, delimiter);
+    mergedTime.push((performance.now() - before));
+
+    before = performance.now();
     mainMap = mergeS3Maps(mainMap, mergedMapCruts, parent, delimiter);
+    mergedTime.push((performance.now() - before));
 
     xml = await xml2js.parseStringPromise(s3ContentTmin, xmlParseOptions);
     prefixList = xml?.ListBucketResult?.CommonPrefixes;
@@ -168,7 +183,9 @@ describe('S3 Factory testing subfunctions with prefixes', () => {
     const contentMapTmin = getS3Map(contentList, baseUrl, delimiter);
     const mergedMapTmin = mergeS3Maps(prefixMapTmin, contentMapTmin, parent, delimiter);
 
+    before = performance.now();
     mainMap = mergeS3Maps(mainMap, mergedMapTmin, parent, delimiter);
+    mergedTime.push((performance.now() - before));
 
     xml = await xml2js.parseStringPromise(s3ContentPrec, xmlParseOptions);
     prefixList = xml?.ListBucketResult?.CommonPrefixes;
@@ -179,7 +196,9 @@ describe('S3 Factory testing subfunctions with prefixes', () => {
     const contentMapPrec = getS3Map(contentList, baseUrl, delimiter);
     const mergedMapPrec = mergeS3Maps(prefixMapPrec, contentMapPrec, parent, delimiter);
 
+    before = performance.now();
     mainMap = mergeS3Maps(mainMap, mergedMapPrec, parent, delimiter);
+    mergedTime.push((performance.now() - before));
 
   });
 
@@ -216,6 +235,105 @@ describe('S3 Factory testing subfunctions with prefixes', () => {
     expect(parentPath).not.toBe(prefix);
     expect(parentPath).toBe('chelsa_V1/');    
     
+  });
+
+  fileName = 's3_envicloud_root.xml';
+  const rootContent = getXmlStringFromFile(fileName);
+
+  fileName = 's3_envicloud_slf_prefix.xml';
+  const slfPrefix = getXmlStringFromFile(fileName);
+
+  fileName = 's3_envicloud_slf_snow_and_permaforst_prefix.xml';
+  const slfSandPPrefix = getXmlStringFromFile(fileName);
+
+  // fileName = 's3_envicloud_slf_GCOS_content.xml';
+  // const slfGCOSContent = getXmlStringFromFile(fileName);
+
+  it('- multi call of mergeS3Maps() with the slf prefixes', async () => {
+
+    let xml = await xml2js.parseStringPromise(rootContent, xmlParseOptions);
+    let prefixList = xml?.ListBucketResult?.CommonPrefixes;
+    let contentList = xml?.ListBucketResult?.Contents;
+    let parent = xml?.ListBucketResult?.Prefix;
+    let mainMap = {};
+
+    if (!(contentList instanceof Array)) {
+      contentList = [contentList];
+    }
+
+    if (!(prefixList instanceof Array)) {
+      prefixList = [prefixList];
+    }
+
+    const prefixRoot = convertPrefixToMap(prefixList, baseUrl, delimiter);
+    const contentRoot = getS3Map(contentList, baseUrl, delimiter);
+
+    before = performance.now();
+    mainMap = mergeS3Maps(prefixRoot, contentRoot, parent, delimiter);
+    mergedTime.push((performance.now() - before));
+
+    xml = await xml2js.parseStringPromise(slfPrefix, xmlParseOptions);
+    prefixList = xml?.ListBucketResult?.CommonPrefixes;
+    contentList = xml?.ListBucketResult?.Contents;
+    parent = xml?.ListBucketResult?.Prefix;
+
+    if (!(contentList instanceof Array)) {
+      contentList = [contentList];
+    }
+
+    const prefixSlf = convertPrefixToMap(prefixList, baseUrl, delimiter);
+    const contentSlf = getS3Map(contentList, baseUrl, delimiter);
+
+    before = performance.now();
+    const mergedMapSlf = mergeS3Maps(prefixSlf, contentSlf, parent, delimiter);
+    mergedTime.push((performance.now() - before));
+
+    before = performance.now();
+    mainMap = mergeS3Maps(mainMap, mergedMapSlf, parent, delimiter);
+    mergedTime.push((performance.now() - before));
+
+    xml = await xml2js.parseStringPromise(slfSandPPrefix, xmlParseOptions);
+    prefixList = xml?.ListBucketResult?.CommonPrefixes;
+    contentList = xml?.ListBucketResult?.Contents;
+    parent = xml?.ListBucketResult?.Prefix;
+
+    if (!(contentList instanceof Array)) {
+      contentList = [contentList];
+    }
+
+    const prefixSandP = convertPrefixToMap(prefixList, baseUrl, delimiter);
+    const contentSandP = getS3Map(contentList, baseUrl, delimiter);
+
+    before = performance.now();
+    const mergedMapSandP = mergeS3Maps(prefixSandP, contentSandP, parent, delimiter);
+    mergedTime.push((performance.now() - before));
+
+    before = performance.now();
+    mainMap = mergeS3Maps(mainMap, mergedMapSandP, parent, delimiter);
+    mergedTime.push((performance.now() - before));
+
+    // xml = await xml2js.parseStringPromise(s3ContentPrec, xmlParseOptions);
+    // prefixList = xml?.ListBucketResult?.CommonPrefixes;
+    // contentList = xml?.ListBucketResult?.Contents;
+    // parent = xml?.ListBucketResult?.Prefix;
+
+    // const prefixMapPrec = convertPrefixToMap(prefixList, baseUrl, delimiter);
+    // const contentMapPrec = getS3Map(contentList, baseUrl, delimiter);
+    // const mergedMapPrec = mergeS3Maps(prefixMapPrec, contentMapPrec, parent, delimiter);
+
+    // mainMap = mergeS3Maps(mainMap, mergedMapPrec, parent, delimiter);
+
+  });
+
+  it('- log the mergedTime performance', () => {
+
+    if (mergedTime.length > 0) {
+      const entries = mergedTime.length;
+
+      const sum = mergedTime.reduce((x, y) => x + y);
+      const average = sum / entries;
+      console.log(`merged ${entries} entries in ${average} averaged`);
+    }
   });
 
 });

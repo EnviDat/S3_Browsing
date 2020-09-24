@@ -196,7 +196,10 @@ export function getParentPath(entry, delimiter = '/') {
   return null;
 }
 
-export function mergeMapEntry(existing, newEntry, delimiter = '/') {
+let tempLastMergedSubEntry = null;
+let tempLastMergedEntry = null;
+
+function mergeMapEntry(existing, newEntry, delimiter = '/') {
   if (existing.root === newEntry.root) {
 
     if (newEntry.directory === existing.directory
@@ -205,9 +208,20 @@ export function mergeMapEntry(existing, newEntry, delimiter = '/') {
       existing.children = [...existing.children, ...newEntry.children];
       existing.childs = existing.children.length.toString();
       
-    } else if (newEntry.directory.includes(existing.directory)) {
+      tempLastMergedEntry = existing;
+
+      return true;
+    }
+    
+    if (newEntry.directory.includes(existing.directory)) {
       
       const parentDirectory = getParentPath(newEntry, delimiter);
+
+      if (tempLastMergedEntry?.name === parentDirectory) {
+        if (mergeMapEntry(tempLastMergedEntry, newEntry, delimiter)) {
+          return true;
+        }
+      }
 
       // console.log(`Traverse for ${newEntry.id} checking: ${existing.name}`);
 
@@ -230,11 +244,18 @@ export function mergeMapEntry(existing, newEntry, delimiter = '/') {
         return true;
       } 
       
+      if (tempLastMergedSubEntry) {
+        if (mergeMapEntry(tempLastMergedSubEntry, newEntry, delimiter)) {
+          return true;
+        }
+      }
+
       for (let i = 0; i < existing.children.length; i++) {
         const child = existing.children[i];
 
         if (!child.isFile) {
           if (mergeMapEntry(child, newEntry, delimiter)) {
+            tempLastMergedSubEntry = child;
             return true;
           }
         }
@@ -296,13 +317,15 @@ export function mergeS3Maps(mainMap, newMap, parent, delimiter = '/') {
   }
 
   // const mergedKeys = [];
+  const mergedTime = [];
   const newMapKeys = Object.keys(newMap);
+  tempLastMergedEntry = null;
+  tempLastMergedSubEntry = null;
 
   if (mainEntry) {
-
     newMapKeys.forEach((key) => {
       const merged = mergeMapEntry(mainEntry, newMap[key], delimiter);
-
+      tempLastMergedSubEntry = null;
       // mergedKeys.push(`key: "${key}"" merged: ${merged}`);
     });
 
@@ -324,5 +347,25 @@ export function mergeS3Maps(mainMap, newMap, parent, delimiter = '/') {
 
   // console.log({ mergedKeys });
 
+  // runs with no use of temp variables
+  // run 1: 0.06796666666669655
+  // run 2: 0.08196649999998347
+  // run 3: 0.08345833333332091
+  // run 4: 0.07495008333338167
+  // run 5: 0.09335808333342281
+  // const entries = [0.06796666666669655, 0.08196649999998347, 0.08345833333332091, 0.07495008333338167, 0.09335808333342281]
+  // 0.08033993333336108
+
+  // runs with the use of temp variables
+  // run 1: 0.09018333333328125
+  // run 2: 0.08404199999995399
+  // run 3: 0.07427483333325806
+  // run 4: 0.06715858333336655
+  // run 5: 0.07802491666670146  
+  // const entries2 = [0.09018333333328125, 0.08404199999995399, 0.07427483333325806, 0.06715858333336655, 0.07802491666670146]
+  // 0.07873673333331227
+
+  tempLastMergedEntry = null;
+  tempLastMergedSubEntry = null;
   return mainMap;
 }
