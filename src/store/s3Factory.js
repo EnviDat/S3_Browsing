@@ -214,7 +214,12 @@ export function mergeMapEntry(existing, newEntry, delimiter = '/') {
       if (existing.name === parentDirectory) {
         const existingChild = existing.children.findIndex((el) => el.name === newEntry.name);
 
-        if (existingChild > -1) {
+        if (existingChild > -1) {   
+          // merged the subchilds to avoid losing them
+          const exitingSubChilds = existing.children[existingChild].children;
+          newEntry.children = [...newEntry.children, ...exitingSubChilds];
+          newEntry.childs = newEntry.children.length.toString();
+
           existing.children.splice(existingChild, 1, newEntry);
         } else {
           existing.children.push(newEntry);
