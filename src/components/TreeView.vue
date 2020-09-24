@@ -77,7 +77,7 @@
 
         <v-col v-if="!item.isFile && item.childs !== '?'"
                 cols="1"
-                class="shrink"  >
+                class="shrink pt-1"  >
           <v-badge color="primary"
                     class="white--text" 
                     :content="item.childs" />
@@ -182,6 +182,7 @@ export default {
       json: 'mdi-json',
       md: 'mdi-markdown',
       pdf: 'mdi-pdf-box',
+      gif: 'mdi-file-image',
       png: 'mdi-file-image',
       ppt: 'mdi-file-powerpoint-box',
       jpeg: 'mdi-file-image',
@@ -191,6 +192,14 @@ export default {
       txt: 'mdi-file-document-outline',
       xls: 'mdi-file-excel',
       nc: 'mdi-file',
+      r: 'mdi-code-tags',
+      c: 'mdi-code-tags',
+      cs: 'mdi-code-tags',
+      cpp: 'mdi-code-tags',
+      tar: 'mdi-zip-box',
+      rar: 'mdi-zip-box',
+      bz2: 'mdi-zip-box',
+      tgz: 'mdi-zip-box',
       zip: 'mdi-zip-box',
     },
   }),
