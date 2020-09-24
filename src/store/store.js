@@ -6,22 +6,22 @@ import mutations from './mutations';
 
 Vue.use(Vuex);
 
-const state = {
-  config: null,
-  configLoading: false,
-  configError: null,
-  fallbackContentUrl: process.env.VUE_APP_CONTENT_URL,
-  content: null,
-  contentMap: null,
-  contentLoading: false,
-  contentError: null,
-  fallbackDefaultMaxKeys: process.env.VUE_APP_DEFAULT_MAX_KEYS,
-};
+/* eslint-disable no-unused-vars */
 
 export default new Vuex.Store({
-  state,
+  state: {
+    config: null,
+    configLoading: false,
+    configError: null,
+    fallbackContentUrl: process.env.VUE_APP_CONTENT_URL,
+    content: null,
+    contentMap: null,
+    contentLoading: false,
+    contentError: null,
+    fallbackDefaultMaxKeys: process.env.VUE_APP_DEFAULT_MAX_KEYS,
+  },
   getters: {
-    contentUrl() {
+    contentUrl: (state, getters) => {
       const configUrl = state.config?.contentUrl || state.config?.contentURL;
 
       if (configUrl) {
@@ -30,7 +30,7 @@ export default new Vuex.Store({
 
       return state.fallbackContentUrl;
     },
-    defaultMaxKeys() {
+    defaultMaxKeys: (state, getters) => {
       const configMKeys = state.config?.defaultMaxKeys || state.config?.DefaultMaxKeys;
 
       let fbMaxKeys = null;
@@ -43,13 +43,9 @@ export default new Vuex.Store({
 
       return configMKeys || fbMaxKeys || 100000;
     },
-    contentBucketName() {
-      return state.content?.ListBucketResult?.Name || 'Nothing loaded';
-    },
-    contentMap() {
-      // return state.contentMap?.size > 0 ? state.contentMap : null;
-      return state.contentMap && Object.keys(state.contentMap).length > 0 ? state.contentMap : null;
-    },
+    contentBucketName: (state, getters) => (state.content?.ListBucketResult?.Name || 'Nothing loaded'),
+    contentMap: (state, getters) => (state.contentMap && Object.keys(state.contentMap).length > 0 ? state.contentMap : null),
+    downloadDomain: (state, getters) => (state.config?.downloadDomain || getters.contentUrl),
   },
   mutations,
   actions,

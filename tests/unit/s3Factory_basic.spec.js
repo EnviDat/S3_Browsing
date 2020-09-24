@@ -4,7 +4,7 @@ import { resolve } from 'path';
 import fs from 'fs';
 
 import {
-  convertPrefixToMap,
+  getPrefixMap,
   getS3Map,
   mergeS3Maps,
 } from '../../src/store/s3Factory';
@@ -56,14 +56,14 @@ describe('S3 Factory basic calls starting from root', () => {
     expect(parent).not.toBe(undefined);
   });
 
-  it(`- convertPrefixToMap() and mergeS3Maps() with mixed content of ${fileName}`, () => {
+  it(`- getPrefixMap() and mergeS3Maps() with mixed content of ${fileName}`, () => {
 
     expect(() => {
       getS3Map('contentList', baseUrl, delimiter);
     }).toThrow(Error);
 
     expect(() => {
-      convertPrefixToMap('prefixList', baseUrl, delimiter);
+      getPrefixMap('prefixList', baseUrl, delimiter);
     }).toThrow(Error);
 
     prefixList = rootXml?.ListBucketResult?.CommonPrefixes;
@@ -91,7 +91,7 @@ describe('S3 Factory basic calls starting from root', () => {
       }
     }
 
-    prefixMap = convertPrefixToMap(prefixList, baseUrl, delimiter);
+    prefixMap = getPrefixMap(prefixList, baseUrl, delimiter);
     const prefixKeys = Object.keys(prefixMap);
     expect(prefixKeys.length).toBeGreaterThan(0);
 
@@ -139,7 +139,7 @@ describe('S3 Factory basic calls starting from root', () => {
     expect(prefixList).not.toBe(undefined);
     expect(prefixList).toBeInstanceOf(Array);
 
-    const prefixChelsaMap = convertPrefixToMap(prefixList, baseUrl, delimiter);
+    const prefixChelsaMap = getPrefixMap(prefixList, baseUrl, delimiter);
     before = performance.now();
     mergedMap = mergeS3Maps(prefixMap, prefixChelsaMap, parent);
     mergedTime.push((performance.now() - before));
@@ -169,7 +169,7 @@ describe('S3 Factory basic calls starting from root', () => {
     expect(prefixList).not.toBe(undefined);
     expect(prefixList).toBeInstanceOf(Array);
 
-    const prefixChelsaMap = convertPrefixToMap(prefixList, baseUrl, delimiter);
+    const prefixChelsaMap = getPrefixMap(prefixList, baseUrl, delimiter);
     before = performance.now();
     mergedMap = mergeS3Maps(mergedMap, prefixChelsaMap, parent);
     mergedTime.push((performance.now() - before));

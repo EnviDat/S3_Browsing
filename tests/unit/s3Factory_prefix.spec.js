@@ -4,7 +4,7 @@ import { resolve } from 'path';
 import fs from 'fs';
 
 import {
-  convertPrefixToMap,
+  getPrefixMap,
   getS3Map,
   mergeS3Maps,
   getParentPath,
@@ -38,7 +38,7 @@ describe('S3 Factory starting directly on a prefix', () => {
   const s3PrefixChelsa = getXmlStringFromFile(fileName);
   let mergedMap = null;
 
-  it(`- convertPrefixToMap() ${fileName} prefix files `, async () => {
+  it(`- getPrefixMap() ${fileName} prefix files `, async () => {
     expect(typeof s3PrefixChelsa).toBe('string');
 
     let prefixList = null;
@@ -51,7 +51,7 @@ describe('S3 Factory starting directly on a prefix', () => {
     expect(prefixList).not.toBe(undefined);
     expect(prefixList).toBeInstanceOf(Array);
 
-    mergedMap = convertPrefixToMap(prefixList, baseUrl, delimiter);
+    mergedMap = getPrefixMap(prefixList, baseUrl, delimiter);
 
     const mergedValues = Object.values(mergedMap);
     const firstDir = mergedValues[0];
@@ -76,7 +76,7 @@ describe('S3 Factory starting directly on a prefix', () => {
     expect(prefixList).not.toBe(undefined);
     expect(prefixList).toBeInstanceOf(Array);
 
-    const prefixChelsaMap = convertPrefixToMap(prefixList, baseUrl, delimiter);
+    const prefixChelsaMap = getPrefixMap(prefixList, baseUrl, delimiter);
 
     before = performance.now();
     mergedMap = mergeS3Maps(mergedMap, prefixChelsaMap, parent);
@@ -151,7 +151,7 @@ describe('S3 Factory testing subfunctions with prefixes', () => {
     let parent = xml?.ListBucketResult?.Prefix;
     let mainMap = {};
 
-    const prefixMapV1 = convertPrefixToMap(prefixList, baseUrl, delimiter);
+    const prefixMapV1 = getPrefixMap(prefixList, baseUrl, delimiter);
     const contentMapV1 = getS3Map(contentList, baseUrl, delimiter);
 
     before = performance.now();
@@ -163,7 +163,7 @@ describe('S3 Factory testing subfunctions with prefixes', () => {
     contentList = xml?.ListBucketResult?.Contents;
     parent = xml?.ListBucketResult?.Prefix;
 
-    const prefixMapCruts = convertPrefixToMap(prefixList, baseUrl, delimiter);
+    const prefixMapCruts = getPrefixMap(prefixList, baseUrl, delimiter);
     const contentMapCruts = getS3Map(contentList, baseUrl, delimiter);
 
     before = performance.now();
@@ -179,7 +179,7 @@ describe('S3 Factory testing subfunctions with prefixes', () => {
     contentList = xml?.ListBucketResult?.Contents;
     parent = xml?.ListBucketResult?.Prefix;
 
-    const prefixMapTmin = convertPrefixToMap(prefixList, baseUrl, delimiter);
+    const prefixMapTmin = getPrefixMap(prefixList, baseUrl, delimiter);
     const contentMapTmin = getS3Map(contentList, baseUrl, delimiter);
     const mergedMapTmin = mergeS3Maps(prefixMapTmin, contentMapTmin, parent, delimiter);
 
@@ -192,7 +192,7 @@ describe('S3 Factory testing subfunctions with prefixes', () => {
     contentList = xml?.ListBucketResult?.Contents;
     parent = xml?.ListBucketResult?.Prefix;
 
-    const prefixMapPrec = convertPrefixToMap(prefixList, baseUrl, delimiter);
+    const prefixMapPrec = getPrefixMap(prefixList, baseUrl, delimiter);
     const contentMapPrec = getS3Map(contentList, baseUrl, delimiter);
     const mergedMapPrec = mergeS3Maps(prefixMapPrec, contentMapPrec, parent, delimiter);
 
@@ -207,6 +207,8 @@ describe('S3 Factory testing subfunctions with prefixes', () => {
     const prefixList = xml?.ListBucketResult?.CommonPrefixes;
     const prefix = xml?.ListBucketResult?.Prefix;
     // let contentList = xml?.ListBucketResult?.Contents;
+
+    expect(prefixList).not.toBe(undefined);
 
     let parentPath = getParentPath('chelsa/', delimiter);
     expect(parentPath).toBe(null);
@@ -265,7 +267,7 @@ describe('S3 Factory testing subfunctions with prefixes', () => {
       prefixList = [prefixList];
     }
 
-    const prefixRoot = convertPrefixToMap(prefixList, baseUrl, delimiter);
+    const prefixRoot = getPrefixMap(prefixList, baseUrl, delimiter);
     const contentRoot = getS3Map(contentList, baseUrl, delimiter);
 
     before = performance.now();
@@ -281,7 +283,7 @@ describe('S3 Factory testing subfunctions with prefixes', () => {
       contentList = [contentList];
     }
 
-    const prefixSlf = convertPrefixToMap(prefixList, baseUrl, delimiter);
+    const prefixSlf = getPrefixMap(prefixList, baseUrl, delimiter);
     const contentSlf = getS3Map(contentList, baseUrl, delimiter);
 
     before = performance.now();
@@ -301,7 +303,7 @@ describe('S3 Factory testing subfunctions with prefixes', () => {
       contentList = [contentList];
     }
 
-    const prefixSandP = convertPrefixToMap(prefixList, baseUrl, delimiter);
+    const prefixSandP = getPrefixMap(prefixList, baseUrl, delimiter);
     const contentSandP = getS3Map(contentList, baseUrl, delimiter);
 
     before = performance.now();
@@ -317,7 +319,7 @@ describe('S3 Factory testing subfunctions with prefixes', () => {
     // contentList = xml?.ListBucketResult?.Contents;
     // parent = xml?.ListBucketResult?.Prefix;
 
-    // const prefixMapPrec = convertPrefixToMap(prefixList, baseUrl, delimiter);
+    // const prefixMapPrec = getPrefixMap(prefixList, baseUrl, delimiter);
     // const contentMapPrec = getS3Map(contentList, baseUrl, delimiter);
     // const mergedMapPrec = mergeS3Maps(prefixMapPrec, contentMapPrec, parent, delimiter);
 

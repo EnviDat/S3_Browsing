@@ -21,7 +21,7 @@ import {
 
 import {
   getS3Map,
-  convertPrefixToMap,
+  getPrefixMap,
   mergeS3Maps,
 } from './s3Factory';
 
@@ -60,8 +60,8 @@ export default {
     }
     const parent = payload?.ListBucketResult?.Prefix;
 
-    const prefixMap = convertPrefixToMap(prefixList, this.getters.contentUrl);
-    const contentMap = getS3Map(contentList, this.getters.contentUrl);
+    const prefixMap = getPrefixMap(prefixList, this.getters.downloadDomain);
+    const contentMap = getS3Map(contentList, this.getters.downloadDomain);
 
     let map = mergeS3Maps(prefixMap, contentMap, parent);
 

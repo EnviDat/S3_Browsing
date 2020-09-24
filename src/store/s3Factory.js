@@ -30,9 +30,9 @@ function createDirectoryEntry(keyInfos, baseUrl, delimiter, childs = null) {
   splits.reverse();
   const directoryName = `${splits[1]}${delimiter}`;
   const absolutePath = `${baseUrl}${keyInfos.directory}`;
-  const ftpUrl = absolutePath;
-  ftpUrl.replace('https', 'sftp');
-  ftpUrl.replace('http', 'ftp');
+  let ftpUrl = absolutePath;
+  ftpUrl = ftpUrl.replace('https', 'sftp');
+  ftpUrl = ftpUrl.replace('http', 'ftp');
 
   return {
     root: keyInfos.root,
@@ -113,19 +113,19 @@ export function extractKeyInfos(key, delimiter = '/') {
   };
 }
 
-export function getS3Map(list, baseUrl, delimiter = '/') {
+export function getS3Map(contentList, baseUrl, delimiter = '/') {
   const map = {};
 
-  if (!list) {
+  if (!contentList) {
     return map;
   }
 
-  if (!(list instanceof Array)) {
-    throw new Error('list has to be an Array (instanceof Array) !');
+  if (!(contentList instanceof Array)) {
+    throw new Error('contentList has to be an Array (instanceof Array) !');
   }
   
-  for (let i = 0; i < list.length; i++) {
-    const s3 = list[i];
+  for (let i = 0; i < contentList.length; i++) {
+    const s3 = contentList[i];
 
     const keyInfos = extractKeyInfos(s3.Key, delimiter);
 
@@ -151,8 +151,9 @@ export function getS3Map(list, baseUrl, delimiter = '/') {
   return map;
 }
 
-export function convertPrefixToMap(prefixList, baseUrl, delimiter = '/') {
+export function getPrefixMap(prefixList, baseUrl, delimiter = '/') {
   const map = {};
+
   if (!prefixList) {
     return map;
   }

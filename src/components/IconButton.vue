@@ -9,7 +9,7 @@
                 :dark="dark"
                 :href="url ? url : ''"
                 target="_blank"
-                @click="clickCallback ? clickCallback : $emit('click'); snackbar = true;">
+                @click="clickCallback ? clickCallback() : $emit('click'); snackbar = true;">
           <v-icon>{{ icon }}</v-icon>
         </v-btn>
       </template>
