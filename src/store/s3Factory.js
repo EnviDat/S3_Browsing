@@ -29,7 +29,11 @@ function createDirectoryEntry(keyInfos, baseUrl, delimiter, childs = null) {
   const splits = keyInfos.directory.split(delimiter);
   splits.reverse();
   const directoryName = `${splits[1]}${delimiter}`;
-  const absolutePath = `${baseUrl}${keyInfos.directory}`;
+
+  // skip the root "/" directory to avoid having double // in the url
+  const dir = keyInfos.directory === '/' ? '' : keyInfos.directory;
+
+  const absolutePath = `${baseUrl}${dir}`;
   let ftpUrl = absolutePath;
   ftpUrl = ftpUrl.replace('https', 'sftp');
   ftpUrl = ftpUrl.replace('http', 'ftp');
@@ -50,7 +54,9 @@ function createDirectoryEntry(keyInfos, baseUrl, delimiter, childs = null) {
 
 function createFileEntry(keyInfos, baseUrl, size, lastModified) {
 
-  const absolutePath = `${baseUrl}${keyInfos.directory}${keyInfos.name}`;
+  // skip the root "/" directory to avoid having double // in the url
+  const dir = keyInfos.directory === '/' ? '' : keyInfos.directory;
+  const absolutePath = `${baseUrl}${dir}${keyInfos.name}`;
 
   return {
     ...keyInfos,
