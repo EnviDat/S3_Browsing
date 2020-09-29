@@ -5,6 +5,7 @@
               :open.sync="open"
               :search="search"
               item-key="name"
+              dense
               expand-icon="mdi-chevron-down"
               open-on-click >
 
@@ -29,22 +30,6 @@
               :class="item.isFile ? '' : 'shrink'">
           {{ item.name }}
         </v-col>
-
-        <!-- <v-col v-if="!item.isFile"
-                class="shrink px-1" >
-
-          <IconButton icon="mdi-zip-box"
-                      tooltipText="Bulk download"
-                      @click="saveDirectoyViaMemoryFile(item)" />
-        </v-col>
-
-        <v-col v-if="!item.isFile"
-                class="shrink px-1" >
-
-          <IconButton icon="mdi-cloud-download-outline"
-                      tooltipText="Open via FTP"
-                      :url="item.ftpUrl" />
-        </v-col> -->
 
         <v-col v-if="item.isFile"
                 class="shrink px-1" >
@@ -71,8 +56,15 @@
         </v-col>
 
         <v-col v-if="item.isFile"
-                class="shrink px-1 caption" >
+                class="px-1 caption"
+                cols="1" >
           {{ item.size }}
+        </v-col>
+
+        <v-col v-if="item.isFile"
+                class="px-1 caption"
+                cols="2" >
+          {{ item.lastModified }}
         </v-col>
 
         <v-col v-if="!item.isFile && item.childs !== '?'"
