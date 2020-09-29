@@ -65,8 +65,8 @@ function createFileEntry(keyInfos, baseUrl, size, lastModified) {
       size,
       lastModified,
       fileUrl: absolutePath,
-      children: [],
-      childs: '0',
+      // children: [],
+      // childs: '0',
     },
   };
 }
