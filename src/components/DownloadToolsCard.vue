@@ -20,7 +20,7 @@
             <template v-slot:activator="{ on, attrs }">
               <v-btn v-on="on"
                       v-bind="attrs"
-                      color="primary"
+                      color="secondary"
                       fab
                       small
                       :dark="dark"
@@ -30,7 +30,7 @@
                       @click="!tool.href && tool.clickCallback ? tool.clickCallback() : $emit('click');">
 
                 <!-- <v-img :src="tool.image" height="32" width="32" /> -->
-                <img :src="tool.image" style="width: 30px; border-radius: 50%;" />
+                <img :src="tool.image" style="width: 40px; border-radius: 50%;" />
               </v-btn>
             </template>
               

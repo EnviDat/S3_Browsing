@@ -133,14 +133,14 @@ export default {
         {
           title: 'Browse via Http WebDAV',
           toolTip: 'Use WebDAV to access the files.',
-          image: this.imagesPng('./WebDAV.io-logo-55x55.png'),
+          image: this.imagesPng('./icons8-dav-100-2.png'),
           href: `http://envicloud.wsl.ch/${this.urlPrefix}`,
           moreInfoUrl: 'https://webdav.io/webdav-client/',
         },
         {
           title: 'Brose via Https WebDAV',
           toolTip: 'Use WebDAV to access the files.',
-          image: this.imagesPng('./WebDAV.io-logo-55x55.png'),
+          image: this.imagesPng('./icons8-dav-100-2.png'),
           href: `https://envicloud.wsl.ch/webdav/${this.urlPrefix}`,
           moreInfoUrl: 'https://webdav.io/webdav-client/',
         },
