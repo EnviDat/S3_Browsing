@@ -19,6 +19,7 @@ export default new Vuex.Store({
     contentLoading: false,
     contentError: null,
     fallbackDefaultMaxKeys: process.env.VUE_APP_DEFAULT_MAX_KEYS,
+    vendorUrl: process.env.VUE_APP_VENDOR_URL,
   },
   getters: {
     contentUrl: (state, getters) => {
