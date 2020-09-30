@@ -23,8 +23,7 @@
     <template v-slot:label="{ item }">
 
       <v-row no-gutters
-              align="center"
-              :class="item.isFile ? 'justify-end' : ''" >
+              align="center" >
 
         <v-col class="pl-2 pr-4"
               :class="item.isFile ? '' : 'shrink'">
@@ -62,8 +61,7 @@
         </v-col>
 
         <v-col v-if="item.isFile"
-                class="px-1 caption"
-                cols="2" >
+                class="shrink px-1 caption" >
           {{ item.lastModified }}
         </v-col>
 
@@ -181,6 +179,7 @@ export default {
       jpg: 'mdi-file-image',
       tiff: 'mdi-file-image',
       tif: 'mdi-file-image',
+      aim: 'mdi-file-document-outline',
       txt: 'mdi-file-document-outline',
       xls: 'mdi-file-excel',
       nc: 'mdi-file',
