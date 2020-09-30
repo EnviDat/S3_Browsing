@@ -4,7 +4,7 @@
  * @author Dominik Haas-Artho
  *
  * Created at     : 2019-10-23 16:34:51 
- * Last modified  : 2020-09-23 11:03:23
+ * Last modified  : 2020-09-30 14:53:15
  *
  * This file is subject to the terms and conditions defined in
  * file 'LICENSE.txt', which is part of this source code package.
@@ -63,7 +63,7 @@ export default {
     const prefixMap = getPrefixMap(prefixList, this.getters.downloadDomain);
     const contentMap = getS3Map(contentList, this.getters.downloadDomain);
 
-    let map = mergeS3Maps(prefixMap, contentMap, parent);
+    let map = mergeS3Maps(contentMap, prefixMap, parent);
 
     if (state.contentMap) {
       map = mergeS3Maps(state.contentMap, map, parent);

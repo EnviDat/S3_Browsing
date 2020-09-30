@@ -344,6 +344,7 @@ export function mergeS3Maps(mainMap, newMap, parent, delimiter = '/') {
       let merged = false;
       if (existingEntry) {
         merged = mergeMapEntry(existingEntry, newMap[key], delimiter);
+        tempLastMergedSubEntry = null;
       } else {
         mainMap[key] = newMap[key];
         merged = true;
