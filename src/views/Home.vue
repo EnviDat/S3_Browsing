@@ -81,7 +81,13 @@ export default {
   beforeMount() {
     this.extractUrlParameters();
 
-    this.$store.dispatch(GET_CONFIG, configURL);
+    if (configURL) {
+      // the loadContent() get triggered from the watcher on configLoading
+      // after the config is loaded the content with the new config will be loaded
+      this.$store.dispatch(GET_CONFIG, configURL);
+    } else {
+      this.loadContent();
+    }
   },
   computed: {
     ...mapGetters([
@@ -104,8 +110,8 @@ export default {
       'imagesPng',
     ]),
     loading() {
-      // return this.configLoading || this.contentLoading;
-      return this.configLoading;
+      return this.configLoading || this.contentLoading;
+      // return this.configLoading;
     },
     hasError() {
       return this.configError || this.contentError;
@@ -131,16 +137,20 @@ export default {
   watch: {
     configLoading() {
       if (!this.configLoading && this.contentUrl) {
-        // initial call
-        this.$store.dispatch(GET_S3_CONTENT, { url: this.contentUrl, prefix: this.urlPrefix });
+        this.loadContent();
       }
     },
   },
   methods: {
+    loadContent() {
+      this.$store.dispatch(GET_S3_CONTENT, { url: this.contentUrl, prefix: this.urlPrefix });
+    },
     getDownloadTools() {
       if (!this.downloadTools) {
-        this.downloadTools = [
-          {
+        const tools = [];
+
+        if (this.cyberduckProfileName && this.cyberduckHostName && this.vendorUrl) {
+          tools.push({
             title: 'Download CyberDuck bookmark',
             toolTip: 'Use CyberDuck to access the files.',
             image: this.imagesPng('./cyberduck-icon-64.png'),
@@ -149,8 +159,11 @@ export default {
             moreInfoUrl: 'https://cyberduck.io/',
             showDescription: false,
             description: 'Use CyberDuck client to access the files the S3 bucket.',
-          },
-          {
+          });
+        }
+
+        if (this.WebDAVDomainHttp) {
+          tools.push({
             title: 'Browse via Http WebDAV',
             toolTip: 'Use WebDAV to access the files.',
             image: this.imagesPng('./dav-100-2.png'),
@@ -158,8 +171,11 @@ export default {
             moreInfoUrl: 'https://webdav.io/webdav-client/',
             showDescription: false,
             description: 'Direclty browse the files via WebDAV in the browser.',
-          },
-          {
+          });
+        }
+
+        if (this.WebDAVDomainHttps) {
+          tools.push({
             title: 'Brose via Https WebDAV',
             toolTip: 'Use WebDAV to access the files.',
             image: this.imagesPng('./dav-100-2.png'),
@@ -167,7 +183,9 @@ export default {
             moreInfoUrl: 'https://webdav.io/webdav-client/',
             showDescription: false,
             description: 'Direclty browse the files via WebDAV in the browser.',
-          },
+          });
+        }
+
           // {
           //   title: 'FTP',
           //   toolTip: 'Use a FTP-Client to access the files.',
@@ -176,7 +194,8 @@ export default {
           //   clickCallback: () => { console.log('clicked on Cyberduck'); },
           //   moreInfoUrl: 'https://filezilla-project.org/',
           // },
-        ];
+
+        this.downloadTools = tools;
       }
 
       return this.downloadTools;
