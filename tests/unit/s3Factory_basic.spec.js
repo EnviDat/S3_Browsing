@@ -4,7 +4,7 @@ import { resolve } from 'path';
 import fs from 'fs';
 
 import {
-  convertPrefixToMap,
+  getPrefixMap,
   getS3Map,
   mergeS3Maps,
 } from '../../src/store/s3Factory';
@@ -17,6 +17,8 @@ const xmlParseOptions = {
   explicitArray: false,
   trim: true,
 };
+const mergedTime = [];
+let before = null;
 
 function getXmlStringFromFile(fileName) {
   const filePath = resolve(__dirname, `../../public/testdata/${fileName}`);
@@ -54,14 +56,14 @@ describe('S3 Factory basic calls starting from root', () => {
     expect(parent).not.toBe(undefined);
   });
 
-  it(`- convertPrefixToMap() and mergeS3Maps() with mixed content of ${fileName}`, () => {
+  it(`- getPrefixMap() and mergeS3Maps() with mixed content of ${fileName}`, () => {
 
     expect(() => {
       getS3Map('contentList', baseUrl, delimiter);
     }).toThrow(Error);
 
     expect(() => {
-      convertPrefixToMap('prefixList', baseUrl, delimiter);
+      getPrefixMap('prefixList', baseUrl, delimiter);
     }).toThrow(Error);
 
     prefixList = rootXml?.ListBucketResult?.CommonPrefixes;
@@ -89,11 +91,14 @@ describe('S3 Factory basic calls starting from root', () => {
       }
     }
 
-    prefixMap = convertPrefixToMap(prefixList, baseUrl, delimiter);
+    prefixMap = getPrefixMap(prefixList, baseUrl, delimiter);
     const prefixKeys = Object.keys(prefixMap);
     expect(prefixKeys.length).toBeGreaterThan(0);
 
+    before = performance.now();
     prefixMap = mergeS3Maps(prefixMap, map, parent);
+    mergedTime.push((performance.now() - before));
+
     const mergedPrefixKeys = Object.keys(prefixMap);
     expect(mergedPrefixKeys.length).toBeGreaterThan(0);
     expect(mergedPrefixKeys.length).toBeGreaterThan(prefixKeys.length);
@@ -134,8 +139,10 @@ describe('S3 Factory basic calls starting from root', () => {
     expect(prefixList).not.toBe(undefined);
     expect(prefixList).toBeInstanceOf(Array);
 
-    const prefixChelsaMap = convertPrefixToMap(prefixList, baseUrl, delimiter);
+    const prefixChelsaMap = getPrefixMap(prefixList, baseUrl, delimiter);
+    before = performance.now();
     mergedMap = mergeS3Maps(prefixMap, prefixChelsaMap, parent);
+    mergedTime.push((performance.now() - before));
 
     const mergedValues = Object.values(mergedMap);
     const firstDir = mergedValues[0];
@@ -162,8 +169,10 @@ describe('S3 Factory basic calls starting from root', () => {
     expect(prefixList).not.toBe(undefined);
     expect(prefixList).toBeInstanceOf(Array);
 
-    const prefixChelsaMap = convertPrefixToMap(prefixList, baseUrl, delimiter);
+    const prefixChelsaMap = getPrefixMap(prefixList, baseUrl, delimiter);
+    before = performance.now();
     mergedMap = mergeS3Maps(mergedMap, prefixChelsaMap, parent);
+    mergedTime.push((performance.now() - before));
 
     const mergedValues = Object.values(mergedMap);
     const chelsaDir = mergedValues[0];
@@ -188,7 +197,9 @@ describe('S3 Factory basic calls starting from root', () => {
     const prefixKeys = Object.keys(mergedMap);
     expect(prefixKeys.length).toBeGreaterThan(0);
 
+    before = performance.now();
     mergedMap = mergeS3Maps(mergedMap, contentMap, contentParent);
+    mergedTime.push((performance.now() - before));
 
     const mergedValues = Object.values(mergedMap);
     const chelsaDir = mergedValues[0];
@@ -203,6 +214,17 @@ describe('S3 Factory basic calls starting from root', () => {
     const chelsaV1Cmip5Dir = chelsaV1Dir.children[0];
     expect(chelsaV1Cmip5Dir).not.toBe(undefined);
     expect(chelsaV1Cmip5Dir.children.length).toBeGreaterThan(0);
+  });
+
+  it('- log the mergedTime performance', () => {
+
+    if (mergedTime.length > 0) {
+      const entries = mergedTime.length;
+
+      const sum = mergedTime.reduce((x, y) => x + y);
+      const average = sum / entries;
+      console.log(`merged ${entries} entries in ${average} averaged`);
+    }
   });
 
 });

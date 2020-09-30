@@ -6,50 +6,68 @@ import mutations from './mutations';
 
 Vue.use(Vuex);
 
-const state = {
-  config: null,
-  configLoading: false,
-  configError: null,
-  fallbackContentUrl: process.env.VUE_APP_CONTENT_URL,
-  content: null,
-  contentMap: null,
-  contentLoading: false,
-  contentError: null,
-  fallbackDefaultMaxKeys: process.env.VUE_APP_DEFAULT_MAX_KEYS,
-};
+/* eslint-disable no-unused-vars */
+const fallbackShowProtocols = !!(process.env.VUE_APP_SHOW_PROTOCOLS && process.env.VUE_APP_SHOW_PROTOCOLS === 'true');
+
+// load all the png for the protocol images / icons
+// an image can be access like via mappedState of the imagesPng
+// and then use ex. this.imagesPng('./dav-100-2.png')
+const imagesPng = require.context('../assets/', false, /\.png$/);
 
 export default new Vuex.Store({
-  state,
+  state: {
+    config: null,
+    configLoading: false,
+    configError: null,
+    content: null,
+    contentMap: null,
+    contentLoading: false,
+    contentError: null,
+    imagesPng,
+    fallbackContentUrl: process.env.VUE_APP_CONTENT_URL,
+    fallbackDownloadDomain: process.env.VUE_APP_DOWNLOAD_DOMAIN,
+    fallbackDefaultMaxKeys: process.env.VUE_APP_DEFAULT_MAX_KEYS,
+    fallbackShowProtocols,
+    fallbackVendorUrl: process.env.VUE_APP_VENDOR_URL,
+    fallbackCyberduckHost: process.env.VUE_APP_CYBERDUCK_HOST_NAME,
+    fallbackCyberduckProfile: process.env.VUE_APP_CYBERDUCK_PROFILE_NAME,
+    fallbackWebDAVDomainHttp: process.env.VUE_APP_WEBDAV_DOMAIN_HTTP,
+    fallbackWebDAVDomainHttps: process.env.VUE_APP_WEBDAV_DOMAIN_HTTPS,
+  },
   getters: {
-    contentUrl() {
-      const configUrl = state.config?.contentUrl || state.config?.contentURL;
-
-      if (configUrl) {
-        return configUrl;
-      }
-
-      return state.fallbackContentUrl;
-    },
-    defaultMaxKeys() {
+    contentBucketName: (state) => (state.content?.ListBucketResult?.Name || 'Nothing loaded'),
+    contentMap: (state) => (state.contentMap && Object.keys(state.contentMap).length > 0 ? state.contentMap : null),
+    contentUrl: (state) => state.config?.contentUrl || state.fallbackContentUrl,
+    downloadDomain: (state, getters) => (state.config?.downloadDomain || state.fallbackDownloadDomain || getters.contentUrl),
+    defaultMaxKeys: (state) => {
       const configMKeys = state.config?.defaultMaxKeys || state.config?.DefaultMaxKeys;
 
       let fbMaxKeys = null;
-      try {
-        fbMaxKeys = Number.parseInt(state.fallbackDefaultMaxKeys, 10);
-      } catch (e) {
-        // eslint-disable-next-line no-console
-        console.log(`Error while parsing the fallbackDefaultMaxKeys environment variable: ${e}`);
+      if (state.fallbackDefaultMaxKeys) {
+        try {
+          fbMaxKeys = Number.parseInt(state.fallbackDefaultMaxKeys, 10);
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.log(`Error while parsing the fallbackDefaultMaxKeys environment variable: ${e}`);
+        }
       }
 
       return configMKeys || fbMaxKeys || 100000;
     },
-    contentBucketName() {
-      return state.content?.ListBucketResult?.Name || 'Nothing loaded';
+    showProtocols: (state) => {
+      const showProtocols = state.config?.showProtocols;
+      
+      if (showProtocols !== undefined && showProtocols !== null) {
+        return showProtocols;
+      }
+
+      return state.fallbackShowProtocols;
     },
-    contentMap() {
-      // return state.contentMap?.size > 0 ? state.contentMap : null;
-      return state.contentMap && Object.keys(state.contentMap).length > 0 ? state.contentMap : null;
-    },
+    vendorUrl: (state) => state.config?.vendorUrl || state.fallbackVendorUrl,
+    cyberduckHostName: (state) => state.config?.cyberduckHostName || state.fallbackCyberduckHost,
+    cyberduckProfileName: (state) => state.config?.cyberduckProfileName || state.fallbackCyberduckProfile,
+    WebDAVDomainHttp: (state) => state.config?.webDAVDomainHttp || state.fallbackWebDAVDomainHttp,
+    WebDAVDomainHttps: (state) => state.config?.webDAVDomainHttps || state.fallbackWebDAVDomainHttps,
   },
   mutations,
   actions,

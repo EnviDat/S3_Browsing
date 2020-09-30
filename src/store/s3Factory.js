@@ -29,10 +29,14 @@ function createDirectoryEntry(keyInfos, baseUrl, delimiter, childs = null) {
   const splits = keyInfos.directory.split(delimiter);
   splits.reverse();
   const directoryName = `${splits[1]}${delimiter}`;
-  const absolutePath = `${baseUrl}${keyInfos.directory}`;
-  const ftpUrl = absolutePath;
-  ftpUrl.replace('https', 'sftp');
-  ftpUrl.replace('http', 'ftp');
+
+  // skip the root "/" directory to avoid having double // in the url
+  const dir = keyInfos.directory === '/' ? '' : keyInfos.directory;
+
+  const absolutePath = `${baseUrl}${dir}`;
+  let ftpUrl = absolutePath;
+  ftpUrl = ftpUrl.replace('https', 'sftp');
+  ftpUrl = ftpUrl.replace('http', 'ftp');
 
   return {
     root: keyInfos.root,
@@ -50,7 +54,9 @@ function createDirectoryEntry(keyInfos, baseUrl, delimiter, childs = null) {
 
 function createFileEntry(keyInfos, baseUrl, size, lastModified) {
 
-  const absolutePath = `${baseUrl}${keyInfos.directory}${keyInfos.name}`;
+  // skip the root "/" directory to avoid having double // in the url
+  const dir = keyInfos.directory === '/' ? '' : keyInfos.directory;
+  const absolutePath = `${baseUrl}${dir}${keyInfos.name}`;
 
   return {
     ...keyInfos,
@@ -59,8 +65,8 @@ function createFileEntry(keyInfos, baseUrl, size, lastModified) {
       size,
       lastModified,
       fileUrl: absolutePath,
-      children: [],
-      childs: '0',
+      // children: [],
+      // childs: '0',
     },
   };
 }
@@ -100,6 +106,7 @@ export function extractKeyInfos(key, delimiter = '/') {
     const fileExtSplits = fileKey.split('.');
     if (fileExtSplits.length > 0) {
       fileExt = fileExtSplits[fileExtSplits.length - 1];
+      fileExt = fileExt.toLowerCase();
     }
   }
 
@@ -112,19 +119,19 @@ export function extractKeyInfos(key, delimiter = '/') {
   };
 }
 
-export function getS3Map(list, baseUrl, delimiter = '/') {
+export function getS3Map(contentList, baseUrl, delimiter = '/') {
   const map = {};
 
-  if (!list) {
+  if (!contentList) {
     return map;
   }
 
-  if (!(list instanceof Array)) {
-    throw new Error('list has to be an Array (instanceof Array) !');
+  if (!(contentList instanceof Array)) {
+    throw new Error('contentList has to be an Array (instanceof Array) !');
   }
   
-  for (let i = 0; i < list.length; i++) {
-    const s3 = list[i];
+  for (let i = 0; i < contentList.length; i++) {
+    const s3 = contentList[i];
 
     const keyInfos = extractKeyInfos(s3.Key, delimiter);
 
@@ -150,8 +157,9 @@ export function getS3Map(list, baseUrl, delimiter = '/') {
   return map;
 }
 
-export function convertPrefixToMap(prefixList, baseUrl, delimiter = '/') {
+export function getPrefixMap(prefixList, baseUrl, delimiter = '/') {
   const map = {};
+
   if (!prefixList) {
     return map;
   }
@@ -196,7 +204,10 @@ export function getParentPath(entry, delimiter = '/') {
   return null;
 }
 
-export function mergeMapEntry(existing, newEntry, delimiter = '/') {
+let tempLastMergedSubEntry = null;
+let tempLastMergedEntry = null;
+
+function mergeMapEntry(existing, newEntry, delimiter = '/') {
   if (existing.root === newEntry.root) {
 
     if (newEntry.directory === existing.directory
@@ -205,16 +216,32 @@ export function mergeMapEntry(existing, newEntry, delimiter = '/') {
       existing.children = [...existing.children, ...newEntry.children];
       existing.childs = existing.children.length.toString();
       
-    } else if (newEntry.directory.includes(existing.directory)) {
+      tempLastMergedEntry = existing;
+
+      return true;
+    }
+    
+    if (newEntry.directory.includes(existing.directory)) {
       
       const parentDirectory = getParentPath(newEntry, delimiter);
+
+      if (tempLastMergedEntry?.name === parentDirectory) {
+        if (mergeMapEntry(tempLastMergedEntry, newEntry, delimiter)) {
+          return true;
+        }
+      }
 
       // console.log(`Traverse for ${newEntry.id} checking: ${existing.name}`);
 
       if (existing.name === parentDirectory) {
         const existingChild = existing.children.findIndex((el) => el.name === newEntry.name);
 
-        if (existingChild > -1) {
+        if (existingChild > -1) {   
+          // merged the subchilds to avoid losing them
+          const exitingSubChilds = existing.children[existingChild].children;
+          newEntry.children = [...newEntry.children, ...exitingSubChilds];
+          newEntry.childs = newEntry.children.length.toString();
+
           existing.children.splice(existingChild, 1, newEntry);
         } else {
           existing.children.push(newEntry);
@@ -225,11 +252,18 @@ export function mergeMapEntry(existing, newEntry, delimiter = '/') {
         return true;
       } 
       
+      if (tempLastMergedSubEntry) {
+        if (mergeMapEntry(tempLastMergedSubEntry, newEntry, delimiter)) {
+          return true;
+        }
+      }
+
       for (let i = 0; i < existing.children.length; i++) {
         const child = existing.children[i];
 
         if (!child.isFile) {
           if (mergeMapEntry(child, newEntry, delimiter)) {
+            tempLastMergedSubEntry = child;
             return true;
           }
         }
@@ -291,13 +325,15 @@ export function mergeS3Maps(mainMap, newMap, parent, delimiter = '/') {
   }
 
   // const mergedKeys = [];
+  const mergedTime = [];
   const newMapKeys = Object.keys(newMap);
+  tempLastMergedEntry = null;
+  tempLastMergedSubEntry = null;
 
   if (mainEntry) {
-
     newMapKeys.forEach((key) => {
       const merged = mergeMapEntry(mainEntry, newMap[key], delimiter);
-
+      tempLastMergedSubEntry = null;
       // mergedKeys.push(`key: "${key}"" merged: ${merged}`);
     });
 
@@ -308,6 +344,7 @@ export function mergeS3Maps(mainMap, newMap, parent, delimiter = '/') {
       let merged = false;
       if (existingEntry) {
         merged = mergeMapEntry(existingEntry, newMap[key], delimiter);
+        tempLastMergedSubEntry = null;
       } else {
         mainMap[key] = newMap[key];
         merged = true;
@@ -319,5 +356,25 @@ export function mergeS3Maps(mainMap, newMap, parent, delimiter = '/') {
 
   // console.log({ mergedKeys });
 
+  // runs with no use of temp variables
+  // run 1: 0.06796666666669655
+  // run 2: 0.08196649999998347
+  // run 3: 0.08345833333332091
+  // run 4: 0.07495008333338167
+  // run 5: 0.09335808333342281
+  // const entries = [0.06796666666669655, 0.08196649999998347, 0.08345833333332091, 0.07495008333338167, 0.09335808333342281]
+  // 0.08033993333336108
+
+  // runs with the use of temp variables
+  // run 1: 0.09018333333328125
+  // run 2: 0.08404199999995399
+  // run 3: 0.07427483333325806
+  // run 4: 0.06715858333336655
+  // run 5: 0.07802491666670146  
+  // const entries2 = [0.09018333333328125, 0.08404199999995399, 0.07427483333325806, 0.06715858333336655, 0.07802491666670146]
+  // 0.07873673333331227
+
+  tempLastMergedEntry = null;
+  tempLastMergedSubEntry = null;
   return mainMap;
 }
