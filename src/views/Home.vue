@@ -22,7 +22,7 @@
       </v-col>
     </v-row>
 
-    <v-row v-if="!contentError" >
+    <v-row >
 
       <!-- <v-col cols="12"
               :sm="bucketInfoExpanded ? 3 : ''"
@@ -40,14 +40,16 @@
                     @expand="catchBucketInfoExpand" />
       </v-col> -->
 
-      <v-col cols="12"
-              sm="9"  >
+      <v-col v-if="!contentError" 
+              cols="12"
+              :sm="showProtocols ? 9 : 12" >
         <TreeCard @showSnack="catchShowSnack" />
       </v-col>
 
-      <v-col cols="12"
+      <v-col v-if="showProtocols"
+              cols="12"
               sm="3" >
-        <DownloadToolsCard :tools="downloadTools" />
+        <DownloadToolsCard :tools="getDownloadTools()" />
       </v-col>
 
     </v-row>
@@ -80,13 +82,18 @@ export default {
     this.extractUrlParameters();
 
     this.$store.dispatch(GET_CONFIG, configURL);
-
-    this.loadImages();    
   },
   computed: {
     ...mapGetters([
-      'contentUrl',
+      'contentBucketName',
       'contentMap',
+      'contentUrl',
+      'showProtocols',
+      'vendorUrl',
+      'cyberduckHostName',
+      'cyberduckProfileName',
+      'WebDAVDomainHttp',
+      'WebDAVDomainHttps',
       ]),
     ...mapState([
       'configLoading',
@@ -94,7 +101,7 @@ export default {
       'content',
       'contentLoading',
       'contentError',
-      'vendorUrl',
+      'imagesPng',
     ]),
     loading() {
       // return this.configLoading || this.contentLoading;
@@ -120,40 +127,6 @@ export default {
 
       return { }; // return empty object so the defaults will be shown
     },
-    downloadTools() {
-      return [
-        {
-          title: 'Download CyberDuck profile',
-          toolTip: 'Use CyberDuck to access the files.',
-          image: this.imagesPng('./cyberduck-icon-64.png'),
-          href: this.hrefCyberduckFile(),
-          downloadFileName: 'envicloud.cyberduck.profile',
-          moreInfoUrl: 'https://cyberduck.io/',
-        },
-        {
-          title: 'Browse via Http WebDAV',
-          toolTip: 'Use WebDAV to access the files.',
-          image: this.imagesPng('./icons8-dav-100-2.png'),
-          href: `http://envicloud.wsl.ch/${this.urlPrefix}`,
-          moreInfoUrl: 'https://webdav.io/webdav-client/',
-        },
-        {
-          title: 'Brose via Https WebDAV',
-          toolTip: 'Use WebDAV to access the files.',
-          image: this.imagesPng('./icons8-dav-100-2.png'),
-          href: `https://envicloud.wsl.ch/webdav/${this.urlPrefix}`,
-          moreInfoUrl: 'https://webdav.io/webdav-client/',
-        },
-        // {
-        //   title: 'FTP',
-        //   toolTip: 'Use a FTP-Client to access the files.',
-        //   image: this.imagesPng('./icons8-ftp-100.png'),
-        //   href: null,
-        //   clickCallback: () => { console.log('clicked on Cyberduck'); },
-        //   moreInfoUrl: 'https://filezilla-project.org/',
-        // },
-      ];
-    },
   },
   watch: {
     configLoading() {
@@ -164,10 +137,52 @@ export default {
     },
   },
   methods: {
-    loadImages() {
-      // const getImages = require.context('../assets/', false, /\.png$/);
-      this.imagesPng = require.context('../assets/', false, /\.png$/);
-      // this.imagesPng = getImages('./' + pet + ".png");
+    getDownloadTools() {
+      if (!this.downloadTools) {
+        this.downloadTools = [
+          {
+            title: 'Download CyberDuck bookmark',
+            toolTip: 'Use CyberDuck to access the files.',
+            image: this.imagesPng('./cyberduck-icon-64.png'),
+            href: this.hrefCyberduckFile(this.urlPrefix),
+            downloadFileName: `${this.cyberduckProfileName}.cyberduckprofile`,
+            moreInfoUrl: 'https://cyberduck.io/',
+            showDescription: false,
+            description: 'Use CyberDuck client to access the files the S3 bucket.',
+          },
+          {
+            title: 'Browse via Http WebDAV',
+            toolTip: 'Use WebDAV to access the files.',
+            image: this.imagesPng('./dav-100-2.png'),
+            href: `${this.WebDAVDomainHttp}${this.urlPrefix}`,
+            moreInfoUrl: 'https://webdav.io/webdav-client/',
+            showDescription: false,
+            description: 'Direclty browse the files via WebDAV in the browser.',
+          },
+          {
+            title: 'Brose via Https WebDAV',
+            toolTip: 'Use WebDAV to access the files.',
+            image: this.imagesPng('./dav-100-2.png'),
+            href: `${this.WebDAVDomainHttps}${this.urlPrefix}`,
+            moreInfoUrl: 'https://webdav.io/webdav-client/',
+            showDescription: false,
+            description: 'Direclty browse the files via WebDAV in the browser.',
+          },
+          // {
+          //   title: 'FTP',
+          //   toolTip: 'Use a FTP-Client to access the files.',
+          //   image: this.imagesPng('./icons8-ftp-100.png'),
+          //   href: null,
+          //   clickCallback: () => { console.log('clicked on Cyberduck'); },
+          //   moreInfoUrl: 'https://filezilla-project.org/',
+          // },
+        ];
+      }
+
+      return this.downloadTools;
+    },
+    clickShowDesc(tool) {
+      tool.showDescription = !tool.showDescription;
     },
     catchBucketInfoExpand() {
       this.bucketInfoExpanded = !this.bucketInfoExpanded;
@@ -194,8 +209,10 @@ export default {
             <string>${this.vendorUrl}</string>
             <key>Protocol</key>
             <string>s3</string>
+            <key>Default Nickname</key>
+            <string>${this.contentBucketName} - S3 Bucket</string>
             <key>Default Hostname</key>
-            <string>os.zhdk.cloud.switch.ch</string>
+            <string>${this.cyberduckHostName}</string>
             <key>Default Path</key>
             <string>${urlPrefix}</string>
             <key>Anonymous Configurable</key>
@@ -203,8 +220,8 @@ export default {
           </dict>
         </plist>`;
     },
-    hrefCyberduckFile() {
-      const prefix = `/envicloud/${this.urlPrefix}`;
+    hrefCyberduckFile(urlPrefix) {
+      const prefix = `/envicloud/${urlPrefix}`;
       const data = this.getCyberduckXML(prefix);
       // const encodedData = encodeURI(data);
       const encodedData = btoa(unescape(encodeURIComponent(data)));
@@ -253,7 +270,7 @@ export default {
     appAvatarText: 'S3',
     bucketInfoExpanded: false,
     urlPrefix: null,
-    imagesPng: null,
+    downloadTools: null,
   }),
 };
 </script>
