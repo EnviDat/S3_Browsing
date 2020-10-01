@@ -1,3 +1,6 @@
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/07867b83bc9244c8ada67e5f7df03ac4)](https://www.codacy.com/gh/EnviDat/S3_Browsing/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=EnviDat/S3_Browsing&amp;utm_campaign=Badge_Grade)
+[![DeepScan grade](https://deepscan.io/api/teams/6114/projects/13957/branches/248737/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=6114&pid=13957&bid=248737)
+
 # S3 Browsing Web Frontend
 
 Web file browser for a S3 backend. Browse and download files in a 
@@ -8,7 +11,7 @@ file tree structure.
 - Search directories and files
 - The content of folders is "lazy-loaded" to prevent a long initial rendering time
 - prefix query parameter to start from a certain folder
-- It works only for public S3 Buckets (by version 1.1.5)
+- It works **only for public S3 Buckets** (by version 1.1.5)
 
 
 Check https://envicloud.wsl.ch/ as a demo.
