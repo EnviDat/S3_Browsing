@@ -21,6 +21,7 @@ export default new Vuex.Store({
     configError: null,
     content: null,
     contentMap: null,
+    contentMapFlat: null,
     contentLoading: false,
     contentError: null,
     imagesPng,

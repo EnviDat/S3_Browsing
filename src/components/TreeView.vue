@@ -22,11 +22,14 @@
 
     <template v-slot:label="{ item }">
 
-      <v-row no-gutters
-              align="center" >
+      <v-row v-intersect="onIntersect"
+              no-gutters
+              align="center"
+              :id="item.key"
+              :ref="item.key" >
 
         <v-col class="pl-2 pr-4"
-              :class="item.isFile ? '' : 'shrink'">
+                :class="item.isFile ? '' : 'shrink'">
           {{ item.name }}
         </v-col>
 
@@ -74,6 +77,7 @@
         </v-col>        
 
       </v-row>
+
     </template>
 
   </v-treeview>
@@ -109,6 +113,7 @@ export default {
     ...mapState([
       'content',
       'contentLoading',
+      'contentMapFlat',
     ]),
   },
   methods: {
@@ -145,6 +150,22 @@ export default {
 
       item.open = true;
     },
+    // eslint-disable-next-line no-unused-vars
+    onIntersect(entries, observer) {
+      // More information about these options
+      // is located here: https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
+
+      const observerdEntry = entries[0];
+      const key = observerdEntry?.target?.id;
+
+      const flatMapValue = this.$refs[key]; // this.contentMapFlat[key];
+      if (flatMapValue) {
+        flatMapValue.setAttribute('visibility', observerdEntry.isIntersecting ? 'inherit' : 'hidden');
+        // flatMapValue.isIntersecting = observerdEntry.isIntersecting;
+        // console.log(`${key} isIntersecting ${observerdEntry.isIntersecting}`);
+        // this.$forceUpdate();
+      }
+    },    
   },
   watch: {
     allCollapsed() {
