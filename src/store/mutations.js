@@ -59,7 +59,7 @@ export default {
     if (prefixList && !(prefixList instanceof Array)) {
       prefixList = [prefixList];
     }
-    const prefix = payload?.ListBucketResult?.Prefix;
+    const prefix = payload?.ListBucketResult?.Prefix || '';
     const parentPrefix = sanitaizePrefix(prefix);
 
     const prefixMap = getPrefixMap(prefixList, this.getters.downloadDomain);
