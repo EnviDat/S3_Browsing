@@ -68,6 +68,8 @@ import {
   GET_S3_CONTENT,
 } from '@/store/mutationsConsts';
 
+import { sanitaizePrefix } from '@/store/s3Factory';
+
 import TreeCard from '@/components/TreeCard';
 import DownloadToolsCard from '@/components/DownloadToolsCard';
 
@@ -216,13 +218,14 @@ export default {
     extractUrlParameters() {
       let params = this.$route.query;
 
-      this.urlPrefix = params?.prefix || '';
+      let prefix = params?.prefix || '';
 
-      if (!this.urlPrefix) {
+      if (!prefix) {
         params = this.$route.params;
-
-        this.urlPrefix = params?.prefix || '';
+        prefix = params?.prefix || '';
       }
+
+      this.urlPrefix = sanitaizePrefix(prefix);
     },
     getCyberduckXML(urlPrefix) {
       return `<?xml version="1.0" encoding="UTF-8"?>
