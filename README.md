@@ -11,7 +11,7 @@ file tree structure.
 - Search directories and files
 - The content of folders is "lazy-loaded" to prevent a long initial rendering time
 - prefix query parameter to start from a certain folder
-- It works **only for public S3 Buckets** (by version 1.1.5)
+- It works **only for public S3 Buckets** (by version 1.2.0)
 
 
 Check https://envicloud.wsl.ch/ as a demo.
@@ -185,5 +185,5 @@ For now only the s3Factory methods are being tested.
 
 - Rendering large amounts of folder and files is still pretty slow. For the https://envicloud.wsl.ch we are having folders which have >1k or even >4k files which makes the rendering from the v-tree-view component of vuetify very slow. To handle such large amounts of entries a virtual list is needed, which will probably be implemented in the future.
 - Bulk downloading files, for downloading mutliple files at once you need to use a different protocol / client, make sure to enable the `showProtocols` option.
-- Multiple entires >10k as mentioned the rendering isn't performant, so this issue isn't tackled yet, but if for any folder there are more than 10k entires the needs to be a pagniation of sorts or at least multiple requests to the backend. The default server side maximum seems to be 10k, this might be configurable, so how. For a multiple request scenario the `Marker` parameter can be used make any futher calls. The `Marker` would be the last key which was provided from the last request and from there the new request should provide again the amount given with the max-keys parameter or the server side maxium. (As of version 1.1.5 such a scenario isn't implemented yet.)
+- Multiple entires >10k as mentioned the rendering isn't performant, so this issue isn't tackled yet, but if for any folder there are more than 10k entires the needs to be a pagniation of sorts or at least multiple requests to the backend. The default server side maximum seems to be 10k, this might be configurable, so how. For a multiple request scenario the `Marker` parameter can be used make any futher calls. The `Marker` would be the last key which was provided from the last request and from there the new request should provide again the amount given with the max-keys parameter or the server side maxium. (As of version 1.2.0 such a scenario isn't implemented yet.)
 

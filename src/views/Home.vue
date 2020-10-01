@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
 
-    <v-row v-if="loading" >
+    <v-row v-if="configLoading" >
       <v-col cols="12"
               sm="3">
         <PlaceholderCard />
@@ -40,13 +40,14 @@
                     @expand="catchBucketInfoExpand" />
       </v-col> -->
 
-      <v-col v-if="!contentError" 
+      <v-col v-if="!configLoading && !contentError" 
               cols="12"
               :sm="showProtocols ? 9 : 12" >
-        <TreeCard @showSnack="catchShowSnack" />
+        <TreeCard @showSnack="catchShowSnack"
+                  :prefix="urlPrefix" />
       </v-col>
 
-      <v-col v-if="showProtocols"
+      <v-col v-if="!loading && showProtocols"
               cols="12"
               sm="3" >
         <DownloadToolsCard :tools="getDownloadTools()" />
@@ -146,43 +147,46 @@ export default {
       this.$store.dispatch(GET_S3_CONTENT, { url: this.contentUrl, prefix: this.urlPrefix });
     },
     getDownloadTools() {
+      // not done via computedProperty because the DownloadToolCard can change the showDescription
+      // via computed that isn't working
+      
       if (!this.downloadTools) {
         const tools = [];
 
         if (this.cyberduckProfileName && this.cyberduckHostName && this.vendorUrl) {
           tools.push({
-            title: 'Download CyberDuck bookmark',
-            toolTip: 'Use CyberDuck to access the files.',
+            title: 'Download Cyberduck bookmark',
+            toolTip: 'Download a Cyberduck bookmark to access the files via the Cyberduck client.',
             image: this.imagesPng('./cyberduck-icon-64.png'),
             href: this.hrefCyberduckFile(this.urlPrefix),
             downloadFileName: `${this.cyberduckProfileName}.cyberduckprofile`,
             moreInfoUrl: 'https://cyberduck.io/',
             showDescription: false,
-            description: 'Use CyberDuck client to access the files the S3 bucket.',
+            description: 'Access the files in the S3 Bucket via Cyberduck client.',
           });
         }
 
         if (this.WebDAVDomainHttp) {
           tools.push({
             title: 'Browse via Http WebDAV',
-            toolTip: 'Use WebDAV to access the files.',
+            toolTip: 'Open a new tab to access the files via WebDAV.',
             image: this.imagesPng('./dav-100-2.png'),
             href: `${this.WebDAVDomainHttp}${this.urlPrefix}`,
             moreInfoUrl: 'https://webdav.io/webdav-client/',
             showDescription: false,
-            description: 'Direclty browse the files via WebDAV in the browser.',
+            description: 'Access the files in the S3 Bucket via the WebDAV protocol over HTTP.',
           });
         }
 
         if (this.WebDAVDomainHttps) {
           tools.push({
-            title: 'Brose via Https WebDAV',
+            title: 'Browse via Https WebDAV',
             toolTip: 'Use WebDAV to access the files.',
             image: this.imagesPng('./dav-100-2.png'),
             href: `${this.WebDAVDomainHttps}${this.urlPrefix}`,
             moreInfoUrl: 'https://webdav.io/webdav-client/',
             showDescription: false,
-            description: 'Direclty browse the files via WebDAV in the browser.',
+            description: 'Access the files in the S3 Bucket via the WebDAV protocol over HTTP(S).',
           });
         }
 

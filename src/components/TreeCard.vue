@@ -1,5 +1,5 @@
 <template>
-  <v-card height="100%">
+  <v-card >
     <v-sheet class="pa-4" color="primary">
 
       <v-row no-gutters>
@@ -42,17 +42,37 @@
 
     </v-sheet>
 
-    <v-card-text :style="`max-height: ${height}; overflow:auto;`">
-      <TreeView :search="search"
+    <v-card-text v-if="contentMapValues"
+                  :style="`max-height: ${height}; overflow:auto;`">
+      <TreeView :items="contentMapValues"
+                :search="search"
                 :allCollapsed="allCollapsed"
                 @showSnack="catchShowSnack"
                 @collapsed="catchCollapsed" />
     </v-card-text>
 
+    <v-sheet v-if="!contentMapValues"
+              class="pa-4">
+
+      <v-card-text :style="`background-color: ${$vuetify.theme.themes.light.error};`">
+        {{ `No files or folder found for the prefix: ${prefix}` }}
+      </v-card-text>
+
+      <v-card-actions>
+        <v-btn color="secondary"
+                href="/">
+          Back to main site
+        </v-btn>
+      </v-card-actions>
+    </v-sheet>
+
   </v-card>
 </template>
 
 <script>
+import {
+  mapGetters,
+} from 'vuex';
 
 import IconButton from './IconButton';
 import TreeView from './TreeView';
@@ -64,6 +84,7 @@ export default {
       type: String,
       default: '75vh',
     },
+    prefix: String,
   },
   data: () => ({
     caseSensitive: false,
@@ -72,6 +93,10 @@ export default {
     allCollapsed: false,
   }),
   computed: {
+    ...mapGetters(['contentMap']),
+    contentMapValues() {
+      return this.contentMap ? Object.values(this.contentMap) : null;
+    },    
     // filter() {
     //   return this.caseSensitive
     //     ? (item, search, textKey) => item[textKey].indexOf(search) > -1
