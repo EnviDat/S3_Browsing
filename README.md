@@ -6,8 +6,9 @@ file tree structure.
 ## Features
 
 - Search directories and files
-- Folder content is lazy-loaded to prevent long rendering time
+- The content of folders is "lazy-loaded" to prevent a long initial rendering time
 - prefix query parameter to start from a certain folder
+- It works only for public S3 Buckets (by version 1.1.5)
 
 
 Check https://envicloud.wsl.ch/ as a demo.
@@ -146,6 +147,8 @@ via .env files or json-config.
 
 The `contentBucketName` comes from the S3 xml which is provided via `contentUrl`.
 The `urlPrefix` is a query parameter from the url
+
+[More about Cyberduck ](https://www.cyberduck.io/)
 
 
 ### Configuration Options
