@@ -1,3 +1,6 @@
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/07867b83bc9244c8ada67e5f7df03ac4)](https://www.codacy.com/gh/EnviDat/S3_Browsing/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=EnviDat/S3_Browsing&amp;utm_campaign=Badge_Grade)
+[![DeepScan grade](https://deepscan.io/api/teams/6114/projects/13957/branches/248737/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=6114&pid=13957&bid=248737)
+
 # S3 Browsing Web Frontend
 
 Web file browser for a S3 backend. Browse and download files in a 
@@ -6,8 +9,9 @@ file tree structure.
 ## Features
 
 - Search directories and files
-- Folder content is lazy-loaded to prevent long rendering time
+- The content of folders is "lazy-loaded" to prevent a long initial rendering time
 - prefix query parameter to start from a certain folder
+- It works **only for public S3 Buckets** (by version 1.2.0)
 
 
 Check https://envicloud.wsl.ch/ as a demo.
@@ -147,6 +151,8 @@ via .env files or json-config.
 The `contentBucketName` comes from the S3 xml which is provided via `contentUrl`.
 The `urlPrefix` is a query parameter from the url
 
+[More about Cyberduck ](https://www.cyberduck.io/)
+
 
 ### Configuration Options
 
@@ -179,5 +185,5 @@ For now only the s3Factory methods are being tested.
 
 - Rendering large amounts of folder and files is still pretty slow. For the https://envicloud.wsl.ch we are having folders which have >1k or even >4k files which makes the rendering from the v-tree-view component of vuetify very slow. To handle such large amounts of entries a virtual list is needed, which will probably be implemented in the future.
 - Bulk downloading files, for downloading mutliple files at once you need to use a different protocol / client, make sure to enable the `showProtocols` option.
-- Multiple entires >10k as mentioned the rendering isn't performant, so this issue isn't tackled yet, but if for any folder there are more than 10k entires the needs to be a pagniation of sorts or at least multiple requests to the backend. The default server side maximum seems to be 10k, this might be configurable, so how. For a multiple request scenario the `Marker` parameter can be used make any futher calls. The `Marker` would be the last key which was provided from the last request and from there the new request should provide again the amount given with the max-keys parameter or the server side maxium. (As of version 1.1.5 such a scenario isn't implemented yet.)
+- Multiple entires >10k as mentioned the rendering isn't performant, so this issue isn't tackled yet, but if for any folder there are more than 10k entires the needs to be a pagniation of sorts or at least multiple requests to the backend. The default server side maximum seems to be 10k, this might be configurable, so how. For a multiple request scenario the `Marker` parameter can be used make any futher calls. The `Marker` would be the last key which was provided from the last request and from there the new request should provide again the amount given with the max-keys parameter or the server side maxium. (As of version 1.2.0 such a scenario isn't implemented yet.)
 

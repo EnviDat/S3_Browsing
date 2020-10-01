@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListBucketResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+    <Name>envicloud</Name>
+    <Prefix>slf/</Prefix>
+    <MaxKeys>100000</MaxKeys>
+    <Delimiter>/</Delimiter>
+    <IsTruncated>false</IsTruncated>
+    <CommonPrefixes>
+        <Prefix>slf/3dct/</Prefix>
+    </CommonPrefixes>
+    <CommonPrefixes>
+        <Prefix>slf/snow-booklet/</Prefix>
+    </CommonPrefixes>
+    <CommonPrefixes>
+        <Prefix>slf/snow_and_permafrost/</Prefix>
+    </CommonPrefixes>
+    <CommonPrefixes>
+        <Prefix>slf/sph-ct/</Prefix>
+    </CommonPrefixes>
+    <Contents>
+        <Key>slf/</Key>
+        <LastModified>2020-08-26T12:35:23.156Z</LastModified>
+        <ETag>&quot;d41d8cd98f00b204e9800998ecf8427e&quot;</ETag>
+        <Size>0</Size>
+        <StorageClass>STANDARD</StorageClass>
+        <Owner>
+            <ID>efac3884f7994ce19e9549186572a52b</ID>
+            <DisplayName>open-research-data</DisplayName>
+        </Owner>
+        <Type>Normal</Type>
+    </Contents>
+    <Marker></Marker>
+</ListBucketResult>

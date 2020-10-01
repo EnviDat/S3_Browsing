@@ -97,6 +97,8 @@ export default {
     search: String,
     caseSensitive: Boolean,
     allCollapsed: Boolean,
+    prefix: String,
+    items: Array,
   },
   computed: {
     ...mapGetters([
@@ -108,13 +110,6 @@ export default {
       'content',
       'contentLoading',
     ]),
-    items() {
-      return this.values ? this.values : [];
-    },
-    values() {
-      // return this.contentMap ? this.contentMap.values() : null;
-      return this.contentMap ? Object.values(this.contentMap) : null;
-    },
   },
   methods: {
     catchCopyClick(url) {

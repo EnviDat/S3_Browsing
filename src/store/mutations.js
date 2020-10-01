@@ -23,6 +23,7 @@ import {
   getS3Map,
   getPrefixMap,
   mergeS3Maps,
+  sanitaizePrefix,
 } from './s3Factory';
 
 export default {
@@ -58,15 +59,16 @@ export default {
     if (prefixList && !(prefixList instanceof Array)) {
       prefixList = [prefixList];
     }
-    const parent = payload?.ListBucketResult?.Prefix;
+    const prefix = payload?.ListBucketResult?.Prefix;
+    const parentPrefix = sanitaizePrefix(prefix);
 
     const prefixMap = getPrefixMap(prefixList, this.getters.downloadDomain);
     const contentMap = getS3Map(contentList, this.getters.downloadDomain);
 
-    let map = mergeS3Maps(contentMap, prefixMap, parent);
+    let map = mergeS3Maps(contentMap, prefixMap, parentPrefix);
 
     if (state.contentMap) {
-      map = mergeS3Maps(state.contentMap, map, parent);
+      map = mergeS3Maps(state.contentMap, map, parentPrefix);
     }
 
     state.contentLoading = false;

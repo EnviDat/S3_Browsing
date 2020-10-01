@@ -356,25 +356,25 @@ export function mergeS3Maps(mainMap, newMap, parent, delimiter = '/') {
 
   // console.log({ mergedKeys });
 
-  // runs with no use of temp variables
-  // run 1: 0.06796666666669655
-  // run 2: 0.08196649999998347
-  // run 3: 0.08345833333332091
-  // run 4: 0.07495008333338167
-  // run 5: 0.09335808333342281
-  // const entries = [0.06796666666669655, 0.08196649999998347, 0.08345833333332091, 0.07495008333338167, 0.09335808333342281]
-  // 0.08033993333336108
-
-  // runs with the use of temp variables
-  // run 1: 0.09018333333328125
-  // run 2: 0.08404199999995399
-  // run 3: 0.07427483333325806
-  // run 4: 0.06715858333336655
-  // run 5: 0.07802491666670146  
-  // const entries2 = [0.09018333333328125, 0.08404199999995399, 0.07427483333325806, 0.06715858333336655, 0.07802491666670146]
-  // 0.07873673333331227
-
   tempLastMergedEntry = null;
   tempLastMergedSubEntry = null;
   return mainMap;
+}
+
+export function sanitaizePrefix(prefix, delimiter = '/') {
+  if (prefix.length <= 0) {
+    return ''; // maybe root '/' is needed?
+  }
+
+  let sainPrefix = prefix;
+
+  if (prefix.substr(0, 1) === delimiter) {
+    sainPrefix = prefix.substr(1);
+  }
+
+  if (prefix.substr(prefix.length - 1, 1) !== delimiter) {
+    sainPrefix = `${prefix}${delimiter}`;
+  }
+
+  return sainPrefix;
 }
