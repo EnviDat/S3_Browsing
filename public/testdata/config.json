@@ -1,0 +1,11 @@
+{
+  "showProtocols": true,
+  "defaultMaxKeys": 10000,
+  "contentUrl": "https://envicloud.wsl.ch/envicloud/",
+  "downloadDomain": "https://os.zhdk.cloud.switch.ch/envicloud/",
+  "vendorUrl": "www.envidat.ch",
+  "cyberduckHostName": "os.zhdk.cloud.switch.ch",
+  "cyberduckProfileName": "envicloud",
+  "webDAVDomainHttp": "http://envicloud.wsl.ch/",
+  "webDAVDomainHttps": "https://envicloud.wsl.ch/webdav/"
+}
