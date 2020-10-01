@@ -204,11 +204,9 @@ describe('S3 Factory testing subfunctions with prefixes', () => {
 
   it('- getParentPath() ', async () => {
     const xml = await xml2js.parseStringPromise(s3PrefixChelsaV1, xmlParseOptions);
-    const prefixList = xml?.ListBucketResult?.CommonPrefixes;
+    const prefixList = xml?.ListBucketResult?.CommonPrefixes || [];
     const prefix = xml?.ListBucketResult?.Prefix;
     // let contentList = xml?.ListBucketResult?.Contents;
-
-    expect(prefixList).not.toBe(undefined);
 
     let parentPath = getParentPath('chelsa/', delimiter);
     expect(parentPath).toBe(null);
