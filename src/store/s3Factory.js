@@ -49,6 +49,7 @@ function createDirectoryEntry(keyInfos, baseUrl, delimiter, childs = null) {
     children,
     childs: childrenLength,
     fileExt: '',
+    key: directoryName,
   };
 }
 
@@ -116,6 +117,7 @@ export function extractKeyInfos(key, delimiter = '/') {
     name: fileKey,
     isFile,
     fileExt,
+    key,
   };
 }
 
@@ -377,4 +379,25 @@ export function sanitaizePrefix(prefix, delimiter = '/') {
   }
 
   return sainPrefix;
+}
+
+function getFlatEntries(entries) {
+  let flat = {};
+
+  for (let i = 0; i < entries.length; i++) {
+    const entry = entries[i];
+    flat[entry.key] = entry;
+
+    if (entry.children?.length > 0) {
+      const flatChildren = getFlatEntries(entry.children);
+      flat = { ...flat, ...flatChildren };
+    }
+  }
+
+  return flat;
+}
+
+export function flattenContentMap(contentMap) {
+  const contentValues = Object.values(contentMap);
+  return getFlatEntries(contentValues);
 }

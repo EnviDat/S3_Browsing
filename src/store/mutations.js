@@ -27,6 +27,7 @@ import {
   getPrefixMap,
   mergeS3Maps,
   sanitaizePrefix,
+  flattenContentMap,
 } from './s3Factory';
 
 export default {
@@ -85,8 +86,12 @@ export default {
       map = mergeS3Maps(state.contentMap, map, parentPrefix);
     }
 
-    state.contentLoading = false;
     this._vm.$set(state, 'contentMap', map);
+
+    const flatMap = flattenContentMap(map);
+    this._vm.$set(state, 'contentMapFlat', flatMap);
+
+    state.contentLoading = false;
   },
   [GET_S3_CONTENT_ERROR](state, reason) {
     state.contentLoading = false;
