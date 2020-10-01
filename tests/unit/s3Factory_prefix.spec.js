@@ -8,6 +8,7 @@ import {
   getS3Map,
   mergeS3Maps,
   getParentPath,
+  sanitaizePrefix,
 } from '../../src/store/s3Factory';
 
 import config from '../../public/testdata/config.json';
@@ -27,6 +28,36 @@ function getXmlStringFromFile(fileName) {
 
   return fs.readFileSync(filePath, { encoding: 'utf8' });
 }
+describe('S3 Factory starting directly on a prefix', () => {
+  it('- sanitaizePrefix() ', () => {
+
+    let dirtyPrefix = '';
+
+    let sainPrefix = sanitaizePrefix(dirtyPrefix);
+    expect(sainPrefix).toBe(dirtyPrefix);
+
+    dirtyPrefix = '/slf/';
+
+    sainPrefix = sanitaizePrefix(dirtyPrefix);
+
+    expect(sainPrefix).not.toBe(dirtyPrefix);
+    expect(sainPrefix).toBe('slf/');
+
+    const cleanPrefix = 'chelsa/';
+
+    sainPrefix = sanitaizePrefix(cleanPrefix);
+
+    expect(sainPrefix).toBe(cleanPrefix);
+
+    dirtyPrefix = '/chelsa/chelsa_V1';
+
+    sainPrefix = sanitaizePrefix(dirtyPrefix);
+
+    expect(sainPrefix).not.toBe(dirtyPrefix);
+    expect(sainPrefix).toBe('/chelsa/chelsa_V1/');
+
+  }); 
+});
 
 describe('S3 Factory starting directly on a prefix', () => {
 
