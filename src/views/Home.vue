@@ -103,6 +103,8 @@ export default {
       'cyberduckProfileName',
       'WebDAVDomainHttp',
       'WebDAVDomainHttps',
+      'wgetDomain',
+      'ftpDomain',
       ]),
     ...mapState([
       'configLoading',
@@ -189,6 +191,32 @@ export default {
             moreInfoUrl: 'https://webdav.io/webdav-client/',
             showDescription: false,
             description: 'Access the files in the S3 Bucket via the WebDAV protocol over HTTP(S).',
+          });
+        }
+
+        if (this.wgetDomain) {
+          tools.push({
+            title: 'Download files via Wget command',
+            toolTip: 'Use Wget to access the files.',
+            image: this.imagesPng('./wget.png'),
+            href: `${this.wgetDomain}?prefix=${this.urlPrefix}`,
+            moreInfoUrl: 'https://www.gnu.org/software/wget/',
+            showDescription: false,
+            style: 'width: 38px; border-radius: 10%;',
+            description: 'You can download the file, install wget and then run the command: wget --no-host-directories --force-directories --input-file=envidatS3paths.txt.',
+          });
+        }
+
+        if (this.ftpDomain) {
+          tools.push({
+            title: 'Download files via FTP',
+            toolTip: 'Use FTP to access the files.',
+            image: this.imagesPng('./ftp.png'),
+            href: `${this.ftpDomain}${this.urlPrefix}`,
+            moreInfoUrl: 'https://filezilla-project.org/',
+            showDescription: false,
+            style: 'width: 38px; border-radius: 10%;',
+            description: 'Use any ftp client to download the files.',
           });
         }
 
