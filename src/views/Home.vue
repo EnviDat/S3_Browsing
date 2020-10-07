@@ -198,7 +198,7 @@ export default {
           tools.push({
             title: 'Download files via Wget command',
             toolTip: 'Use Wget to access the files.',
-            image: this.imagesPng('./wget.png'),
+            image: this.imagesPng('./wget-2.png'),
             href: `${this.wgetDomain}?prefix=${this.urlPrefix}`,
             moreInfoUrl: 'https://www.gnu.org/software/wget/',
             showDescription: false,
@@ -211,7 +211,7 @@ export default {
           tools.push({
             title: 'Download files via FTP',
             toolTip: 'Use FTP to access the files.',
-            image: this.imagesPng('./ftp.png'),
+            image: this.imagesPng('./ftp-2.png'),
             href: `${this.ftpDomain}${this.urlPrefix}`,
             moreInfoUrl: 'https://filezilla-project.org/',
             showDescription: false,
