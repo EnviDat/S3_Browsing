@@ -31,7 +31,8 @@
                         @click="!tool.href && tool.clickCallback ? tool.clickCallback() : $emit('click');">
 
                   <!-- <v-img :src="tool.image" height="32" width="32" /> -->
-                  <img :src="tool.image" style="width: 40px; border-radius: 50%;" />
+                  <img :src="tool.image"
+                        :style="tool.style ? tool.style : 'width: 40px; border-radius: 50%;' " />
                 </v-btn>
               </template>
                 

@@ -7,5 +7,7 @@
   "cyberduckHostName": "os.zhdk.cloud.switch.ch",
   "cyberduckProfileName": "envicloud",
   "webDAVDomainHttp": "http://envicloud.wsl.ch/",
-  "webDAVDomainHttps": "https://envicloud.wsl.ch/webdav/"
+  "webDAVDomainHttps": "https://envicloud.wsl.ch/webdav/",
+  "wgetDomain": "https://www.envidat.ch/ui/s3/StreamServlet",
+  "ftpDomain": "ftp://envicloud.wsl.ch/"
 }

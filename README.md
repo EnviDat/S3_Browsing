@@ -11,7 +11,7 @@ file tree structure.
 - Search directories and files
 - The content of folders is "lazy-loaded" to prevent a long initial rendering time
 - prefix query parameter to start from a certain folder
-- It works **only for public S3 Buckets** (by version 1.2.0)
+- It works **only for public S3 Buckets** (by version 1.2.x)
 
 
 Check https://envicloud.wsl.ch/ as a demo.
@@ -57,6 +57,7 @@ Two ways to setup, either only use the VUE_APP_\* variables to
 set the contentUrl to load the S3 Content to browse through, like this:
 
       VUE_APP_CONTENT_URL=http://www.domain.something/possibleSubdomain/
+      VUE_APP_ABOUT_URL=http://www.domain.something/possibleSubdomain/about.md
 
 Or you load all the configs from your backend to still have the flexiblity to
 define configurations on the server side.
@@ -64,6 +65,7 @@ define configurations on the server side.
 #### Minimal .env.production for server side configuration
 
       VUE_APP_CONFIG_URL=http://www.domain.something/possibleSubdomain/config.json
+      VUE_APP_ABOUT_URL=http://www.domain.something/possibleSubdomain/about.md
 
 Which loads the config.json from the given url.
 This file would need to have at least the contentUrl defined, like so:
@@ -93,6 +95,7 @@ Aside from the contentUrl the other options are mostly relevant for the "Other P
 
       VUE_APP_USE_TESTDATA=false
       VUE_APP_CONTENT_URL=https://envicloud.wsl.ch/envicloud/
+      VUE_APP_ABOUT_URL=./about.md
       VUE_APP_DOWNLOAD_DOMAIN=https://os.zhdk.cloud.switch.ch/envicloud/
       VUE_APP_DEFAULT_MAX_KEYS=1000
       VUE_APP_SHOW_PROTOCOLS=true
@@ -185,5 +188,5 @@ For now only the s3Factory methods are being tested.
 
 - Rendering large amounts of folder and files is still pretty slow. For the https://envicloud.wsl.ch we are having folders which have >1k or even >4k files which makes the rendering from the v-tree-view component of vuetify very slow. To handle such large amounts of entries a virtual list is needed, which will probably be implemented in the future.
 - Bulk downloading files, for downloading mutliple files at once you need to use a different protocol / client, make sure to enable the `showProtocols` option.
-- Multiple entires >10k as mentioned the rendering isn't performant, so this issue isn't tackled yet, but if for any folder there are more than 10k entires the needs to be a pagniation of sorts or at least multiple requests to the backend. The default server side maximum seems to be 10k, this might be configurable, so how. For a multiple request scenario the `Marker` parameter can be used make any futher calls. The `Marker` would be the last key which was provided from the last request and from there the new request should provide again the amount given with the max-keys parameter or the server side maxium. (As of version 1.2.0 such a scenario isn't implemented yet.)
+- Multiple entires >10k as mentioned the rendering isn't performant, so this issue isn't tackled yet, but if for any folder there are more than 10k entires the needs to be a pagniation of sorts or at least multiple requests to the backend. The default server side maximum seems to be 10k, this might be configurable, so how. For a multiple request scenario the `Marker` parameter can be used make any futher calls. The `Marker` would be the last key which was provided from the last request and from there the new request should provide again the amount given with the max-keys parameter or the server side maxium. (As of version 1.2.x such a scenario isn't implemented yet.)
 
