@@ -16,6 +16,9 @@ import {
   GET_CONFIG,
   GET_CONFIG_SUCCESS,
   GET_CONFIG_ERROR,
+  GET_ABOUT,
+  GET_ABOUT_SUCCESS,
+  GET_ABOUT_ERROR,
   GET_S3_CONTENT,
   GET_S3_CONTENT_SUCCESS,
   GET_S3_CONTENT_ERROR,
@@ -68,6 +71,26 @@ export default {
             commit(GET_CONFIG_SUCCESS, null);
           } else {
             commit(GET_CONFIG_ERROR, reason);
+          }
+        });
+    }
+  },
+  [GET_ABOUT]({ commit }, aboutURL) {
+    if (aboutURL && aboutURL !== 'NULL') {
+
+      commit(GET_ABOUT);
+
+      const url = `${aboutURL}?nocache=${new Date().getTime()}`;
+
+      axios.get(url)
+        .then((response) => {
+          commit(GET_ABOUT_SUCCESS, response.data);
+        })
+        .catch((reason) => {
+          if (reason?.response?.status === 404) {
+            commit(GET_ABOUT_SUCCESS, null);
+          } else {
+            commit(GET_ABOUT_ERROR, reason);
           }
         });
     }

@@ -13,12 +13,18 @@
               align="center" >
             <v-col class="shrink">
                 <v-avatar color="red"
-                          class="text-h5">
+                          class="text-h5"
+                          ripple
+                          style="cursor: pointer;"
+                          @click="navigateTo('/')"
+                          >
                   {{ appAvatarText }}
                 </v-avatar>
             </v-col>
 
-            <v-col class="hidden-xs-only ml-4" >
+            <v-col class="hidden-xs-only ml-4"
+                    style="cursor: pointer;"
+                    @click="navigateTo('/')" >
               <v-row no-gutters>
                 <v-col class="text-h5">{{ appTitle }}</v-col>      
               </v-row>
@@ -45,7 +51,8 @@
             <v-col class="shrink" >
 
               <IconButton icon="mdi-help-circle"
-                          tooltipText="About the S3 Browsing" />
+                          tooltipText="About the S3 Browsing"
+                          :clickCallback="() => { navigateTo('About'); }" />
 
             </v-col>
             <v-col class="shrink" >
@@ -132,6 +139,13 @@ export default {
     },
   },
   methods: {
+    navigateTo(routeName) {
+      if (this.$route.name === routeName || this.$route.path === routeName) {
+        return;
+      }
+
+      this.$router.push(routeName);
+    },
     catchShowSnack(snackMsgObj) {
       this.snackbar = true;
       this.snackText = snackMsgObj.text;

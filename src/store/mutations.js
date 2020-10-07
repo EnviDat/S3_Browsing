@@ -14,6 +14,9 @@ import {
   GET_CONFIG,
   GET_CONFIG_SUCCESS,
   GET_CONFIG_ERROR,
+  GET_ABOUT,
+  GET_ABOUT_SUCCESS,
+  GET_ABOUT_ERROR,
   GET_S3_CONTENT,
   GET_S3_CONTENT_SUCCESS,
   GET_S3_CONTENT_ERROR,
@@ -39,8 +42,19 @@ export default {
   [GET_CONFIG_ERROR](state, reason) {
     state.configLoading = false;
     state.configError = reason;
-    // const notificationObj = getSpecificApiError('Config could not ge loaded!', reason);
-    // this.commit(ADD_USER_NOTIFICATION, notificationObj);
+  },
+  [GET_ABOUT](state) {
+    state.aboutLoading = true;
+    state.about = null;
+    state.aboutError = null;
+  },
+  [GET_ABOUT_SUCCESS](state, payload) {
+    state.aboutLoading = false;
+    state.about = payload;
+  },
+  [GET_ABOUT_ERROR](state, reason) {
+    state.aboutLoading = false;
+    state.aboutError = reason;
   },
   [GET_S3_CONTENT](state) {
     state.content = null;
