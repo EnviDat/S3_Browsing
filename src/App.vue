@@ -11,15 +11,10 @@
 
           <v-row no-gutters
               align="center" >
-            <v-col class="shrink">
-                <v-avatar color="red"
-                          class="text-h5"
-                          ripple
-                          style="cursor: pointer;"
-                          @click="navigateTo('/')"
-                          >
-                  {{ appAvatarText }}
-                </v-avatar>
+            <v-col class="shrink"
+                    style="cursor: pointer;"
+                    @click="navigateTo('/')" >
+                <v-img :src="this.imagesPng('./S3-Logo.png')" />
             </v-col>
 
             <v-col class="hidden-xs-only ml-4"
@@ -51,7 +46,7 @@
             <v-col class="shrink" >
 
               <IconButton icon="mdi-help-circle"
-                          tooltipText="About the S3 Browsing"
+                          tooltipText="About the S3 Browser"
                           :clickCallback="() => { navigateTo('About'); }" />
 
             </v-col>
@@ -122,6 +117,7 @@ export default {
     ...mapState([
       'configLoading',
       'contentLoading',
+      'imagesPng',
     ]),
     loading() {
       return this.configLoading || this.contentLoading;
