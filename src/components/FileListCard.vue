@@ -1,5 +1,5 @@
 <template>
-  <v-card >
+  <v-card :loading="loading" >
 
     <v-card-title primary-title>
       <v-row no-gutters>
@@ -16,7 +16,7 @@
       </v-row>      
     </v-card-title>
 
-    <v-card-text >
+    <v-card-text v-show="selectedFiles.length > 0">
       <v-row v-for="(file, index) in selectedFilesPreview"
               :key="`${file.key}_${index}`"
               no-gutters >
