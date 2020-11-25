@@ -6,8 +6,8 @@ import mutations from './mutations';
 
 Vue.use(Vuex);
 
-/* eslint-disable no-unused-vars */
 const fallbackShowProtocols = !!(process.env.VUE_APP_SHOW_PROTOCOLS && process.env.VUE_APP_SHOW_PROTOCOLS === 'true');
+const fallbackFileSelectionEnabled = !!(process.env.VUE_APP_FILE_SELECTION_ENABLED && process.env.VUE_APP_FILE_SELECTION_ENABLED === 'true');
 
 // load all the png for the protocol images / icons
 // an image can be access like via mappedState of the imagesPng
@@ -31,6 +31,7 @@ export default new Vuex.Store({
     fallbackDownloadDomain: process.env.VUE_APP_DOWNLOAD_DOMAIN,
     fallbackDefaultMaxKeys: process.env.VUE_APP_DEFAULT_MAX_KEYS,
     fallbackShowProtocols,
+    fallbackFileSelectionEnabled,
     fallbackVendorUrl: process.env.VUE_APP_VENDOR_URL,
     fallbackCyberduckHost: process.env.VUE_APP_CYBERDUCK_HOST_NAME,
     fallbackCyberduckProfile: process.env.VUE_APP_CYBERDUCK_PROFILE_NAME,
@@ -67,6 +68,15 @@ export default new Vuex.Store({
       }
 
       return state.fallbackShowProtocols;
+    },
+    fileSelectionEnabled: (state) => {
+      const fileSelectionEnabled = state.config?.fileSelectionEnabled;
+
+      if (fileSelectionEnabled !== undefined && fileSelectionEnabled !== null) {
+        return fileSelectionEnabled;
+      }
+
+      return state.fallbackFileSelectionEnabled;
     },
     vendorUrl: (state) => state.config?.vendorUrl || state.fallbackVendorUrl,
     cyberduckHostName: (state) => state.config?.cyberduckHostName || state.fallbackCyberduckHost,

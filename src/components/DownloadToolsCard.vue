@@ -48,6 +48,7 @@
           <v-col class="shrink">
             <IconButton icon="mdi-information-outline"
                         tooltipText="Show more infos"
+                        :color="tool.showDescription ? 'secondary' : ''"
                         @click="clickShowDesc(tool)" />
           </v-col>
         </v-row>

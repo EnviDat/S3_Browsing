@@ -43,14 +43,29 @@
       <v-col v-if="!configLoading && !contentError" 
               cols="12"
               :sm="showProtocols ? 9 : 12" >
-        <TreeCard @showSnack="catchShowSnack"
+        <TreeCard :fileSelectionEnabled="fileSelectionEnabled"
+                  @showSnack="catchShowSnack"
+                  @selectedFiles="catchSelectedFiles"
                   :prefix="urlPrefix" />
       </v-col>
 
-      <v-col v-if="!loading && showProtocols"
-              cols="12"
-              sm="3" >
-        <DownloadToolsCard :tools="getDownloadTools()" />
+      <v-col cols="12"
+              sm="3">
+        <v-row>
+          <v-col v-if="!loading && showProtocols"
+                  cols="12"
+                  >
+            <DownloadToolsCard :tools="getDownloadTools()" />
+          </v-col>
+
+          <v-col v-if="fileSelectionEnabled" 
+                  cols="12">
+            <FileListCard :selectedFiles="selectedFiles"
+                          :loading="loading"
+                          :wgetDownloadInfo="wgetDownloadInfo"
+                          :fileDownloadHref="hrefWgetFile()" />
+          </v-col>
+        </v-row>
       </v-col>
 
     </v-row>
@@ -72,6 +87,7 @@ import { sanitaizePrefix } from '@/store/s3Factory';
 
 import TreeCard from '@/components/TreeCard';
 import DownloadToolsCard from '@/components/DownloadToolsCard';
+import FileListCard from '@/components/FileListCard';
 
 // import BucketCard from '@/components/BucketCard';
 import PlaceholderCard from '@/components/PlaceholderCard';
@@ -97,7 +113,9 @@ export default {
       'contentBucketName',
       'contentMap',
       'contentUrl',
+      'downloadDomain',
       'showProtocols',
+      'fileSelectionEnabled',
       'vendorUrl',
       'cyberduckHostName',
       'cyberduckProfileName',
@@ -194,17 +212,12 @@ export default {
           });
         }
 
+        this.wgetDownloadInfo.image = this.imagesPng('./wget-2.png');
+        this.wgetDownloadInfo.href = `${this.wgetDomain}?prefix=${this.urlPrefix}`;
+        this.wgetDownloadInfo.filesDownloadHref = this.hrefWgetFile(this.selectedFiles);
+
         if (this.wgetDomain) {
-          tools.push({
-            title: 'Download files via Wget command',
-            toolTip: 'Use Wget to access the files.',
-            image: this.imagesPng('./wget-2.png'),
-            href: `${this.wgetDomain}?prefix=${this.urlPrefix}`,
-            moreInfoUrl: 'https://www.gnu.org/software/wget/',
-            showDescription: false,
-            style: 'width: 38px; border-radius: 10%;',
-            description: 'You can download the file, install wget and then run the command: wget --no-host-directories --force-directories --input-file=envidatS3paths.txt.',
-          });
+          tools.push(this.wgetDownloadInfo);
         }
 
         if (this.ftpDomain) {
@@ -242,6 +255,9 @@ export default {
     },
     catchShowSnack(snackMsgObj) {
       this.$emit('showSnack', snackMsgObj);
+    },
+    catchSelectedFiles(selectedFiles) {
+      this.selectedFiles = selectedFiles;
     },
     extractUrlParameters() {
       let params = this.$route.query;
@@ -283,6 +299,29 @@ export default {
     // return `data:text/plain;charset=UTF-8;page=21,${encodedData};`;
       return `data:application/octet-stream;charset=UTF-8;base64,${encodedData}`;
     },
+    getWgetListfile(selectedFiles) {
+      let fileString = '';
+
+      for (let i = 0; i < selectedFiles.length; i++) {
+        const file = selectedFiles[i];
+        
+        fileString += `${file.fileUrl} \n`;
+      }
+
+      return fileString;
+    },
+    hrefWgetFile() {
+      if (this.selectedFiles.length <= 0) {
+        return '';
+      }
+
+      const data = this.getWgetListfile(this.selectedFiles);
+      // const encodedData = encodeURI(data);
+      const encodedData = btoa(unescape(encodeURIComponent(data)));
+
+    // return `data:text/plain;charset=UTF-8;page=21,${encodedData};`;
+      return `data:application/octet-stream;charset=UTF-8;base64,${encodedData}`;
+    },
     saveDirectoyViaMemoryFile() {
       // const data = { name: item.name }; // need to get the data via directory?
       // const fileName = item.name.split('/').reverse()[1];
@@ -315,7 +354,7 @@ export default {
   components: {
     TreeCard,
     DownloadToolsCard,
-    // BucketCard,
+    FileListCard,
     PlaceholderCard,
     NotificationCard,
   },
@@ -325,6 +364,16 @@ export default {
     bucketInfoExpanded: false,
     urlPrefix: null,
     downloadTools: null,
+    selectedFiles: [],
+    wgetDownloadInfo: {
+      title: 'Download files via Wget command',
+      toolTip: 'Download files paths to use via Wget command',
+      moreInfoUrl: 'https://www.gnu.org/software/wget/',
+      downloadFileName: 'envidatS3paths.txt',
+      showDescription: false,
+      style: 'width: 38px; border-radius: 10%;',
+      description: 'You can download the file, install wget and then run the command: wget --no-host-directories --force-directories --input-file=envidatS3paths.txt.',
+    },
   }),
 };
 </script>
