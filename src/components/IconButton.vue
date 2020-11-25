@@ -6,6 +6,7 @@
         <v-btn v-on="on"
                 v-bind="attrs"
                 icon
+                :color="color"
                 :dark="dark"
                 :href="url ? url : ''"
                 target="_blank"
@@ -33,6 +34,10 @@ export default {
     icon: String,
     url: String,
     clickCallback: Function,
+    color: {
+      type: String,
+      default: '',
+    },
   },
   data: () => ({
   }),

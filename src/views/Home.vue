@@ -43,14 +43,33 @@
       <v-col v-if="!configLoading && !contentError" 
               cols="12"
               :sm="showProtocols ? 9 : 12" >
-        <TreeCard @showSnack="catchShowSnack"
-                  :prefix="urlPrefix" />
+        <TreeCard :fileSelectionEnabled="fileSelectionEnabled"
+                  :prefix="urlPrefix" 
+                  @showSnack="catchShowSnack"
+                  @selectedFiles="catchSelectedFiles"
+                  @activeItems="catchActiveItems"/>
       </v-col>
 
-      <v-col v-if="!loading && showProtocols"
-              cols="12"
-              sm="3" >
-        <DownloadToolsCard :tools="getDownloadTools()" />
+      <v-col cols="12"
+              sm="3">
+        <v-row no-gutters>
+          <v-col v-if="showProtocols"
+                  cols="12"
+                  class="pb-4" >
+            <DownloadToolsCard :tools="downloadTools"
+                                :loading="loading"
+                                :highlightTitle="!!selectedFolder"
+                                :selectedFolder="selectedFolder ? selectedFolder : urlPrefix" />
+          </v-col>
+
+          <v-col v-if="fileSelectionEnabled" 
+                  cols="12">
+            <FileListCard :selectedFiles="selectedFiles"
+                          :loading="loading"
+                          :wgetDownloadInfo="wgetDownloadInfo"
+                          :fileDownloadHref="hrefWgetFile()" />
+          </v-col>
+        </v-row>
       </v-col>
 
     </v-row>
@@ -72,6 +91,7 @@ import { sanitaizePrefix } from '@/store/s3Factory';
 
 import TreeCard from '@/components/TreeCard';
 import DownloadToolsCard from '@/components/DownloadToolsCard';
+import FileListCard from '@/components/FileListCard';
 
 // import BucketCard from '@/components/BucketCard';
 import PlaceholderCard from '@/components/PlaceholderCard';
@@ -90,6 +110,7 @@ export default {
       this.$store.dispatch(GET_CONFIG, configURL);
     } else {
       this.loadContent();
+      this.setDownloadTools();
     }
   },
   computed: {
@@ -97,7 +118,9 @@ export default {
       'contentBucketName',
       'contentMap',
       'contentUrl',
+      'downloadDomain',
       'showProtocols',
+      'fileSelectionEnabled',
       'vendorUrl',
       'cyberduckHostName',
       'cyberduckProfileName',
@@ -138,11 +161,19 @@ export default {
 
       return { }; // return empty object so the defaults will be shown
     },
+    selectedFolder() {
+      if (this.activeFolders?.length <= 0) {
+        return null;
+      }
+
+      return this.activeFolders[0].directory;
+    },
   },
   watch: {
     configLoading() {
       if (!this.configLoading && this.contentUrl) {
         this.loadContent();
+        this.setDownloadTools();
       }
     },
   },
@@ -150,89 +181,80 @@ export default {
     loadContent() {
       this.$store.dispatch(GET_S3_CONTENT, { url: this.contentUrl, prefix: this.urlPrefix });
     },
-    getDownloadTools() {
+    setDownloadTools() {
       // not done via computedProperty because the DownloadToolCard can change the showDescription
       // via computed that isn't working
-      
-      if (!this.downloadTools) {
-        const tools = [];
+      const prefix = this.selectedFolder ? this.selectedFolder : this.urlPrefix;
+      const tools = [];
 
-        if (this.cyberduckProfileName && this.cyberduckHostName && this.vendorUrl) {
-          tools.push({
-            title: 'Download Cyberduck bookmark',
-            toolTip: 'Download a Cyberduck bookmark to access the files via the Cyberduck client.',
-            image: this.imagesPng('./cyberduck-icon-64.png'),
-            href: this.hrefCyberduckFile(this.urlPrefix),
-            downloadFileName: `${this.cyberduckProfileName}.cyberduckprofile`,
-            moreInfoUrl: 'https://cyberduck.io/',
-            showDescription: false,
-            description: 'Access the files in the S3 Bucket via Cyberduck client.',
-          });
-        }
-
-        if (this.WebDAVDomainHttp) {
-          tools.push({
-            title: 'Browse via Http WebDAV',
-            toolTip: 'Open a new tab to access the files via WebDAV.',
-            image: this.imagesPng('./dav-100-2.png'),
-            href: `${this.WebDAVDomainHttp}${this.urlPrefix}`,
-            moreInfoUrl: 'https://webdav.io/webdav-client/',
-            showDescription: false,
-            description: 'Access the files in the S3 Bucket via the WebDAV protocol over HTTP.',
-          });
-        }
-
-        if (this.WebDAVDomainHttps) {
-          tools.push({
-            title: 'Browse via Https WebDAV',
-            toolTip: 'Use WebDAV to access the files.',
-            image: this.imagesPng('./dav-100-2.png'),
-            href: `${this.WebDAVDomainHttps}${this.urlPrefix}`,
-            moreInfoUrl: 'https://webdav.io/webdav-client/',
-            showDescription: false,
-            description: 'Access the files in the S3 Bucket via the WebDAV protocol over HTTP(S).',
-          });
-        }
-
-        if (this.wgetDomain) {
-          tools.push({
-            title: 'Download files via Wget command',
-            toolTip: 'Use Wget to access the files.',
-            image: this.imagesPng('./wget-2.png'),
-            href: `${this.wgetDomain}?prefix=${this.urlPrefix}`,
-            moreInfoUrl: 'https://www.gnu.org/software/wget/',
-            showDescription: false,
-            style: 'width: 38px; border-radius: 10%;',
-            description: 'You can download the file, install wget and then run the command: wget --no-host-directories --force-directories --input-file=envidatS3paths.txt.',
-          });
-        }
-
-        if (this.ftpDomain) {
-          tools.push({
-            title: 'Download files via FTP',
-            toolTip: 'Use FTP to access the files.',
-            image: this.imagesPng('./ftp-2.png'),
-            href: `${this.ftpDomain}${this.urlPrefix}`,
-            moreInfoUrl: 'https://filezilla-project.org/',
-            showDescription: false,
-            style: 'width: 38px; border-radius: 10%;',
-            description: 'Use any ftp client to download the files.',
-          });
-        }
-
-          // {
-          //   title: 'FTP',
-          //   toolTip: 'Use a FTP-Client to access the files.',
-          //   image: this.imagesPng('./icons8-ftp-100.png'),
-          //   href: null,
-          //   clickCallback: () => { console.log('clicked on Cyberduck'); },
-          //   moreInfoUrl: 'https://filezilla-project.org/',
-          // },
-
-        this.downloadTools = tools;
+      if (this.cyberduckProfileName && this.cyberduckHostName && this.vendorUrl) {
+        tools.push({
+          title: 'Download Cyberduck bookmark',
+          toolTip: 'Download a Cyberduck bookmark to access the files via the Cyberduck client.',
+          image: this.imagesPng('./cyberduck-icon-64.png'),
+          href: this.hrefCyberduckFile(prefix),
+          downloadFileName: `${this.cyberduckProfileName}.cyberduckprofile`,
+          moreInfoUrl: 'https://cyberduck.io/',
+          showDescription: false,
+          description: 'Access the files in the S3 Bucket via Cyberduck client.',
+        });
       }
 
-      return this.downloadTools;
+      if (this.WebDAVDomainHttp) {
+        tools.push({
+          title: 'Browse via Http WebDAV',
+          toolTip: 'Open a new tab to access the files via WebDAV.',
+          image: this.imagesPng('./dav-100-2.png'),
+          href: `${this.WebDAVDomainHttp}${prefix}`,
+          moreInfoUrl: 'https://webdav.io/webdav-client/',
+          showDescription: false,
+          description: 'Access the files in the S3 Bucket via the WebDAV protocol over HTTP.',
+        });
+      }
+
+      if (this.WebDAVDomainHttps) {
+        tools.push({
+          title: 'Browse via Https WebDAV',
+          toolTip: 'Use WebDAV to access the files.',
+          image: this.imagesPng('./dav-100-2.png'),
+          href: `${this.WebDAVDomainHttps}${prefix}`,
+          moreInfoUrl: 'https://webdav.io/webdav-client/',
+          showDescription: false,
+          description: 'Access the files in the S3 Bucket via the WebDAV protocol over HTTP(S).',
+        });
+      }
+
+      this.wgetDownloadInfo.image = this.imagesPng('./wget-2.png');
+      this.wgetDownloadInfo.href = `${this.wgetDomain}?prefix=${prefix}`;
+      this.wgetDownloadInfo.filesDownloadHref = this.hrefWgetFile(this.selectedFiles);
+
+      if (this.wgetDomain) {
+        tools.push(this.wgetDownloadInfo);
+      }
+
+      if (this.ftpDomain) {
+        tools.push({
+          title: 'Download files via FTP',
+          toolTip: 'Use FTP to access the files.',
+          image: this.imagesPng('./ftp-2.png'),
+          href: `${this.ftpDomain}${prefix}`,
+          moreInfoUrl: 'https://filezilla-project.org/',
+          showDescription: false,
+          style: 'width: 38px; border-radius: 10%;',
+          description: 'Use any ftp client to download the files.',
+        });
+      }
+
+        // {
+        //   title: 'FTP',
+        //   toolTip: 'Use a FTP-Client to access the files.',
+        //   image: this.imagesPng('./icons8-ftp-100.png'),
+        //   href: null,
+        //   clickCallback: () => { console.log('clicked on Cyberduck'); },
+        //   moreInfoUrl: 'https://filezilla-project.org/',
+        // },
+
+      this.downloadTools = tools;
     },
     clickShowDesc(tool) {
       tool.showDescription = !tool.showDescription;
@@ -242,6 +264,13 @@ export default {
     },
     catchShowSnack(snackMsgObj) {
       this.$emit('showSnack', snackMsgObj);
+    },
+    catchSelectedFiles(selectedFiles) {
+      this.selectedFiles = selectedFiles;
+    },
+    catchActiveItems(activeItems) {
+      this.activeFolders = activeItems;
+      this.setDownloadTools();
     },
     extractUrlParameters() {
       let params = this.$route.query;
@@ -283,6 +312,29 @@ export default {
     // return `data:text/plain;charset=UTF-8;page=21,${encodedData};`;
       return `data:application/octet-stream;charset=UTF-8;base64,${encodedData}`;
     },
+    getWgetListfile(selectedFiles) {
+      let fileString = '';
+
+      for (let i = 0; i < selectedFiles.length; i++) {
+        const file = selectedFiles[i];
+        
+        fileString += `${file.fileUrl} \n`;
+      }
+
+      return fileString;
+    },
+    hrefWgetFile() {
+      if (this.selectedFiles.length <= 0) {
+        return '';
+      }
+
+      const data = this.getWgetListfile(this.selectedFiles);
+      // const encodedData = encodeURI(data);
+      const encodedData = btoa(unescape(encodeURIComponent(data)));
+
+    // return `data:text/plain;charset=UTF-8;page=21,${encodedData};`;
+      return `data:application/octet-stream;charset=UTF-8;base64,${encodedData}`;
+    },
     saveDirectoyViaMemoryFile() {
       // const data = { name: item.name }; // need to get the data via directory?
       // const fileName = item.name.split('/').reverse()[1];
@@ -315,7 +367,7 @@ export default {
   components: {
     TreeCard,
     DownloadToolsCard,
-    // BucketCard,
+    FileListCard,
     PlaceholderCard,
     NotificationCard,
   },
@@ -325,6 +377,17 @@ export default {
     bucketInfoExpanded: false,
     urlPrefix: null,
     downloadTools: null,
+    selectedFiles: [],
+    activeFolders: [],
+    wgetDownloadInfo: {
+      title: 'Download files via Wget command',
+      toolTip: 'Download files paths to use via Wget command',
+      moreInfoUrl: 'https://www.gnu.org/software/wget/',
+      downloadFileName: 'envidatS3paths.txt',
+      showDescription: false,
+      style: 'width: 38px; border-radius: 10%;',
+      description: 'Download the file (envidatS3paths.txt), install wget and then run the command: wget --no-host-directories --force-directories --input-file=envidatS3paths.txt.',
+    },
   }),
 };
 </script>

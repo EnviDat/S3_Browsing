@@ -1,13 +1,20 @@
 <template>
-  <v-treeview v-model="tree"
+  <v-treeview v-model="selectedItems"
               :items="items"
               :load-children="fetchSubkeys"
               :open.sync="open"
               :search="search"
               item-key="name"
               dense
-              expand-icon="mdi-chevron-down"
-              open-on-click >
+              activatable
+              :active.sync="activeItems"
+              color="primary"
+              return-object
+              :selectable="fileSelectionEnabled"
+              selected-color="primary"
+              selection-type="leaf"
+              hoverable
+              expand-icon="mdi-chevron-down" >
 
     <template v-slot:prepend="{ item, open }" >
 
@@ -20,7 +27,7 @@
       </v-icon>
     </template>
 
-    <template v-slot:label="{ item }">
+    <template v-slot:label="{ item, active }">
 
       <v-row no-gutters
               align="center" >
@@ -68,10 +75,18 @@
         <v-col v-if="!item.isFile && item.childs !== '?'"
                 cols="1"
                 class="shrink pt-1"  >
-          <v-badge color="primary"
+          <v-badge color="grey"
                     class="white--text" 
                     :content="item.childs" />
         </v-col>        
+
+        <v-col v-if="!item.isFile && active"
+                class="shrink px-1" >
+
+          <IconButton icon="mdi-open-in-new"
+                      tooltipText="Open browser starting from this folder."
+                      :url="`./#/?prefix=${item.directory}`" />
+        </v-col>
 
       </v-row>
     </template>
@@ -99,6 +114,7 @@ export default {
     allCollapsed: Boolean,
     prefix: String,
     items: Array,
+    fileSelectionEnabled: Boolean,
   },
   computed: {
     ...mapGetters([
@@ -153,11 +169,35 @@ export default {
         this.$emit('collapsed');
       }
     },
+    activeItems() {
+      const activeItems = [];
+
+      for (let i = 0; i < this.activeItems.length; i++) {
+        const item = this.activeItems[i];
+        if (!item.isFile) {
+          activeItems.push(item);
+        }
+      }
+
+      this.$emit('activeItems', activeItems);
+    },
+    selectedItems() {
+      const selectedFiles = [];
+
+      for (let i = 0; i < this.selectedItems.length; i++) {
+        const item = this.selectedItems[i];
+        if (item.isFile) {
+          selectedFiles.push(item);
+        }
+      }
+
+      this.$emit('selectedFiles', selectedFiles);
+    },
   },
   data: () => ({
-    tree: [],
+    selectedItems: [],
     copySnackText: 'Url copied to clipboard',
-    active: [],
+    activeItems: [],
     open: [],
     fileExtentions: {
       csv: 'mdi-text-box',

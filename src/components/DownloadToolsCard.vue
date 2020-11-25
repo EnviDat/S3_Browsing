@@ -1,11 +1,13 @@
 <template>
-  <v-card >
+  <v-card :loading="loading" >
 
-    <v-card-title primary-title>
-      {{ title }}
+    <v-card-title primary-title
+                  :style="`background-color:${highlightTitle ? $vuetify.theme.themes.light.secondary : ''};
+                  transition: 0.5s all; line-height: 1.6rem;`" >
+      {{ selectedFolder ? `Open "${selectedFolder}" ${subTitle}` : title }}
     </v-card-title>
 
-    <v-card-text >
+    <v-card-text class="pt-2">
 
       <v-row v-for="(tool, index) in tools"
               :key="`${tool.title}_${index}`"
@@ -48,6 +50,7 @@
           <v-col class="shrink">
             <IconButton icon="mdi-information-outline"
                         tooltipText="Show more infos"
+                        :color="tool.showDescription ? 'secondary' : ''"
                         @click="clickShowDesc(tool)" />
           </v-col>
         </v-row>
@@ -101,10 +104,13 @@ export default {
         moreInfoUrl: 'https://cyberduck.io/',
       }],
     },
+    selectedFolder: String,
+    highlightTitle: Boolean,
     loading: Boolean,
   },
   data: () => ({
-    title: 'Open With Other Protocols',
+    title: 'Open main folder with other protocols',
+    subTitle: 'folder with other protocols',
   }),
   methods: {
     clickShowDesc(tool) {
