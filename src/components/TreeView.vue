@@ -1,13 +1,18 @@
 <template>
-  <v-treeview v-model="tree"
+  <v-treeview v-model="selectedItems"
               :items="items"
               :load-children="fetchSubkeys"
               :open.sync="open"
               :search="search"
               item-key="name"
               dense
-              expand-icon="mdi-chevron-down"
-              open-on-click >
+              activatable
+              return-object
+              :selectable="fileSelectionEnabled"
+              selected-color="primary"
+              selection-type="leaf"
+              hoverable
+              expand-icon="mdi-chevron-down" >
 
     <template v-slot:prepend="{ item, open }" >
 
@@ -20,7 +25,7 @@
       </v-icon>
     </template>
 
-    <template v-slot:label="{ item }">
+    <template v-slot:label="{ item, active }">
 
       <v-row no-gutters
               align="center" >
@@ -73,6 +78,14 @@
                     :content="item.childs" />
         </v-col>        
 
+        <v-col v-if="!item.isFile && active"
+                class="shrink px-1" >
+
+          <IconButton icon="mdi-open-in-new"
+                      :tooltipText="`Open browser starting from this folder. Url: ./#/?prefix=${item.directory}`"
+                      :url="`./#/?prefix=${item.directory}`" />
+        </v-col>
+
       </v-row>
     </template>
 
@@ -99,6 +112,7 @@ export default {
     allCollapsed: Boolean,
     prefix: String,
     items: Array,
+    fileSelectionEnabled: Boolean,
   },
   computed: {
     ...mapGetters([
@@ -153,9 +167,21 @@ export default {
         this.$emit('collapsed');
       }
     },
+    selectedItems() {
+      const selectedFiles = [];
+
+      for (let i = 0; i < this.selectedItems.length; i++) {
+        const item = this.selectedItems[i];
+        if (item.isFile) {
+          selectedFiles.push(item);
+        }
+      }
+
+      this.$emit('selectedFiles', selectedFiles);
+    },
   },
   data: () => ({
-    tree: [],
+    selectedItems: [],
     copySnackText: 'Url copied to clipboard',
     active: [],
     open: [],

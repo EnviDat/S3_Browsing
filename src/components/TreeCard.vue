@@ -47,8 +47,10 @@
       <TreeView :items="contentMapValues"
                 :search="search"
                 :allCollapsed="allCollapsed"
+                :fileSelectionEnabled="fileSelectionEnabled"
                 @showSnack="catchShowSnack"
-                @collapsed="catchCollapsed" />
+                @collapsed="catchCollapsed"
+                @selectedFiles="catchSelectedFiles" />
     </v-card-text>
 
     <v-sheet v-if="!contentMapValues"
@@ -85,6 +87,7 @@ export default {
       default: '75vh',
     },
     prefix: String,
+    fileSelectionEnabled: Boolean,
   },
   data: () => ({
     caseSensitive: false,
@@ -112,6 +115,9 @@ export default {
     },
     catchCollapsed() {
       this.allCollapsed = false;
+    },
+    catchSelectedFiles(selectedFiles) {
+      this.$emit('selectedFiles', selectedFiles);
     },
   },
   components: {
