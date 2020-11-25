@@ -75,7 +75,7 @@
         <v-col v-if="!item.isFile && item.childs !== '?'"
                 cols="1"
                 class="shrink pt-1"  >
-          <v-badge color="primary"
+          <v-badge color="grey"
                     class="white--text" 
                     :content="item.childs" />
         </v-col>        
