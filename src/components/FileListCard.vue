@@ -77,11 +77,6 @@
               class="pt-3"
               no-gutters >
 
-        <v-col cols="12"
-                class="pb-2">
-          {{ fileSelectionDescription }}
-        </v-col>
-
         <v-col >
           {{ wgetDownloadInfo.description }}
         </v-col>
@@ -104,6 +99,10 @@
 
     </v-card-text>
 
+    <v-card-text :style="`background-color: ${$vuetify.theme.themes.light.highlight};`" >
+      {{ fileSelectionDescription }}
+    </v-card-text>
+
   </v-card>
 
 </template>
@@ -124,8 +123,8 @@ export default {
     wgetDownloadInfo: Object,
   },
   data: () => ({
-    title: 'Selected files for Wget download',
-    fileSelectionDescription: 'If a folder is selected make sure it\'s contains files. Subfolders have to be opened first before a selection is possible. For folder selection use the "Open With Other Protocols" functionalities.',
+    title: 'File selection for Wget download',
+    fileSelectionDescription: 'Select files for wget download, if a folder contains no files nothing will be listed here. Subfolders have to be opened first before a selection is possible. For folder selection use the "Open With Other Protocols" functionalities.',
     showDescription: false,
     maxSelectedFilesPreview: 10,
   }),

@@ -2,7 +2,7 @@
   <v-card :loading="loading" >
 
     <v-card-title primary-title
-                  :style="`background-color:${highlightTitle ? $vuetify.theme.themes.light.highlight : ''};
+                  :style="`background-color:${highlightTitle ? $vuetify.theme.themes.light.secondary : ''};
                   transition: 0.5s all; line-height: 1.6rem;`" >
       {{ selectedFolder ? `Open "${selectedFolder}" ${subTitle}` : title }}
     </v-card-title>

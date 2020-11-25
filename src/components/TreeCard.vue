@@ -1,6 +1,6 @@
 <template>
   <v-card >
-    <v-sheet class="pa-4" color="primary">
+    <v-sheet class="pa-4" color="secondary">
 
       <v-row no-gutters>
         <v-col>

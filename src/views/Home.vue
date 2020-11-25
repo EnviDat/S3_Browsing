@@ -386,7 +386,7 @@ export default {
       downloadFileName: 'envidatS3paths.txt',
       showDescription: false,
       style: 'width: 38px; border-radius: 10%;',
-      description: 'You can download the file, install wget and then run the command: wget --no-host-directories --force-directories --input-file=envidatS3paths.txt.',
+      description: 'Download the file (envidatS3paths.txt), install wget and then run the command: wget --no-host-directories --force-directories --input-file=envidatS3paths.txt.',
     },
   }),
 };
