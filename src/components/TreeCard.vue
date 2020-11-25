@@ -50,7 +50,8 @@
                 :fileSelectionEnabled="fileSelectionEnabled"
                 @showSnack="catchShowSnack"
                 @collapsed="catchCollapsed"
-                @selectedFiles="catchSelectedFiles" />
+                @selectedFiles="catchSelectedFiles"
+                @activeItems="catchActiveItems" />
     </v-card-text>
 
     <v-sheet v-if="!contentMapValues"
@@ -118,6 +119,9 @@ export default {
     },
     catchSelectedFiles(selectedFiles) {
       this.$emit('selectedFiles', selectedFiles);
+    },
+    catchActiveItems(activeItems) {
+      this.$emit('activeItems', activeItems);
     },
   },
   components: {

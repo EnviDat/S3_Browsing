@@ -7,6 +7,8 @@
               item-key="name"
               dense
               activatable
+              :active.sync="activeItems"
+              color="primary"
               return-object
               :selectable="fileSelectionEnabled"
               selected-color="primary"
@@ -82,7 +84,7 @@
                 class="shrink px-1" >
 
           <IconButton icon="mdi-open-in-new"
-                      :tooltipText="`Open browser starting from this folder. Url: ./#/?prefix=${item.directory}`"
+                      tooltipText="Open browser starting from this folder."
                       :url="`./#/?prefix=${item.directory}`" />
         </v-col>
 
@@ -167,6 +169,18 @@ export default {
         this.$emit('collapsed');
       }
     },
+    activeItems() {
+      const activeItems = [];
+
+      for (let i = 0; i < this.activeItems.length; i++) {
+        const item = this.activeItems[i];
+        if (!item.isFile) {
+          activeItems.push(item);
+        }
+      }
+
+      this.$emit('activeItems', activeItems);
+    },
     selectedItems() {
       const selectedFiles = [];
 
@@ -183,7 +197,7 @@ export default {
   data: () => ({
     selectedItems: [],
     copySnackText: 'Url copied to clipboard',
-    active: [],
+    activeItems: [],
     open: [],
     fileExtentions: {
       csv: 'mdi-text-box',
