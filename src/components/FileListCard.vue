@@ -55,13 +55,13 @@
               </v-btn>          
             </template>
               
-            <span>{{ wgetDownloadInfo.title }}</span>
+            <span>{{ wgetDownloadInfo.toolTip }}</span>
 
           </v-tooltip>
         </v-col>
 
         <v-col class="px-2">
-          {{ wgetDownloadInfo.title }}
+          {{ wegButtonInfoText }}
         </v-col>
 
         <v-col class="shrink">
@@ -123,8 +123,9 @@ export default {
     wgetDownloadInfo: Object,
   },
   data: () => ({
-    title: 'File selection for Wget download',
-    fileSelectionDescription: 'Select files for wget download, if a folder contains no files nothing will be listed here. Subfolders have to be opened first before a selection is possible. For folder selection use the "Open With Other Protocols" functionalities.',
+    title: 'File Selection Download',
+    fileSelectionDescription: 'Select multiple files via the checkboxes, if a selected directory contains no files nothing will be listed here. Subdirectories have to be opened first before a selection is possible. For directories with many files use the other download options.',
+    wegButtonInfoText: 'Download only the selected files via Wget',
     showDescription: false,
     maxSelectedFilesPreview: 10,
   }),

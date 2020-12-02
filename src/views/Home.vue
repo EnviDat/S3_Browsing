@@ -187,6 +187,10 @@ export default {
       const prefix = this.selectedFolder ? this.selectedFolder : this.urlPrefix;
       const tools = [];
 
+      if (this.wgetDomain) {
+        tools.push(this.wgetDownloadInfo);
+      }
+
       if (this.cyberduckProfileName && this.cyberduckHostName && this.vendorUrl) {
         tools.push({
           title: 'Download Cyberduck bookmark',
@@ -228,20 +232,16 @@ export default {
       this.wgetDownloadInfo.href = `${this.wgetDomain}?prefix=${prefix}`;
       this.wgetDownloadInfo.filesDownloadHref = this.hrefWgetFile(this.selectedFiles);
 
-      if (this.wgetDomain) {
-        tools.push(this.wgetDownloadInfo);
-      }
-
       if (this.ftpDomain) {
         tools.push({
-          title: 'Download files via FTP',
+          title: 'Download files via FTP (can be slow)',
           toolTip: 'Use FTP to access the files.',
           image: this.imagesPng('./ftp-2.png'),
           href: `${this.ftpDomain}${prefix}`,
           moreInfoUrl: 'https://filezilla-project.org/',
           showDescription: false,
           style: 'width: 38px; border-radius: 10%;',
-          description: 'Use any ftp client to download the files.',
+          description: 'Use any ftp client to download the files, warning this might be slow.',
         });
       }
 
@@ -380,7 +380,7 @@ export default {
     selectedFiles: [],
     activeFolders: [],
     wgetDownloadInfo: {
-      title: 'Download files via Wget command',
+      title: 'Download files via Wget command (recommended)',
       toolTip: 'Download files paths to use via Wget command',
       moreInfoUrl: 'https://www.gnu.org/software/wget/',
       downloadFileName: 'envidatS3paths.txt',
