@@ -4,7 +4,7 @@
     <v-card-title primary-title
                   :style="`background-color:${highlightTitle ? $vuetify.theme.themes.light.secondary : ''};
                   transition: 0.5s all; line-height: 1.6rem;`" >
-      {{ selectedFolder ? `Open "${selectedFolder}" ${subTitle}` : title }}
+      {{ `Entire Directory Download of "${selectedFolder ? selectedFolder : 'root'}"` }}
     </v-card-title>
 
     <v-card-text class="pt-2">
@@ -109,7 +109,7 @@ export default {
     loading: Boolean,
   },
   data: () => ({
-    title: 'Open main folder with other protocols',
+    title: 'Directory download with other protocols',
     subTitle: 'folder with other protocols',
   }),
   methods: {

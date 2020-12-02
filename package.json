@@ -1,6 +1,6 @@
 {
   "name": "s3_browsing",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "private": false,
   "description": "Web app for browsing through S3 XML and provide it's links.",
   "author": {
