@@ -18,7 +18,7 @@
                 no-gutters >
           
           <v-col class="shrink">
-            <v-tooltip bottom >
+            <!-- <v-tooltip bottom >
 
               <template v-slot:activator="{ on, attrs }">
                 <v-btn v-on="on"
@@ -30,21 +30,46 @@
                         :href="tool.href ? tool.href : ''"
                         :download="tool.downloadFileName ? tool.downloadFileName : null"
                         target="_blank"
-                        @click="!tool.href && tool.clickCallback ? tool.clickCallback() : $emit('click');">
+                        @click="!tool.href && tool.clickCallback ? tool.clickCallback() : $emit('click');"> -->
 
                   <!-- <v-img :src="tool.image" height="32" width="32" /> -->
                   <img :src="tool.image"
-                        :style="tool.style ? tool.style : 'width: 40px; border-radius: 50%;' " />
+                        :style="tool.style ? tool.style : 'width: 40px; border-radius: 50%; '" />
+                <!-- </v-btn>
+              </template>
+                
+              <span>{{ tool.toolTip }}</span>
+
+            </v-tooltip> -->
+          </v-col>
+
+          <v-col class="px-2">
+            {{ tool.title }}
+          </v-col>
+
+          <v-col class="shrink mx-2" 
+                        :style="`border-radius: 50%; border: solid 1px ${$vuetify.theme.themes.light.secondary};`">
+            <v-tooltip bottom >
+
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn v-on="on"
+                        v-bind="attrs"
+                        color="secondary"
+                        icon
+                        small
+                        :dark="dark"
+                        :href="tool.href ? tool.href : ''"
+                        :download="tool.downloadFileName ? tool.downloadFileName : null"
+                        target="_blank"
+                        @click="!tool.href && tool.clickCallback ? tool.clickCallback() : $emit('click');">
+
+                  <v-icon>mdi-file-download</v-icon>
                 </v-btn>
               </template>
                 
               <span>{{ tool.toolTip }}</span>
 
             </v-tooltip>
-          </v-col>
-
-          <v-col class="px-2">
-            {{ tool.title }}
           </v-col>
 
           <v-col class="shrink">
@@ -82,6 +107,11 @@
       </v-row>
 
     </v-card-text>
+
+    <v-card-text :style="`background-color: ${$vuetify.theme.themes.light.highlight};`" >
+      {{ entrieFolderDownloadDescription }}
+    </v-card-text>
+
   </v-card>
 
 </template>
@@ -100,7 +130,9 @@ export default {
         toolTip: 'Use CyberDuck to access the files.',
         image: 'cyberduck-icon-64.png',
         href: null,
-        clickCallback: () => { console.log('clicked on Cyberduck'); },
+        clickCallback: () => {
+          // console.log('clicked on Cyberduck');
+        },
         moreInfoUrl: 'https://cyberduck.io/',
       }],
     },
@@ -111,6 +143,7 @@ export default {
   data: () => ({
     title: 'Directory download with other protocols',
     subTitle: 'folder with other protocols',
+    entrieFolderDownloadDescription: 'To download all files from a directory select it in the list, and choose the tools you would want to access this directory. There can be many files and large ones. If your interested in specific files use the file selection to download them.',
   }),
   methods: {
     clickShowDesc(tool) {

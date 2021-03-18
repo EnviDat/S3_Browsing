@@ -30,7 +30,8 @@
     <template v-slot:label="{ item, active }">
 
       <v-row no-gutters
-              align="center" >
+              align="center"
+              style="cursor: pointer; " >
 
         <v-col class="pl-2 pr-4"
               :class="item.isFile ? '' : 'shrink'">
