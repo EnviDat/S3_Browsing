@@ -1,12 +1,10 @@
 {
   "showProtocols": true,
   "fileSelectionEnabled": true,
-  "defaultMaxKeys": 10000,
+  "defaultMaxKeys": 100000,
   "contentUrl": "https://envicloud.wsl.ch/envicloud/",
   "downloadDomain": "https://os.zhdk.cloud.switch.ch/envicloud/",
   "vendorUrl": "www.envidat.ch",
   "cyberduckHostName": "os.zhdk.cloud.switch.ch",
-  "cyberduckProfileName": "envicloud",
-  "wgetDomain": "https://www.envidat.ch/ui/s3/StreamServlet",
-  "ftpDomain": "ftp://envicloud.wsl.ch/"
+  "cyberduckProfileName": "envicloud"
 }

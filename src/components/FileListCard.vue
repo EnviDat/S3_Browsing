@@ -37,7 +37,7 @@
       <v-row align="center"
               no-gutters>
         <v-col class="shrink">
-          <v-tooltip bottom >
+          <!-- <v-tooltip bottom >
 
             <template v-slot:activator="{ on, attrs }">
               <v-btn v-on="on"
@@ -49,19 +49,44 @@
                       :download="wgetDownloadInfo.downloadFileName ? wgetDownloadInfo.downloadFileName : null"
                       target="_blank"
                       :href="fileDownloadHref" >
-
+ -->
                 <img :src="wgetDownloadInfo.image"
                       :style="wgetDownloadInfo.style ? wgetDownloadInfo.style : 'width: 40px; border-radius: 50%;' " />
+              <!-- </v-btn>          
+            </template>
+              
+            <span>{{ wgetDownloadInfo.toolTip }}</span>
+
+          </v-tooltip> -->
+        </v-col>
+
+        <v-col class="px-2">
+          {{ wegButtonInfoText }}
+        </v-col>
+
+        <v-col class="shrink mx-2" 
+                      :style="`border-radius: 50%; border: solid 1px ${$vuetify.theme.themes.light.secondary};`">
+          <v-tooltip bottom >
+
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn v-on="on"
+                      v-bind="attrs"
+                      color="secondary"
+                      icon
+                      small
+                      :dark="dark"
+                      :disabled="fileDownloadHref === ''"
+                      :download="wgetDownloadInfo.downloadFileName ? wgetDownloadInfo.downloadFileName : null"
+                      target="_blank"
+                      :href="fileDownloadHref" >
+
+                <v-icon>mdi-file-download</v-icon>
               </v-btn>          
             </template>
               
             <span>{{ wgetDownloadInfo.toolTip }}</span>
 
           </v-tooltip>
-        </v-col>
-
-        <v-col class="px-2">
-          {{ wegButtonInfoText }}
         </v-col>
 
         <v-col class="shrink">
@@ -124,7 +149,7 @@ export default {
   },
   data: () => ({
     title: 'File Selection Download',
-    fileSelectionDescription: 'Select multiple files via the checkboxes, if a selected directory contains no files nothing will be listed here. Subdirectories have to be opened first before a selection is possible. For directories with many files use the other download options.',
+    fileSelectionDescription: 'Select multiple files via the checkboxes, if a selected directory contains no files, nothing will be listed here. Subdirectories have to be opened first before a selection is possible. For directories with many files use the other download options.',
     wegButtonInfoText: 'Download only the selected files via Wget',
     showDescription: false,
     maxSelectedFilesPreview: 10,

@@ -128,6 +128,7 @@ export default {
       'WebDAVDomainHttps',
       'wgetDomain',
       'ftpDomain',
+      'defaultMaxKeys',
       ]),
     ...mapState([
       'configLoading',
@@ -179,7 +180,11 @@ export default {
   },
   methods: {
     loadContent() {
-      this.$store.dispatch(GET_S3_CONTENT, { url: this.contentUrl, prefix: this.urlPrefix });
+      this.$store.dispatch(GET_S3_CONTENT, {
+        url: this.contentUrl,
+        prefix: this.urlPrefix,
+        'max-keys': this.defaultMaxKeys,
+      });
     },
     setDownloadTools() {
       // not done via computedProperty because the DownloadToolCard can change the showDescription
