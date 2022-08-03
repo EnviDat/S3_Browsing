@@ -14,6 +14,7 @@ workflow:
       changes:
         - src/**/*
         - public/**/*
+        - .env.production
       when: always
     - if: '$CI_PIPELINE_SOURCE == "web"'
       when: always
