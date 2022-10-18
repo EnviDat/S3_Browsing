@@ -1,0 +1,48 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  ARTIFACT_COMPRESSION_LEVEL: 'fast'
+  CACHE_COMPRESSION_LEVEL: 'fast'
+
+workflow:
+  rules:
+    - if: >
+        ($CI_COMMIT_REF_NAME == "main"
+        && $CI_PIPELINE_SOURCE == "push")
+      changes:
+        - src/**/*
+        - public/**/*
+      when: always
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
+
+webpack-build:
+  stage: build
+  image: docker.io/node:16
+  cache:
+    key: dist
+    paths:
+      - dist/
+    policy: pull-push
+  before_script:
+    - npm install
+  script:
+    - npm run build
+
+rclone-sync:
+  stage: deploy
+  image: docker.io/rclone/rclone
+  cache:
+    key: dist
+    paths:
+      - dist/
+    policy: pull
+  variables:
+    GIT_STRATEGY: none
+    RCLONE_CONFIG_SWITCH_TYPE: 's3'
+    RCLONE_S3_PROVIDER: 'Other'
+    RCLONE_S3_ENV_AUTH: 'true'
+  script:
+    - rclone --verbose sync dist switch:s3-browser
