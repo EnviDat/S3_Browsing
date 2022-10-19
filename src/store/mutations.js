@@ -63,21 +63,25 @@ export default {
     state.contentError = null;
   },
   [GET_S3_CONTENT_SUCCESS](state, payload) {
-    state.content = payload;
+    const xml = payload.xml;
+    state.content = xml;
+    const baseUrl = payload.baseUrl || this.getters.downloadDomain;
 
-    let contentList = payload?.ListBucketResult?.Contents;
+    let contentList = xml?.ListBucketResult?.Contents;
     if (contentList && !(contentList instanceof Array)) {
       contentList = [contentList];
     }
-    let prefixList = payload?.ListBucketResult?.CommonPrefixes;
+
+    let prefixList = xml?.ListBucketResult?.CommonPrefixes;
     if (prefixList && !(prefixList instanceof Array)) {
       prefixList = [prefixList];
     }
-    const prefix = payload?.ListBucketResult?.Prefix || '';
+
+    const prefix = xml?.ListBucketResult?.Prefix || '';
     const parentPrefix = sanitaizePrefix(prefix);
 
-    const prefixMap = getPrefixMap(prefixList, this.getters.downloadDomain);
-    const contentMap = getS3Map(contentList, this.getters.downloadDomain);
+    const prefixMap = getPrefixMap(prefixList, baseUrl);
+    const contentMap = getS3Map(contentList, baseUrl);
 
     let map = mergeS3Maps(contentMap, prefixMap, parentPrefix);
 

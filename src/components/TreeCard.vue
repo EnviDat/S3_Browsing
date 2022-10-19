@@ -45,6 +45,7 @@
     <v-card-text v-if="contentMapValues"
                   :style="`max-height: ${height}; overflow:auto;`">
       <TreeView :items="contentMapValues"
+                :baseUrl="baseUrl"
                 :search="search"
                 :allCollapsed="allCollapsed"
                 :fileSelectionEnabled="fileSelectionEnabled"
@@ -87,6 +88,7 @@ export default {
       type: String,
       default: '75vh',
     },
+    baseUrl: String,
     prefix: String,
     fileSelectionEnabled: Boolean,
   },

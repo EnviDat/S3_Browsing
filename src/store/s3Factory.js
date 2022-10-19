@@ -33,7 +33,8 @@ function createDirectoryEntry(keyInfos, baseUrl, delimiter, childs = null) {
   // skip the root "/" directory to avoid having double // in the url
   const dir = keyInfos.directory === '/' ? '' : keyInfos.directory;
 
-  const absolutePath = `${baseUrl}${dir}`;
+  const endingSlash = baseUrl.substring(baseUrl.length - 1, baseUrl.length + 1) === '/' ? '' : '/';
+  const absolutePath = `${baseUrl}${endingSlash}${dir}`;
   let ftpUrl = absolutePath;
   ftpUrl = ftpUrl.replace('https', 'sftp');
   ftpUrl = ftpUrl.replace('http', 'ftp');
@@ -56,7 +57,8 @@ function createFileEntry(keyInfos, baseUrl, size, lastModified) {
 
   // skip the root "/" directory to avoid having double // in the url
   const dir = keyInfos.directory === '/' ? '' : keyInfos.directory;
-  const absolutePath = `${baseUrl}${dir}${keyInfos.name}`;
+  const endingSlash = baseUrl.substring(baseUrl.length - 1, baseUrl.length + 1) === '/' ? '' : '/';
+  const absolutePath = `${baseUrl}${endingSlash}${dir}${keyInfos.name}`;
 
   return {
     ...keyInfos,
@@ -325,7 +327,7 @@ export function mergeS3Maps(mainMap, newMap, parent, delimiter = '/') {
   }
 
   // const mergedKeys = [];
-  const mergedTime = [];
+  // const mergedTime = [];
   const newMapKeys = Object.keys(newMap);
   tempLastMergedEntry = null;
   tempLastMergedSubEntry = null;
