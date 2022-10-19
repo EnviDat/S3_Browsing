@@ -180,8 +180,13 @@ export default {
   },
   methods: {
     loadContent() {
+
+      const bucketUrl = this.$route.query.bucket || this.contentUrl;
+      console.log('bucketUrl');
+      console.log(bucketUrl);
+
       this.$store.dispatch(GET_S3_CONTENT, {
-        url: this.contentUrl,
+        url: bucketUrl,
         prefix: this.urlPrefix,
         'max-keys': this.defaultMaxKeys,
       });
