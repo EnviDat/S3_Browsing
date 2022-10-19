@@ -86,7 +86,7 @@
 
           <IconButton icon="mdi-open-in-new"
                       tooltipText="Open browser starting from this folder."
-                      :url="`./#/?prefix=${item.directory}`" />
+                      :url="`./#/?bucket=${baseUrl}&prefix=${item.directory}`" />
         </v-col>
 
       </v-row>
@@ -113,14 +113,13 @@ export default {
     search: String,
     caseSensitive: Boolean,
     allCollapsed: Boolean,
+    baseUrl: String,
     prefix: String,
     items: Array,
     fileSelectionEnabled: Boolean,
   },
   computed: {
     ...mapGetters([
-      'contentUrl',
-      'contentMap',
       'defaultMaxKeys',
     ]),
     ...mapState([
@@ -155,7 +154,7 @@ export default {
       const prefix = item.directory;
 
       await this.$store.dispatch(GET_S3_CONTENT, {
-        url: this.contentUrl,
+        url: this.baseUrl,
         prefix,
         'max-keys': this.defaultMaxKeys,
       });

@@ -140,7 +140,10 @@ export default {
             trim: true,
           })
             .then((xml) => {
-              commit(GET_S3_CONTENT_SUCCESS, xml);
+              commit(GET_S3_CONTENT_SUCCESS, {
+                xml,
+                baseUrl,
+              });
             })
             .catch((reason) => {
               commit(GET_S3_CONTENT_ERROR, reason);

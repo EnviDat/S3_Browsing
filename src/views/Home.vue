@@ -24,27 +24,12 @@
 
     <v-row >
 
-      <!-- <v-col cols="12"
-              :sm="bucketInfoExpanded ? 3 : ''"
-              :class="bucketInfoExpanded ? '' : 'shrink'">
-
-        <BucketCard :expanded="bucketInfoExpanded"
-                    :name="content.ListBucketResult.Name"
-                    :url="contentUrl"
-                    :prefix="content.ListBucketResult.Prefix"
-                    :maxKeys="content.ListBucketResult.MaxKeys"
-                    :delimiter="content.ListBucketResult.Delimiter"
-                    :isTruncated="content.ListBucketResult.IsTruncated === 'true' ? true : false"
-                    :marker="content.ListBucketResult.Marker"
-                    :loading="loading || !(content && content.ListBucketResult)"
-                    @expand="catchBucketInfoExpand" />
-      </v-col> -->
-
-      <v-col v-if="!configLoading && !contentError" 
+      <v-col v-if="!configLoading && !contentError"
               cols="12"
               :sm="showProtocols ? 9 : 12" >
         <TreeCard :fileSelectionEnabled="fileSelectionEnabled"
-                  :prefix="urlPrefix" 
+                  :prefix="urlPrefix"
+                  :baseUrl="bucketUrl"
                   @showSnack="catchShowSnack"
                   @selectedFiles="catchSelectedFiles"
                   @activeItems="catchActiveItems"/>
@@ -110,7 +95,7 @@ export default {
       this.$store.dispatch(GET_CONFIG, configURL);
     } else {
       this.loadContent();
-      this.setDownloadTools();
+      this.setWGETInfos();
     }
   },
   computed: {
@@ -156,7 +141,7 @@ export default {
       if (this.contentError) {
         return {
           title: 'Bucket Content Error ',
-          message: `Error loading S3 Bucket from ${this.contentUrl}. ${this.contentError} ${this.contentError.stack}`,
+          message: `Error loading S3 Bucket from ${this.bucketUrl}. ${this.contentError} ${this.contentError.stack}`,
         };
       }
 
@@ -169,29 +154,7 @@ export default {
 
       return this.activeFolders[0].directory;
     },
-  },
-  watch: {
-    configLoading() {
-      if (!this.configLoading && this.contentUrl) {
-        this.loadContent();
-        this.setDownloadTools();
-      }
-    },
-  },
-  methods: {
-    loadContent() {
-
-      const bucketUrl = this.$route.query.bucket || this.contentUrl;
-      console.log('bucketUrl');
-      console.log(bucketUrl);
-
-      this.$store.dispatch(GET_S3_CONTENT, {
-        url: bucketUrl,
-        prefix: this.urlPrefix,
-        'max-keys': this.defaultMaxKeys,
-      });
-    },
-    setDownloadTools() {
+    downloadTools() {
       // not done via computedProperty because the DownloadToolCard can change the showDescription
       // via computed that isn't working
       const prefix = this.selectedFolder ? this.selectedFolder : this.urlPrefix;
@@ -238,10 +201,6 @@ export default {
         });
       }
 
-      this.wgetDownloadInfo.image = this.imagesPng('./wget-2.png');
-      this.wgetDownloadInfo.href = `${this.wgetDomain}?prefix=${prefix}`;
-      this.wgetDownloadInfo.filesDownloadHref = this.hrefWgetFile(this.selectedFiles);
-
       if (this.ftpDomain) {
         tools.push({
           title: 'Download files via FTP (can be slow)',
@@ -255,16 +214,43 @@ export default {
         });
       }
 
-        // {
-        //   title: 'FTP',
-        //   toolTip: 'Use a FTP-Client to access the files.',
-        //   image: this.imagesPng('./icons8-ftp-100.png'),
-        //   href: null,
-        //   clickCallback: () => { console.log('clicked on Cyberduck'); },
-        //   moreInfoUrl: 'https://filezilla-project.org/',
-        // },
+      // {
+      //   title: 'FTP',
+      //   toolTip: 'Use a FTP-Client to access the files.',
+      //   image: this.imagesPng('./icons8-ftp-100.png'),
+      //   href: null,
+      //   clickCallback: () => { console.log('clicked on Cyberduck'); },
+      //   moreInfoUrl: 'https://filezilla-project.org/',
+      // },
 
-      this.downloadTools = tools;
+      return tools;
+    },
+    bucketUrl() {
+      return this.$route.query.bucket || this.contentUrl;
+    },
+  },
+  watch: {
+    configLoading() {
+      if (!this.configLoading && this.bucketUrl) {
+        this.loadContent();
+        this.setWGETInfos();
+      }
+    },
+  },
+  methods: {
+    loadContent() {
+      this.$store.dispatch(GET_S3_CONTENT, {
+        url: this.bucketUrl,
+        prefix: this.urlPrefix,
+        'max-keys': this.defaultMaxKeys,
+      });
+    },
+    setWGETInfos() {
+      const prefix = this.selectedFolder ? this.selectedFolder : this.urlPrefix;
+
+      this.wgetDownloadInfo.image = this.imagesPng('./wget-2.png');
+      this.wgetDownloadInfo.href = `${this.wgetDomain}?prefix=${prefix}`;
+      this.wgetDownloadInfo.filesDownloadHref = this.hrefWgetFile(this.selectedFiles);
     },
     clickShowDesc(tool) {
       tool.showDescription = !tool.showDescription;
@@ -280,7 +266,7 @@ export default {
     },
     catchActiveItems(activeItems) {
       this.activeFolders = activeItems;
-      this.setDownloadTools();
+      this.setWGETInfos();
     },
     extractUrlParameters() {
       let params = this.$route.query;
@@ -305,7 +291,7 @@ export default {
             <key>Default Nickname</key>
             <string>${this.contentBucketName} - S3 Bucket</string>
             <key>Default Hostname</key>
-            <string>${this.cyberduckHostName}</string>
+            <string>${this.bucketUrl}</string>
             <key>Default Path</key>
             <string>${urlPrefix}</string>
             <key>Anonymous Configurable</key>
@@ -314,8 +300,7 @@ export default {
         </plist>`;
     },
     hrefCyberduckFile(urlPrefix) {
-      const prefix = `/envicloud/${urlPrefix}`;
-      const data = this.getCyberduckXML(prefix);
+      const data = this.getCyberduckXML(urlPrefix);
       // const encodedData = encodeURI(data);
       const encodedData = btoa(unescape(encodeURIComponent(data)));
 
@@ -348,9 +333,9 @@ export default {
     saveDirectoyViaMemoryFile() {
       // const data = { name: item.name }; // need to get the data via directory?
       // const fileName = item.name.split('/').reverse()[1];
-      const prefix = `/envicloud/${this.urlPrefix}`;
+      const prefix = this.urlPrefix; // `/envicloud/${this.urlPrefix}`;
       const data = this.getCyberduckXML(prefix);
-      let fileName = this.contentUrl.split('.')[0];
+      let fileName = this.bucketUrl.split('.')[0];
       fileName = fileName.replace('http://', '');
       fileName = fileName.replace('https://', '');
       fileName = `${fileName}.cyberduck.profile`;
@@ -386,7 +371,6 @@ export default {
     appAvatarText: 'S3',
     bucketInfoExpanded: false,
     urlPrefix: null,
-    downloadTools: null,
     selectedFiles: [],
     activeFolders: [],
     wgetDownloadInfo: {
