@@ -13,16 +13,15 @@
       </v-col>
     </v-row>
 
-    <v-row v-if="!loading && hasError" >
-      <v-col cols="12"
-              sm="6" >
+    <v-row >
+
+      <v-col v-if="!loading && hasError"
+             cols="12"
+             sm="9" >
         <NotificationCard :title="errorObject.title"
                           :icon="errorObject.icon"
                           :message="errorObject.message" />
       </v-col>
-    </v-row>
-
-    <v-row >
 
       <v-col v-if="!configLoading && !contentError"
               cols="12"
