@@ -88,7 +88,7 @@
 
     <v-footer>
       <v-spacer></v-spacer>
-      <div class="caption" >Developed by the <a href="https://www.envidat.ch/"
+      <div class="text-caption" >Developed by the <a href="https://www.envidat.ch/"
           target="_blank" >EnviDat</a> team
       </div>
     </v-footer>

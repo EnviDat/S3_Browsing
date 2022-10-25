@@ -63,13 +63,13 @@
         </v-col>
 
         <v-col v-if="item.isFile"
-                class="px-1 caption"
+                class="px-1 text-caption"
                 cols="1" >
           {{ item.size }}
         </v-col>
 
         <v-col v-if="item.isFile"
-                class="shrink px-1 caption" >
+                class="shrink px-1 text-caption" >
           {{ item.lastModified }}
         </v-col>
 

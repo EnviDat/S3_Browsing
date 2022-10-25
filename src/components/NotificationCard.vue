@@ -10,7 +10,7 @@
         </v-col>
 
         <v-col cols="11">
-          <div class="title">{{ title }}</div>
+          <div class="text-h6">{{ title }}</div>
         </v-col>
 
       </v-row>
