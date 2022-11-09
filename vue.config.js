@@ -17,7 +17,10 @@ dotenv.config();
 process.env.VUE_APP_VERSION = require('./package.json').version;
 
 const version = process.env.VUE_APP_VERSION;
-const useTestData = !!(process.env.VUE_APP_USE_TESTDATA && process.env.VUE_APP_USE_TESTDATA === 'true');
+const useTestData = !!(
+  process.env.VUE_APP_USE_TESTDATA &&
+  process.env.VUE_APP_USE_TESTDATA === 'true'
+);
 const isProd = process.env.NODE_ENV === 'production';
 
 if (isProd) {
@@ -25,16 +28,19 @@ if (isProd) {
   const filePath = `${__dirname}/public/${fileName}`;
 
   fs.writeFile(filePath, version, (err) => {
-
     if (err) {
       return console.log(`Tried to created file ${fileName}. Error: ${err}`);
     }
 
-    return console.log(`Created version file ${fileName} for easy build version highlight.`);
+    return console.log(
+      `Created version file ${fileName} for easy build version highlight.`,
+    );
   });
 }
 
-console.log(`starting ${version} with use of testdata '${useTestData}' on ${process.env.NODE_ENV}`);
+console.log(
+  `starting ${version} with use of testdata '${useTestData}' on ${process.env.NODE_ENV}`,
+);
 
 module.exports = {
   transpileDependencies: ['vuetify'],

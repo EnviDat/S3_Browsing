@@ -11,7 +11,7 @@ function humanFileSize(bytes) {
   // const units = si ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
 
   const units = ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-  
+
   let u = -1;
 
   do {
@@ -33,7 +33,10 @@ function createDirectoryEntry(keyInfos, baseUrl, delimiter, childs = null) {
   // skip the root "/" directory to avoid having double // in the url
   const dir = keyInfos.directory === '/' ? '' : keyInfos.directory;
 
-  const endingSlash = baseUrl.substring(baseUrl.length - 1, baseUrl.length + 1) === '/' ? '' : '/';
+  const endingSlash =
+    baseUrl.substring(baseUrl.length - 1, baseUrl.length + 1) === '/'
+      ? ''
+      : '/';
   const absolutePath = `${baseUrl}${endingSlash}${dir}`;
   let ftpUrl = absolutePath;
   ftpUrl = ftpUrl.replace('https', 'sftp');
@@ -54,10 +57,12 @@ function createDirectoryEntry(keyInfos, baseUrl, delimiter, childs = null) {
 }
 
 function createFileEntry(keyInfos, baseUrl, size, lastModified) {
-
   // skip the root "/" directory to avoid having double // in the url
   const dir = keyInfos.directory === '/' ? '' : keyInfos.directory;
-  const endingSlash = baseUrl.substring(baseUrl.length - 1, baseUrl.length + 1) === '/' ? '' : '/';
+  const endingSlash =
+    baseUrl.substring(baseUrl.length - 1, baseUrl.length + 1) === '/'
+      ? ''
+      : '/';
   const absolutePath = `${baseUrl}${endingSlash}${dir}${keyInfos.name}`;
 
   return {
@@ -74,7 +79,9 @@ function createFileEntry(keyInfos, baseUrl, size, lastModified) {
 }
 
 export function extractKeyInfos(key, delimiter = '/') {
-  if (!key) { return null; }
+  if (!key) {
+    return null;
+  }
 
   let dirKey = key;
   const isFile = key[key.length - 1] !== delimiter;
@@ -131,29 +138,37 @@ export function getS3Map(contentList, baseUrl, delimiter = '/') {
   if (!(contentList instanceof Array)) {
     throw new Error('contentList has to be an Array (instanceof Array) !');
   }
-  
+
   for (let i = 0; i < contentList.length; i++) {
     const s3 = contentList[i];
 
     const keyInfos = extractKeyInfos(s3.Key, delimiter);
 
-    const fileEntry = createFileEntry(keyInfos, baseUrl, humanFileSize(s3.Size), s3.LastModified);
+    const fileEntry = createFileEntry(
+      keyInfos,
+      baseUrl,
+      humanFileSize(s3.Size),
+      s3.LastModified,
+    );
 
     const fileObj = map[keyInfos.directory];
 
     if (fileObj) {
       fileObj.children.push(fileEntry);
       fileObj.childs = fileObj.children.length.toString();
-
     } else {
       // add an initial directory Object
       // and use it with the first file key as it's first child
 
       const children = fileEntry.isFile ? [fileEntry] : null;
-      const dirEntry = createDirectoryEntry(keyInfos, baseUrl, delimiter, children);
+      const dirEntry = createDirectoryEntry(
+        keyInfos,
+        baseUrl,
+        delimiter,
+        children,
+      );
       map[keyInfos.directory] = dirEntry;
     }
-
   }
 
   return map;
@@ -171,7 +186,9 @@ export function getPrefixMap(prefixList, baseUrl, delimiter = '/') {
   }
 
   for (let i = 0; i < prefixList.length; i++) {
-    const prefix = prefixList[i]?.Prefix ? prefixList[i]?.Prefix : prefixList[i];
+    const prefix = prefixList[i]?.Prefix
+      ? prefixList[i]?.Prefix
+      : prefixList[i];
 
     const keyInfos = extractKeyInfos(prefix, delimiter);
 
@@ -179,7 +196,6 @@ export function getPrefixMap(prefixList, baseUrl, delimiter = '/') {
       const dirEntry = createDirectoryEntry(keyInfos, baseUrl, delimiter);
       map[keyInfos.directory] = dirEntry;
     }
-
   }
 
   return map;
@@ -211,20 +227,19 @@ let tempLastMergedEntry = null;
 
 function mergeMapEntry(existing, newEntry, delimiter = '/') {
   if (existing.root === newEntry.root) {
-
-    if (newEntry.directory === existing.directory
-      && newEntry.name === existing.name) {
-      
+    if (
+      newEntry.directory === existing.directory &&
+      newEntry.name === existing.name
+    ) {
       existing.children = [...existing.children, ...newEntry.children];
       existing.childs = existing.children.length.toString();
-      
+
       tempLastMergedEntry = existing;
 
       return true;
     }
-    
+
     if (newEntry.directory.includes(existing.directory)) {
-      
       const parentDirectory = getParentPath(newEntry, delimiter);
 
       if (tempLastMergedEntry?.name === parentDirectory) {
@@ -236,9 +251,11 @@ function mergeMapEntry(existing, newEntry, delimiter = '/') {
       // console.log(`Traverse for ${newEntry.id} checking: ${existing.name}`);
 
       if (existing.name === parentDirectory) {
-        const existingChild = existing.children.findIndex((el) => el.name === newEntry.name);
+        const existingChild = existing.children.findIndex(
+          (el) => el.name === newEntry.name,
+        );
 
-        if (existingChild > -1) {   
+        if (existingChild > -1) {
           // merged the subchilds to avoid losing them
           const exitingSubChilds = existing.children[existingChild].children;
           newEntry.children = [...newEntry.children, ...exitingSubChilds];
@@ -252,8 +269,8 @@ function mergeMapEntry(existing, newEntry, delimiter = '/') {
         existing.childs = existing.children.length.toString();
 
         return true;
-      } 
-      
+      }
+
       if (tempLastMergedSubEntry) {
         if (mergeMapEntry(tempLastMergedSubEntry, newEntry, delimiter)) {
           return true;
@@ -270,14 +287,15 @@ function mergeMapEntry(existing, newEntry, delimiter = '/') {
           }
         }
       }
-
     }
 
-    return false;    
-  } 
+    return false;
+  }
 
   // throw new Exception(`Tried to merge entries with different root, newEntry: ${newEntry.name} with root: ${newEntry.root} with ${existing.name} with root: ${existing.root}`);
-  console.log(`Tried to merge entries with different root, newEntry: ${newEntry.name} with root: ${newEntry.root} with ${existing.name} with root: ${existing.root}`);
+  console.log(
+    `Tried to merge entries with different root, newEntry: ${newEntry.name} with root: ${newEntry.root} with ${existing.name} with root: ${existing.root}`,
+  );
 
   return false;
 }
@@ -303,11 +321,11 @@ export function getParentEntry(map, searchDirectory) {
 }
 
 /**
- * 
- * @param {Object} mainMap 
- * @param {Object} newMap 
- * @param {string} parent 
- * @param {string} delimiter 
+ *
+ * @param {Object} mainMap
+ * @param {Object} newMap
+ * @param {string} parent
+ * @param {string} delimiter
  */
 export function mergeS3Maps(mainMap, newMap, parent, delimiter = '/') {
   if (!mainMap || Object.keys(mainMap).length <= 0) {
@@ -320,7 +338,9 @@ export function mergeS3Maps(mainMap, newMap, parent, delimiter = '/') {
 
   const directParent = extractKeyInfos(parent);
 
-  let mainEntry = directParent ? mainMap[directParent.root] || mainMap[directParent.directory] : null;
+  let mainEntry = directParent
+    ? mainMap[directParent.root] || mainMap[directParent.directory]
+    : null;
 
   if (!mainEntry && directParent) {
     mainEntry = getParentEntry(mainMap, directParent);
@@ -338,9 +358,7 @@ export function mergeS3Maps(mainMap, newMap, parent, delimiter = '/') {
       tempLastMergedSubEntry = null;
       // mergedKeys.push(`key: "${key}"" merged: ${merged}`);
     });
-
   } else {
-
     newMapKeys.forEach((key) => {
       const existingEntry = mainMap[key];
       let merged = false;

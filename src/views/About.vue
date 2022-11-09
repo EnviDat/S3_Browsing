@@ -1,42 +1,24 @@
 <template>
   <v-container fluid>
-
     <v-row>
-      <v-col v-show="aboutLoading"
-              class="pt-5" 
-              cols="12">
+      <v-col v-show="aboutLoading" class="pt-5" cols="12">
         Loading about information...
       </v-col>
 
-      <v-col v-if="!aboutLoading"
-              cols="12"
-              class="pt-5"
-              v-html="aboutText">
-
+      <v-col v-if="!aboutLoading" cols="12" class="pt-5" v-html="aboutText">
       </v-col>
 
-      <v-col v-if="!aboutLoading && aboutError"
-              cols="12"
-              class="pt-5" >
-
-        <NotificationCard title="About Not Loaded!"
-                          :message="errorText" />
-
+      <v-col v-if="!aboutLoading && aboutError" cols="12" class="pt-5">
+        <NotificationCard title="About Not Loaded!" :message="errorText" />
       </v-col>
-
     </v-row>
-
   </v-container>
 </template>
 
 <script>
-import {
-  mapState,
-} from 'vuex';
+import { mapState } from 'vuex';
 
-import {
-  GET_ABOUT,
-} from '@/store/mutationsConsts';
+import { GET_ABOUT } from '@/store/mutationsConsts';
 
 import remark from 'remark';
 import html from 'remark-html';
@@ -46,7 +28,6 @@ const aboutURL = process.env.VUE_APP_ABOUT_URL;
 export default {
   name: 'About',
   beforeMount() {
-
     if (aboutURL) {
       this.loadAbout();
     }
@@ -57,11 +38,7 @@ export default {
     },
   },
   computed: {
-    ...mapState([
-      'about',
-      'aboutLoading',
-      'aboutError',
-    ]),
+    ...mapState(['about', 'aboutLoading', 'aboutError']),
     aboutMarkdown() {
       return this.about || this.defaultAbout;
     },
@@ -73,8 +50,7 @@ export default {
     },
   },
   data: () => ({
-    defaultAbout:
-    `
+    defaultAbout: `
 # About the S3 Browsing Web Frontend
 
 This app is a web file browser for a S3 backend. You can browse and download files in a 

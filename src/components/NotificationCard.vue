@@ -1,23 +1,18 @@
 <template>
-  <v-card class="elevation-3"
-          :color="color">
-
-    <v-card-title >
+  <v-card class="elevation-3" :color="color">
+    <v-card-title>
       <v-row align-content="center" no-gutters>
-
-        <v-col cols="1" >
+        <v-col cols="1">
           <v-icon>{{ icon }}</v-icon>
         </v-col>
 
         <v-col cols="11">
           <div class="text-h6">{{ title }}</div>
         </v-col>
-
       </v-row>
     </v-card-title>
 
     <v-card-text v-html="message" />
-
   </v-card>
 </template>
 
@@ -34,11 +29,10 @@
  *
  * This file is subject to the terms and conditions defined in
  * file 'LICENSE.txt', which is part of this source code package.
-*/
+ */
 
 export default {
-  components: {
-  },
+  components: {},
   props: {
     title: {
       type: String,
@@ -54,7 +48,8 @@ export default {
     },
     message: {
       type: String,
-      default: 'Apparently something unexpected happend or there was server error. Try reloading and make sure are online!',
+      default:
+        'Apparently something unexpected happend or there was server error. Try reloading and make sure are online!',
     },
   },
 };

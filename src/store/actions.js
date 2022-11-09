@@ -2,7 +2,7 @@
  * @summary main store actions
  * @author Dominik Haas-Artho
  *
- * Created at     : 2019-10-23 16:34:51 
+ * Created at     : 2019-10-23 16:34:51
  * Last modified  : 2020-09-23 13:14:55
  *
  * This file is subject to the terms and conditions defined in
@@ -24,10 +24,12 @@ import {
   GET_S3_CONTENT_ERROR,
 } from '@/store/mutationsConsts';
 
-const useTestData = !!(process.env.VUE_APP_USE_TESTDATA && process.env.VUE_APP_USE_TESTDATA === 'true');
+const useTestData = !!(
+  process.env.VUE_APP_USE_TESTDATA &&
+  process.env.VUE_APP_USE_TESTDATA === 'true'
+);
 
 function buildParameterString(params) {
-
   const keys = Object.keys(params);
 
   if (keys.length > 0) {
@@ -35,7 +37,7 @@ function buildParameterString(params) {
 
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
-      urlParams += `${key}=${params[key]}&`;      
+      urlParams += `${key}=${params[key]}&`;
     }
 
     urlParams = urlParams.substr(0, urlParams.length - 1);
@@ -49,16 +51,16 @@ function buildParameterString(params) {
 export default {
   [GET_CONFIG]({ commit }, configURL) {
     if (configURL && configURL !== 'NULL') {
-
       commit(GET_CONFIG);
 
       const url = `${configURL}?nocache=${new Date().getTime()}`;
 
-      axios.get(url)
+      axios
+        .get(url)
         .then((response) => {
           let config = null;
 
-          if (typeof (response.data) === 'string') {
+          if (typeof response.data === 'string') {
             config = JSON.parse(response.data);
           } else {
             config = response.data;
@@ -77,12 +79,12 @@ export default {
   },
   [GET_ABOUT]({ commit }, aboutURL) {
     if (aboutURL && aboutURL !== 'NULL') {
-
       commit(GET_ABOUT);
 
       const url = `${aboutURL}?nocache=${new Date().getTime()}`;
 
-      axios.get(url)
+      axios
+        .get(url)
         .then((response) => {
           commit(GET_ABOUT_SUCCESS, response.data);
         })
@@ -96,9 +98,8 @@ export default {
     }
   },
   async [GET_S3_CONTENT]({ commit }, contentParams) {
-    
     commit(GET_S3_CONTENT);
-    
+
     const baseUrl = contentParams.url;
     let getParams = '';
 
@@ -116,7 +117,7 @@ export default {
 
     if (useTestData) {
       const splits = baseUrl.split('.');
-      const testUrl = splits[1];      
+      const testUrl = splits[1];
       let testParams = contentParams.prefix;
 
       if (testParams) {
@@ -130,15 +131,15 @@ export default {
       }
     }
 
-    await axios.get(requestUrl)
+    await axios
+      .get(requestUrl)
       .then((response) => {
-
-        if (typeof (response.data) === 'string') {
-
-          xmls2js.parseStringPromise(response.data, {
-            explicitArray: false,
-            trim: true,
-          })
+        if (typeof response.data === 'string') {
+          xmls2js
+            .parseStringPromise(response.data, {
+              explicitArray: false,
+              trim: true,
+            })
             .then((xml) => {
               commit(GET_S3_CONTENT_SUCCESS, {
                 xml,
@@ -149,9 +150,11 @@ export default {
               commit(GET_S3_CONTENT_ERROR, reason);
             });
         } else {
-          commit(GET_S3_CONTENT_ERROR, `Got content respose in unexpected type ${typeof (response.data)}`);
+          commit(
+            GET_S3_CONTENT_ERROR,
+            `Got content respose in unexpected type ${typeof response.data}`,
+          );
         }
-        
       })
       .catch((reason) => {
         commit(GET_S3_CONTENT_ERROR, reason);

@@ -1,109 +1,100 @@
 <template>
-  <v-treeview v-model="selectedItems"
-              :items="items"
-              :load-children="fetchSubkeys"
-              :open.sync="open"
-              :search="search"
-              item-key="name"
-              dense
-              activatable
-              :active.sync="activeItems"
-              color="primary"
-              return-object
-              :selectable="fileSelectionEnabled"
-              selected-color="primary"
-              selection-type="leaf"
-              hoverable
-              expand-icon="mdi-chevron-down" >
-
-    <template v-slot:prepend="{ item, open }" >
-
+  <v-treeview
+    v-model="selectedItems"
+    :items="items"
+    :load-children="fetchSubkeys"
+    :open.sync="open"
+    :search="search"
+    item-key="name"
+    dense
+    activatable
+    :active.sync="activeItems"
+    color="primary"
+    return-object
+    :selectable="fileSelectionEnabled"
+    selected-color="primary"
+    selection-type="leaf"
+    hoverable
+    expand-icon="mdi-chevron-down"
+  >
+    <template v-slot:prepend="{ item, open }">
       <v-icon v-if="item.isFile">
         {{ fileExtentions[item.fileExt] }}
       </v-icon>
-        
+
       <v-icon v-else>
         {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
       </v-icon>
     </template>
 
     <template v-slot:label="{ item, active }">
-
-      <v-row no-gutters
-              align="center"
-              style="cursor: pointer; " >
-
-        <v-col class="pl-2 pr-4"
-              :class="item.isFile ? '' : 'shrink'">
+      <v-row no-gutters align="center" style="cursor: pointer">
+        <v-col class="pl-2 pr-4" :class="item.isFile ? '' : 'shrink'">
           {{ item.name }}
         </v-col>
 
-        <v-col v-if="item.isFile"
-                class="shrink px-1" >
-
-          <IconButton icon="mdi-content-copy"
-                      tooltipText="Copy link to clipboard"
-                      @click="catchCopyClick(item.fileUrl)" />
+        <v-col v-if="item.isFile" class="shrink px-1">
+          <IconButton
+            icon="mdi-content-copy"
+            tooltipText="Copy link to clipboard"
+            @click="catchCopyClick(item.fileUrl)"
+          />
         </v-col>
 
-        <v-col v-if="item.isFile && item.fileExt === 'html'"
-                class="shrink px-1" >
-
-          <IconButton icon="mdi-open-in-new"
-                      tooltipText="Open file"
-                      :url="item.fileUrl" />
+        <v-col
+          v-if="item.isFile && item.fileExt === 'html'"
+          class="shrink px-1"
+        >
+          <IconButton
+            icon="mdi-open-in-new"
+            tooltipText="Open file"
+            :url="item.fileUrl"
+          />
         </v-col>
 
-        <v-col v-if="item.isFile && item.fileExt !== 'html'"
-                class="shrink px-1" >
-
-          <IconButton icon="mdi-cloud-download"
-                      tooltipText="Download file"
-                      :url="item.fileUrl" />
+        <v-col
+          v-if="item.isFile && item.fileExt !== 'html'"
+          class="shrink px-1"
+        >
+          <IconButton
+            icon="mdi-cloud-download"
+            tooltipText="Download file"
+            :url="item.fileUrl"
+          />
         </v-col>
 
-        <v-col v-if="item.isFile"
-                class="px-1 text-caption"
-                cols="1" >
+        <v-col v-if="item.isFile" class="px-1 text-caption" cols="1">
           {{ item.size }}
         </v-col>
 
-        <v-col v-if="item.isFile"
-                class="shrink px-1 text-caption" >
+        <v-col v-if="item.isFile" class="shrink px-1 text-caption">
           {{ item.lastModified }}
         </v-col>
 
-        <v-col v-if="!item.isFile && item.childs !== '?'"
-                cols="1"
-                class="shrink pt-1"  >
-          <v-badge color="grey"
-                    class="white--text" 
-                    :content="item.childs" />
-        </v-col>        
-
-        <v-col v-if="!item.isFile && active"
-                class="shrink px-1" >
-
-          <IconButton icon="mdi-open-in-new"
-                      tooltipText="Open browser starting from this folder."
-                      :url="`./#/?bucket=${baseUrl}&prefix=${item.directory}`" />
+        <v-col
+          v-if="!item.isFile && item.childs !== '?'"
+          cols="1"
+          class="shrink pt-1"
+        >
+          <v-badge color="grey" class="white--text" :content="item.childs" />
         </v-col>
 
+        <v-col v-if="!item.isFile && active" class="shrink px-1">
+          <IconButton
+            icon="mdi-open-in-new"
+            tooltipText="Open browser starting from this folder."
+            :url="`./#/?bucket=${baseUrl}&prefix=${item.directory}`"
+          />
+        </v-col>
       </v-row>
     </template>
-
   </v-treeview>
 </template>
 
 <script>
-import {
-  mapState,
-  mapGetters,
-} from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 
-import {
-  GET_S3_CONTENT,
-} from '@/store/mutationsConsts';
+import { GET_S3_CONTENT } from '@/store/mutationsConsts';
 
 import IconButton from './IconButton';
 
@@ -119,13 +110,8 @@ export default {
     fileSelectionEnabled: Boolean,
   },
   computed: {
-    ...mapGetters([
-      'defaultMaxKeys',
-    ]),
-    ...mapState([
-      'content',
-      'contentLoading',
-    ]),
+    ...mapGetters(['defaultMaxKeys']),
+    ...mapState(['content', 'contentLoading']),
   },
   methods: {
     catchCopyClick(url) {
@@ -136,13 +122,16 @@ export default {
       //   this.fallbackCopyTextToClipboard(text);
       //   return;
       // }
-      navigator.clipboard.writeText(text).then(() => {
-        // console.log('Async: Copying to clipboard was successful!');
-        this.$emit('showSnack', { text: this.copySnackText, success: true });
-      }, (err) => {
-        this.$emit('showSnack', { text: err, success: false });
-        // console.error('Async: Could not copy text: ', err);
-      });
+      navigator.clipboard.writeText(text).then(
+        () => {
+          // console.log('Async: Copying to clipboard was successful!');
+          this.$emit('showSnack', { text: this.copySnackText, success: true });
+        },
+        (err) => {
+          this.$emit('showSnack', { text: err, success: false });
+          // console.error('Async: Could not copy text: ', err);
+        },
+      );
     },
     async fetchSubkeys(item) {
       // console.log({ item });

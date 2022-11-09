@@ -1,75 +1,68 @@
 <template>
   <v-container fluid>
-
-    <v-row v-if="configLoading" >
-      <v-col cols="12"
-              sm="3">
+    <v-row v-if="configLoading">
+      <v-col cols="12" sm="3">
         <PlaceholderCard />
       </v-col>
 
-      <v-col cols="12"
-              sm="9">
+      <v-col cols="12" sm="9">
         <PlaceholderCard />
       </v-col>
     </v-row>
 
-    <v-row >
-
-      <v-col v-if="!loading && hasError"
-             cols="12"
-             sm="9" >
-        <NotificationCard :title="errorObject.title"
-                          :icon="errorObject.icon"
-                          :message="errorObject.message" />
+    <v-row>
+      <v-col v-if="!loading && hasError" cols="12" sm="9">
+        <NotificationCard
+          :title="errorObject.title"
+          :icon="errorObject.icon"
+          :message="errorObject.message"
+        />
       </v-col>
 
-      <v-col v-if="!configLoading && !contentError"
-              cols="12"
-              :sm="showProtocols ? 9 : 12" >
-        <TreeCard :fileSelectionEnabled="fileSelectionEnabled"
-                  :prefix="urlPrefix"
-                  :baseUrl="bucketUrl"
-                  @showSnack="catchShowSnack"
-                  @selectedFiles="catchSelectedFiles"
-                  @activeItems="catchActiveItems"/>
+      <v-col
+        v-if="!configLoading && !contentError"
+        cols="12"
+        :sm="showProtocols ? 9 : 12"
+      >
+        <TreeCard
+          :fileSelectionEnabled="fileSelectionEnabled"
+          :prefix="urlPrefix"
+          :baseUrl="bucketUrl"
+          @showSnack="catchShowSnack"
+          @selectedFiles="catchSelectedFiles"
+          @activeItems="catchActiveItems"
+        />
       </v-col>
 
-      <v-col cols="12"
-              sm="3">
+      <v-col cols="12" sm="3">
         <v-row no-gutters>
-          <v-col v-if="showProtocols"
-                  cols="12"
-                  class="pb-4" >
-            <DownloadToolsCard :tools="downloadTools"
-                                :loading="loading"
-                                :highlightTitle="!!selectedFolder"
-                                :selectedFolder="selectedFolder ? selectedFolder : urlPrefix" />
+          <v-col v-if="showProtocols" cols="12" class="pb-4">
+            <DownloadToolsCard
+              :tools="downloadTools"
+              :loading="loading"
+              :highlightTitle="!!selectedFolder"
+              :selectedFolder="selectedFolder ? selectedFolder : urlPrefix"
+            />
           </v-col>
 
-          <v-col v-if="fileSelectionEnabled" 
-                  cols="12">
-            <FileListCard :selectedFiles="selectedFiles"
-                          :loading="loading"
-                          :wgetDownloadInfo="wgetDownloadInfo"
-                          :fileDownloadHref="hrefWgetFile()" />
+          <v-col v-if="fileSelectionEnabled" cols="12">
+            <FileListCard
+              :selectedFiles="selectedFiles"
+              :loading="loading"
+              :wgetDownloadInfo="wgetDownloadInfo"
+              :fileDownloadHref="hrefWgetFile()"
+            />
           </v-col>
         </v-row>
       </v-col>
-
     </v-row>
   </v-container>
 </template>
 
 <script>
-import {
-  mapState,
-  mapGetters,
-} from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 
-import {
-  GET_CONFIG,
-  GET_S3_CONTENT,
-} from '@/store/mutationsConsts';
+import { GET_CONFIG, GET_S3_CONTENT } from '@/store/mutationsConsts';
 
 import { sanitaizePrefix } from '@/store/s3Factory';
 
@@ -112,7 +105,7 @@ export default {
       'wgetDomain',
       'ftpDomain',
       'defaultMaxKeys',
-      ]),
+    ]),
     ...mapState([
       'configLoading',
       'configError',
@@ -134,8 +127,8 @@ export default {
           title: 'Config Error ',
           message: `Error loading config from ${configURL}. ${this.configError}`,
         };
-      } 
-      
+      }
+
       if (this.contentError) {
         return {
           title: 'Bucket Content Error ',
@@ -143,7 +136,7 @@ export default {
         };
       }
 
-      return { }; // return empty object so the defaults will be shown
+      return {}; // return empty object so the defaults will be shown
     },
     selectedFolder() {
       if (this.activeFolders?.length <= 0) {
@@ -162,16 +155,22 @@ export default {
         tools.push(this.wgetDownloadInfo);
       }
 
-      if (this.cyberduckProfileName && this.cyberduckHostName && this.vendorUrl) {
+      if (
+        this.cyberduckProfileName &&
+        this.cyberduckHostName &&
+        this.vendorUrl
+      ) {
         tools.push({
           title: 'Download Cyberduck bookmark',
-          toolTip: 'Download a Cyberduck bookmark to access the files via the Cyberduck client.',
+          toolTip:
+            'Download a Cyberduck bookmark to access the files via the Cyberduck client.',
           image: this.imagesPng('./cyberduck-icon-64.png'),
           href: this.hrefCyberduckFile(prefix),
           downloadFileName: `${this.cyberduckProfileName}.cyberduckprofile`,
           moreInfoUrl: 'https://cyberduck.io/',
           showDescription: false,
-          description: 'Access the files in the S3 Bucket via Cyberduck client.',
+          description:
+            'Access the files in the S3 Bucket via Cyberduck client.',
         });
       }
 
@@ -183,7 +182,8 @@ export default {
           href: `${this.WebDAVDomainHttps}${prefix}`,
           moreInfoUrl: 'https://webdav.io/webdav-client/',
           showDescription: false,
-          description: 'Access the files in the S3 Bucket via the WebDAV protocol over HTTP(S).',
+          description:
+            'Access the files in the S3 Bucket via the WebDAV protocol over HTTP(S).',
         });
       }
 
@@ -196,7 +196,8 @@ export default {
           moreInfoUrl: 'https://filezilla-project.org/',
           showDescription: false,
           style: 'width: 38px; border-radius: 10%;',
-          description: 'Use any ftp client to download the files, warning this might be slow.',
+          description:
+            'Use any ftp client to download the files, warning this might be slow.',
         });
       }
 
@@ -236,7 +237,9 @@ export default {
 
       this.wgetDownloadInfo.image = this.imagesPng('./wget-2.png');
       this.wgetDownloadInfo.href = `${this.wgetDomain}?prefix=${prefix}`;
-      this.wgetDownloadInfo.filesDownloadHref = this.hrefWgetFile(this.selectedFiles);
+      this.wgetDownloadInfo.filesDownloadHref = this.hrefWgetFile(
+        this.selectedFiles,
+      );
     },
     clickShowDesc(tool) {
       tool.showDescription = !tool.showDescription;
@@ -290,7 +293,7 @@ export default {
       // const encodedData = encodeURI(data);
       const encodedData = btoa(unescape(encodeURIComponent(data)));
 
-    // return `data:text/plain;charset=UTF-8;page=21,${encodedData};`;
+      // return `data:text/plain;charset=UTF-8;page=21,${encodedData};`;
       return `data:application/octet-stream;charset=UTF-8;base64,${encodedData}`;
     },
     getWgetListfile(selectedFiles) {
@@ -298,7 +301,7 @@ export default {
 
       for (let i = 0; i < selectedFiles.length; i++) {
         const file = selectedFiles[i];
-        
+
         fileString += `${file.fileUrl} \n`;
       }
 
@@ -313,7 +316,7 @@ export default {
       // const encodedData = encodeURI(data);
       const encodedData = btoa(unescape(encodeURIComponent(data)));
 
-    // return `data:text/plain;charset=UTF-8;page=21,${encodedData};`;
+      // return `data:text/plain;charset=UTF-8;page=21,${encodedData};`;
       return `data:application/octet-stream;charset=UTF-8;base64,${encodedData}`;
     },
     saveDirectoyViaMemoryFile() {
@@ -334,7 +337,7 @@ export default {
         window.navigator.msSaveOrOpenBlob(blob, fileName);
       } else {
         const el = window.document.createElement(fileName);
-        el.href = window.URL.createObjectURL(blob);        
+        el.href = window.URL.createObjectURL(blob);
         // const url = el.href;
 
         el.download = fileName;
@@ -366,7 +369,8 @@ export default {
       downloadFileName: 'envidatS3paths.txt',
       showDescription: false,
       style: 'width: 38px; border-radius: 10%;',
-      description: 'Download the file (envidatS3paths.txt), install wget and then run the command: wget --no-host-directories --force-directories --input-file=envidatS3paths.txt.',
+      description:
+        'Download the file (envidatS3paths.txt), install wget and then run the command: wget --no-host-directories --force-directories --input-file=envidatS3paths.txt.',
     },
   }),
 };

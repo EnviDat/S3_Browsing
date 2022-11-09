@@ -6,8 +6,14 @@ import mutations from './mutations';
 
 Vue.use(Vuex);
 
-const fallbackShowProtocols = !!(process.env.VUE_APP_SHOW_PROTOCOLS && process.env.VUE_APP_SHOW_PROTOCOLS === 'true');
-const fallbackFileSelectionEnabled = !!(process.env.VUE_APP_FILE_SELECTION_ENABLED && process.env.VUE_APP_FILE_SELECTION_ENABLED === 'true');
+const fallbackShowProtocols = !!(
+  process.env.VUE_APP_SHOW_PROTOCOLS &&
+  process.env.VUE_APP_SHOW_PROTOCOLS === 'true'
+);
+const fallbackFileSelectionEnabled = !!(
+  process.env.VUE_APP_FILE_SELECTION_ENABLED &&
+  process.env.VUE_APP_FILE_SELECTION_ENABLED === 'true'
+);
 
 // load all the png for the protocol images / icons
 // an image can be access like via mappedState of the imagesPng
@@ -40,12 +46,20 @@ export default new Vuex.Store({
     fallbackFtpDomain: process.env.VUE_APP_FTP_DOMAIN,
   },
   getters: {
-    contentBucketName: (state) => (state.content?.ListBucketResult?.Name || 'Nothing loaded'),
-    contentMap: (state) => (state.contentMap && Object.keys(state.contentMap).length > 0 ? state.contentMap : null),
+    contentBucketName: (state) =>
+      state.content?.ListBucketResult?.Name || 'Nothing loaded',
+    contentMap: (state) =>
+      state.contentMap && Object.keys(state.contentMap).length > 0
+        ? state.contentMap
+        : null,
     contentUrl: (state) => state.config?.contentUrl || state.fallbackContentUrl,
-    downloadDomain: (state, getters) => (state.config?.downloadDomain || state.fallbackDownloadDomain || getters.contentUrl),
+    downloadDomain: (state, getters) =>
+      state.config?.downloadDomain ||
+      state.fallbackDownloadDomain ||
+      getters.contentUrl,
     defaultMaxKeys: (state) => {
-      const configMKeys = state.config?.defaultMaxKeys || state.config?.DefaultMaxKeys;
+      const configMKeys =
+        state.config?.defaultMaxKeys || state.config?.DefaultMaxKeys;
 
       let fbMaxKeys = null;
       if (state.fallbackDefaultMaxKeys) {
@@ -53,7 +67,9 @@ export default new Vuex.Store({
           fbMaxKeys = Number.parseInt(state.fallbackDefaultMaxKeys, 10);
         } catch (e) {
           // eslint-disable-next-line no-console
-          console.log(`Error while parsing the fallbackDefaultMaxKeys environment variable: ${e}`);
+          console.log(
+            `Error while parsing the fallbackDefaultMaxKeys environment variable: ${e}`,
+          );
         }
       }
 
@@ -61,7 +77,7 @@ export default new Vuex.Store({
     },
     showProtocols: (state) => {
       const showProtocols = state.config?.showProtocols;
-      
+
       if (showProtocols !== undefined && showProtocols !== null) {
         return showProtocols;
       }
@@ -78,9 +94,12 @@ export default new Vuex.Store({
       return state.fallbackFileSelectionEnabled;
     },
     vendorUrl: (state) => state.config?.vendorUrl || state.fallbackVendorUrl,
-    cyberduckHostName: (state) => state.config?.cyberduckHostName || state.fallbackCyberduckHost,
-    cyberduckProfileName: (state) => state.config?.cyberduckProfileName || state.fallbackCyberduckProfile,
-    WebDAVDomainHttps: (state) => state.config?.webDAVDomainHttps || state.fallbackWebDAVDomainHttps,
+    cyberduckHostName: (state) =>
+      state.config?.cyberduckHostName || state.fallbackCyberduckHost,
+    cyberduckProfileName: (state) =>
+      state.config?.cyberduckProfileName || state.fallbackCyberduckProfile,
+    WebDAVDomainHttps: (state) =>
+      state.config?.webDAVDomainHttps || state.fallbackWebDAVDomainHttps,
     wgetDomain: (state) => state.config?.wgetDomain || state.fallbackWgetDomain,
     ftpDomain: (state) => state.config?.ftpDomain || state.fallbackFtpDomain,
   },

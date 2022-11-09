@@ -3,11 +3,7 @@ import xml2js from 'xml2js';
 import { resolve } from 'path';
 import fs from 'fs';
 
-import {
-  getPrefixMap,
-  getS3Map,
-  mergeS3Maps,
-} from '../../src/store/s3Factory';
+import { getPrefixMap, getS3Map, mergeS3Maps } from '../../src/store/s3Factory';
 
 import config from '../../public/testdata/config.json';
 
@@ -28,7 +24,6 @@ function getXmlStringFromFile(fileName) {
 }
 
 describe('S3 Factory basic calls starting from root', () => {
-
   let fileName = 's3_envicloud_root.xml';
   const s3Root = getXmlStringFromFile(fileName);
   let prefixMap = null;
@@ -41,7 +36,7 @@ describe('S3 Factory basic calls starting from root', () => {
   let prefixList = null;
   let contentList = null;
   let parent = null;
-  
+
   it(`- parsing xml of file ${fileName}`, async () => {
     rootXml = await xml2js.parseStringPromise(s3Root, xmlParseOptions);
 
@@ -57,7 +52,6 @@ describe('S3 Factory basic calls starting from root', () => {
   });
 
   it(`- getPrefixMap() and mergeS3Maps() with mixed content of ${fileName}`, () => {
-
     expect(() => {
       getS3Map('contentList', baseUrl, delimiter);
     }).toThrow(Error);
@@ -73,7 +67,6 @@ describe('S3 Factory basic calls starting from root', () => {
     let map = {};
 
     if (contentList) {
-
       if (!(contentList instanceof Array)) {
         contentList = [contentList];
       }
@@ -85,7 +78,6 @@ describe('S3 Factory basic calls starting from root', () => {
     }
 
     if (prefixList) {
-
       if (!(prefixList instanceof Array)) {
         prefixList = [prefixList];
       }
@@ -97,18 +89,18 @@ describe('S3 Factory basic calls starting from root', () => {
 
     before = performance.now();
     prefixMap = mergeS3Maps(prefixMap, map, parent);
-    mergedTime.push((performance.now() - before));
+    mergedTime.push(performance.now() - before);
 
     const mergedPrefixKeys = Object.keys(prefixMap);
     expect(mergedPrefixKeys.length).toBeGreaterThan(0);
     expect(mergedPrefixKeys.length).toBeGreaterThan(prefixKeys.length);
-  }); 
+  });
 
   fileName = 's3_envicloud_chelsa_cmip5_ts_content.xml';
   const s3Content = getXmlStringFromFile(fileName);
   let contentMap = null;
   let contentParent = null;
-  
+
   it(`- getS3Map() with ${fileName}`, async () => {
     expect(typeof s3Content).toBe('string');
 
@@ -131,7 +123,10 @@ describe('S3 Factory basic calls starting from root', () => {
   it(`- mergeS3Maps() ${fileName} prefix files `, async () => {
     expect(typeof s3PrefixChelsa).toBe('string');
 
-    const xml = await xml2js.parseStringPromise(s3PrefixChelsa, xmlParseOptions);
+    const xml = await xml2js.parseStringPromise(
+      s3PrefixChelsa,
+      xmlParseOptions,
+    );
 
     prefixList = xml?.ListBucketResult?.CommonPrefixes;
     parent = xml?.ListBucketResult?.Prefix;
@@ -142,7 +137,7 @@ describe('S3 Factory basic calls starting from root', () => {
     const prefixChelsaMap = getPrefixMap(prefixList, baseUrl, delimiter);
     before = performance.now();
     mergedMap = mergeS3Maps(prefixMap, prefixChelsaMap, parent);
-    mergedTime.push((performance.now() - before));
+    mergedTime.push(performance.now() - before);
 
     const mergedValues = Object.values(mergedMap);
     const firstDir = mergedValues[0];
@@ -161,7 +156,10 @@ describe('S3 Factory basic calls starting from root', () => {
   it(`- mergeS3Maps() ${fileName} prefix files `, async () => {
     expect(typeof s3PrefixChelsaV1).toBe('string');
 
-    const xml = await xml2js.parseStringPromise(s3PrefixChelsaV1, xmlParseOptions);
+    const xml = await xml2js.parseStringPromise(
+      s3PrefixChelsaV1,
+      xmlParseOptions,
+    );
 
     prefixList = xml?.ListBucketResult?.CommonPrefixes;
     parent = xml?.ListBucketResult?.Prefix;
@@ -172,7 +170,7 @@ describe('S3 Factory basic calls starting from root', () => {
     const prefixChelsaMap = getPrefixMap(prefixList, baseUrl, delimiter);
     before = performance.now();
     mergedMap = mergeS3Maps(mergedMap, prefixChelsaMap, parent);
-    mergedTime.push((performance.now() - before));
+    mergedTime.push(performance.now() - before);
 
     const mergedValues = Object.values(mergedMap);
     const chelsaDir = mergedValues[0];
@@ -190,7 +188,6 @@ describe('S3 Factory basic calls starting from root', () => {
   });
 
   it('- mergeS3Maps() contentMap', async () => {
-
     const contentKeys = Object.keys(contentMap);
     expect(contentKeys.length).toBeGreaterThan(0);
 
@@ -199,7 +196,7 @@ describe('S3 Factory basic calls starting from root', () => {
 
     before = performance.now();
     mergedMap = mergeS3Maps(mergedMap, contentMap, contentParent);
-    mergedTime.push((performance.now() - before));
+    mergedTime.push(performance.now() - before);
 
     const mergedValues = Object.values(mergedMap);
     const chelsaDir = mergedValues[0];
@@ -217,7 +214,6 @@ describe('S3 Factory basic calls starting from root', () => {
   });
 
   it('- log the mergedTime performance', () => {
-
     if (mergedTime.length > 0) {
       const entries = mergedTime.length;
 
@@ -226,5 +222,4 @@ describe('S3 Factory basic calls starting from root', () => {
       console.log(`merged ${entries} entries in ${average} averaged`);
     }
   });
-
 });
