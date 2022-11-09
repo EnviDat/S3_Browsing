@@ -36,9 +36,38 @@
         </v-col>
 
         <v-col v-if="!loading && contentBucketName" style="text-align: center">
-          <span class="text-sm-body-1 text-body-2"
-            >Bucket: {{ contentBucketName }}</span
-          >
+          <v-dialog v-model="bucketUrlDialogOpen" width="1000">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn text v-bind="attrs" v-on="on">
+                <span class="text-sm-body-1 text-body-2"
+                  >Bucket: {{ contentBucketName }}</span
+                >
+              </v-btn>
+            </template>
+            <v-card>
+              <v-container class="px-5 pb-8">
+                <v-row align="end">
+                  <v-col cols="10">
+                    <v-text-field
+                      v-model="bucketUrlUserInput"
+                      label="Bucket URL"
+                      hide-details="auto"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="2">
+                    <v-btn
+                      @click="userUpdateBucketUrl"
+                      outlined
+                      color="primary"
+                      icon
+                    >
+                      <v-icon color="primary">mdi-check</v-icon>
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card>
+          </v-dialog>
         </v-col>
 
         <v-col>
@@ -100,6 +129,8 @@
 <script>
 import { mapState, mapGetters } from 'vuex';
 
+import { USER_INPUT_BUCKET_URL } from '@/store/mutationsConsts';
+
 import IconButton from '@/components/IconButton';
 
 import '../node_modules/skeleton-placeholder/dist/bone.min.css';
@@ -139,6 +170,11 @@ export default {
       this.snackText = snackMsgObj.text;
       this.snackColor = snackMsgObj.success ? 'success' : 'error';
     },
+    userUpdateBucketUrl() {
+      this.bucketUrlDialogOpen = false;
+      this.$store.dispatch(USER_INPUT_BUCKET_URL, this.bucketUrlUserInput);
+      this.bucketUrlUserInput = null;
+    },
   },
   components: {
     IconButton,
@@ -151,6 +187,8 @@ export default {
     snackColor: 'success',
     timeout: 2500,
     version: process.env.VUE_APP_VERSION,
+    bucketUrlUserInput: null,
+    bucketUrlDialogOpen: null,
   }),
 };
 </script>

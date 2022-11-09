@@ -22,12 +22,24 @@ import {
   GET_S3_CONTENT,
   GET_S3_CONTENT_SUCCESS,
   GET_S3_CONTENT_ERROR,
+  USER_INPUT_BUCKET_URL,
+  USER_INPUT_BUCKET_URL_INVALID,
 } from '@/store/mutationsConsts';
 
 const useTestData = !!(
   process.env.VUE_APP_USE_TESTDATA &&
   process.env.VUE_APP_USE_TESTDATA === 'true'
 );
+
+function isValidHttpUrl(string) {
+  let url;
+  try {
+    url = new URL(string);
+  } catch (_) {
+    return false;
+  }
+  return url.protocol === 'http:' || url.protocol === 'https:';
+}
 
 function buildParameterString(params) {
   const keys = Object.keys(params);
@@ -158,6 +170,24 @@ export default {
       })
       .catch((reason) => {
         commit(GET_S3_CONTENT_ERROR, reason);
+      });
+  },
+  async [USER_INPUT_BUCKET_URL]({ commit }, newUrl) {
+    if (!isValidHttpUrl(newUrl)) {
+      commit(USER_INPUT_BUCKET_URL_INVALID);
+      return;
+    }
+
+    // Strip trailing slash
+    newUrl = newUrl.replace(/\/$/, '');
+
+    await axios
+      .get(`${newUrl}/?max-keys=0`)
+      .then(() => {
+        commit(USER_INPUT_BUCKET_URL, newUrl);
+      })
+      .catch(() => {
+        commit(USER_INPUT_BUCKET_URL_INVALID);
       });
   },
 };

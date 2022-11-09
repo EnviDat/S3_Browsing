@@ -33,6 +33,8 @@ export default new Vuex.Store({
     contentLoading: false,
     contentError: null,
     imagesPng,
+    userInputBucketUrl: null,
+    userInputBucketError: false,
     fallbackContentUrl: process.env.VUE_APP_CONTENT_URL,
     fallbackDownloadDomain: process.env.VUE_APP_DOWNLOAD_DOMAIN,
     fallbackDefaultMaxKeys: process.env.VUE_APP_DEFAULT_MAX_KEYS,

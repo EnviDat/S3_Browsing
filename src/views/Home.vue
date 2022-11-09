@@ -11,11 +11,12 @@
     </v-row>
 
     <v-row>
-      <v-col v-if="!loading && hasError" cols="12" sm="9">
+      <v-col v-if="!loading && hasError" cols="12" sm="9" class="py-0">
         <NotificationCard
           :title="errorObject.title"
           :icon="errorObject.icon"
           :message="errorObject.message"
+          :color="errorObject.color"
         />
       </v-col>
 
@@ -113,13 +114,15 @@ export default {
       'contentLoading',
       'contentError',
       'imagesPng',
+      'userInputBucketUrl',
+      'userInputBucketError',
     ]),
     loading() {
       return this.configLoading || this.contentLoading;
       // return this.configLoading;
     },
     hasError() {
-      return this.configError || this.contentError;
+      return this.userInputBucketError || this.configError || this.contentError;
     },
     errorObject() {
       if (this.configError) {
@@ -133,6 +136,14 @@ export default {
         return {
           title: 'Bucket Content Error ',
           message: `Error loading S3 Bucket from ${this.bucketUrl}. ${this.contentError} ${this.contentError.stack}`,
+        };
+      }
+
+      if (this.userInputBucketError) {
+        return {
+          title: 'Bucket URL Error ',
+          message: `The provided bucket URL could not be loaded. Does it exist?`,
+          color: `accent`,
         };
       }
 
@@ -213,7 +224,9 @@ export default {
       return tools;
     },
     bucketUrl() {
-      return this.$route.query.bucket || this.contentUrl;
+      return (
+        this.userInputBucketUrl || this.$route.query.bucket || this.contentUrl
+      );
     },
   },
   watch: {
@@ -222,6 +235,10 @@ export default {
         this.loadContent();
         this.setWGETInfos();
       }
+    },
+    userInputBucketUrl() {
+      this.loadContent();
+      this.setWGETInfos();
     },
   },
   methods: {
