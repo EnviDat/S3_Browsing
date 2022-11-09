@@ -36,7 +36,7 @@
         </v-col>
 
         <v-col v-if="!loading && contentBucketName" style="text-align: center">
-          <v-dialog v-model="bucketUrlDialogOpen" width="1000">
+          <v-dialog v-model="bucketUrlDialogOpen" width="700">
             <template v-slot:activator="{ on, attrs }">
               <v-btn text v-bind="attrs" v-on="on">
                 <span class="text-sm-body-1 text-body-2"
@@ -47,14 +47,15 @@
             <v-card>
               <v-container class="px-5 pb-8">
                 <v-row align="end">
-                  <v-col cols="10">
+                  <v-col cols="11">
                     <v-text-field
                       v-model="bucketUrlUserInput"
+                      @keyup.enter="userUpdateBucketUrl"
                       label="Bucket URL"
                       hide-details="auto"
                     ></v-text-field>
                   </v-col>
-                  <v-col cols="2">
+                  <v-col cols="1">
                     <v-btn
                       @click="userUpdateBucketUrl"
                       outlined

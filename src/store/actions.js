@@ -31,6 +31,9 @@ const useTestData = !!(
   process.env.VUE_APP_USE_TESTDATA === 'true'
 );
 
+const withHttps = (url) =>
+  !/^https?:\/\//i.test(url) ? `https://${url}` : url;
+
 function isValidHttpUrl(string) {
   let url;
   try {
@@ -173,6 +176,9 @@ export default {
       });
   },
   async [USER_INPUT_BUCKET_URL]({ commit }, newUrl) {
+    // If no protocol provided, add https
+    newUrl = withHttps(newUrl);
+
     if (!isValidHttpUrl(newUrl)) {
       commit(USER_INPUT_BUCKET_URL_INVALID);
       return;
@@ -182,7 +188,9 @@ export default {
     newUrl = newUrl.replace(/\/$/, '');
 
     await axios
-      .get(`${newUrl}/?max-keys=0`)
+      .get(`${newUrl}/?max-keys=0`, {
+        timeout: 500,
+      })
       .then(() => {
         commit(USER_INPUT_BUCKET_URL, newUrl);
       })
