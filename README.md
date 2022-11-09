@@ -102,7 +102,6 @@ Aside from the contentUrl the other options are mostly relevant for the "Other P
       VUE_APP_VENDOR_URL=www.envidat.ch
       VUE_APP_CYBERDUCK_HOST_NAME=os.zhdk.cloud.switch.ch
       VUE_APP_CYBERDUCK_PROFILE_NAME=envicloud.cyberduck.profile
-      VUE_APP_WEBDAV_DOMAIN_HTTP=http://envicloud.wsl.ch/
       VUE_APP_WEBDAV_DOMAIN_HTTPS=https://envicloud.wsl.ch/webdav/
 
 
@@ -123,7 +122,6 @@ Better go for the local development option via chrome.
       "vendorUrl": "www.envidat.ch",
       "cyberduckHostName": "os.zhdk.cloud.switch.ch",
       "cyberduckProfileName": "envicloud",
-      "webDAVDomainHttp": "http://envicloud.wsl.ch/",
       "webDAVDomainHttps": "https://envicloud.wsl.ch/webdav/"
     }
 
@@ -168,7 +166,6 @@ The `urlPrefix` is a query parameter from the url
 | vendorUrl | This is the institution or company which provides the cyberduck profile.  | String | Optional, needs `showProtocols` to be `true` |
 | cyberduckHostName | The main domain for the cyberduck connection. Should include no subdomains.  | String | Optional, needs `showProtocols` to be `true` |
 | cyberduckProfileName | The name of the downloaded file. It will be [cyberduckProfileName].cyberduckprofile . | String | Optional, needs `showProtocols` to be `true` |
-| webDAVDomainHttp | The webDAV http url for browsing via webDAV.  | String | Optional, needs `showProtocols` to be `true` |
 | webDAVDomainHttps | The webDAV https url for browsing via webDAV.  | String | Optional, needs `showProtocols` to be `true` |
 
 

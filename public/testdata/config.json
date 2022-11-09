@@ -2,8 +2,8 @@
   "showProtocols": true,
   "fileSelectionEnabled": true,
   "defaultMaxKeys": 100000,
-  "contentUrl": "https://envicloud.wsl.ch/envicloud/",
-  "downloadDomain": "https://os.zhdk.cloud.switch.ch/envicloud/",
+  "contentUrl": "https://envicloud.os.zhdk.cloud.switch.ch/",
+  "downloadDomain": "https://envicloud.os.zhdk.cloud.switch.ch/",
   "vendorUrl": "www.envidat.ch",
   "cyberduckHostName": "os.zhdk.cloud.switch.ch",
   "cyberduckProfileName": "envicloud"

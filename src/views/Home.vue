@@ -108,7 +108,6 @@ export default {
       'vendorUrl',
       'cyberduckHostName',
       'cyberduckProfileName',
-      'WebDAVDomainHttp',
       'WebDAVDomainHttps',
       'wgetDomain',
       'ftpDomain',
@@ -176,21 +175,9 @@ export default {
         });
       }
 
-      if (this.WebDAVDomainHttp) {
-        tools.push({
-          title: 'Browse via Http WebDAV',
-          toolTip: 'Open a new tab to access the files via WebDAV.',
-          image: this.imagesPng('./dav-100-2.png'),
-          href: `${this.WebDAVDomainHttp}${prefix}`,
-          moreInfoUrl: 'https://webdav.io/webdav-client/',
-          showDescription: false,
-          description: 'Access the files in the S3 Bucket via the WebDAV protocol over HTTP.',
-        });
-      }
-
       if (this.WebDAVDomainHttps) {
         tools.push({
-          title: 'Browse via Https WebDAV',
+          title: 'Browse via WebDAV',
           toolTip: 'Use WebDAV to access the files.',
           image: this.imagesPng('./dav-100-2.png'),
           href: `${this.WebDAVDomainHttps}${prefix}`,
