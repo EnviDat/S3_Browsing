@@ -17,9 +17,8 @@ repos:
             '--trailing-comma=all',
             '--ignore-unknown',
             '--no-error-on-unmatched-pattern',
-            '!chart/**',
             '--ignore-path',
-            '.dockerignore',
+            '.cz.yaml',
           ]
 
   # Lint: Javascript
