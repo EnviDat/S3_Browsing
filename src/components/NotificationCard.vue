@@ -1,5 +1,5 @@
 <template>
-  <v-card class="elevation-3" :color="color">
+  <v-alert dismissible class="elevation-3" :color="color">
     <v-card-title>
       <v-row align-content="center" no-gutters>
         <v-col cols="1">
@@ -13,7 +13,7 @@
     </v-card-title>
 
     <v-card-text v-html="message" />
-  </v-card>
+  </v-alert>
 </template>
 
 <script>
