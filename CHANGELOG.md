@@ -1,3 +1,9 @@
+## v_1.4.1 (2022-11-09)
+
+### Fix
+
+- capture enter key, allow url no protocol, ui format, axios timeout
+
 ## v_1.4.0 (2022-11-09)
 
 ### Refactor
