@@ -1,3 +1,9 @@
+## v1.4.2 (2022-11-10)
+
+### Fix
+
+- modify user bucket input feature to show loading
+
 ## v_1.4.1 (2022-11-09)
 
 ### Fix
