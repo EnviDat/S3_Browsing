@@ -18,7 +18,7 @@ repos:
             '--ignore-unknown',
             '--no-error-on-unmatched-pattern',
             '--ignore-path',
-            '.cz.yaml',
+            './.cz.yaml',
           ]
 
   # Lint: Javascript
