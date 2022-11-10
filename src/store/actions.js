@@ -22,8 +22,9 @@ import {
   GET_S3_CONTENT,
   GET_S3_CONTENT_SUCCESS,
   GET_S3_CONTENT_ERROR,
-  USER_INPUT_BUCKET_URL,
-  USER_INPUT_BUCKET_URL_INVALID,
+  USER_BUCKET_URL,
+  USER_BUCKET_URL_SUCCESS,
+  USER_BUCKET_URL_ERROR,
 } from '@/store/mutationsConsts';
 
 const useTestData = !!(
@@ -175,12 +176,14 @@ export default {
         commit(GET_S3_CONTENT_ERROR, reason);
       });
   },
-  async [USER_INPUT_BUCKET_URL]({ commit }, newUrl) {
+  async [USER_BUCKET_URL]({ commit }, newUrl) {
+    commit(USER_BUCKET_URL);
+
     // If no protocol provided, add https
     newUrl = withHttps(newUrl);
 
     if (!isValidHttpUrl(newUrl)) {
-      commit(USER_INPUT_BUCKET_URL_INVALID);
+      commit(USER_BUCKET_URL_ERROR);
       return;
     }
 
@@ -189,13 +192,13 @@ export default {
 
     await axios
       .get(`${newUrl}/?max-keys=0`, {
-        timeout: 500,
+        timeout: 2000,
       })
       .then(() => {
-        commit(USER_INPUT_BUCKET_URL, newUrl);
+        commit(USER_BUCKET_URL_SUCCESS, newUrl);
       })
       .catch(() => {
-        commit(USER_INPUT_BUCKET_URL_INVALID);
+        commit(USER_BUCKET_URL_ERROR);
       });
   },
 };

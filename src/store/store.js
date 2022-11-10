@@ -34,6 +34,7 @@ export default new Vuex.Store({
     contentError: null,
     imagesPng,
     userInputBucketUrl: null,
+    userInputBucketLoading: false,
     userInputBucketError: false,
     fallbackContentUrl: process.env.VUE_APP_CONTENT_URL,
     fallbackDownloadDomain: process.env.VUE_APP_DOWNLOAD_DOMAIN,

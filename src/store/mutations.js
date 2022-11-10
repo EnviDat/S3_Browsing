@@ -20,8 +20,9 @@ import {
   GET_S3_CONTENT,
   GET_S3_CONTENT_SUCCESS,
   GET_S3_CONTENT_ERROR,
-  USER_INPUT_BUCKET_URL,
-  USER_INPUT_BUCKET_URL_INVALID,
+  USER_BUCKET_URL,
+  USER_BUCKET_URL_SUCCESS,
+  USER_BUCKET_URL_ERROR,
 } from '@/store/mutationsConsts';
 
 import {
@@ -100,12 +101,17 @@ export default {
     // const notificationObj = getSpecificApiError('Config could not ge loaded!', reason);
     // this.commit(ADD_USER_NOTIFICATION, notificationObj);
   },
-  [USER_INPUT_BUCKET_URL](state, newUrl) {
+  [USER_BUCKET_URL](state) {
+    state.userInputBucketLoading = true;
+  },
+  [USER_BUCKET_URL_SUCCESS](state, newUrl) {
     state.userInputBucketUrl = newUrl;
     state.contentMap = null;
+    state.userInputBucketLoading = false;
     state.userInputBucketError = false;
   },
-  [USER_INPUT_BUCKET_URL_INVALID](state) {
+  [USER_BUCKET_URL_ERROR](state) {
+    state.userInputBucketLoading = false;
     state.userInputBucketError = true;
   },
 };

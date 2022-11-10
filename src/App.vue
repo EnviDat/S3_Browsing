@@ -130,7 +130,7 @@
 <script>
 import { mapState, mapGetters } from 'vuex';
 
-import { USER_INPUT_BUCKET_URL } from '@/store/mutationsConsts';
+import { USER_BUCKET_URL } from '@/store/mutationsConsts';
 
 import IconButton from '@/components/IconButton';
 
@@ -142,9 +142,16 @@ export default {
   name: 'App',
   computed: {
     ...mapGetters(['contentUrl', 'contentBucketName']),
-    ...mapState(['configLoading', 'contentLoading', 'imagesPng']),
+    ...mapState([
+      'configLoading',
+      'contentLoading',
+      'userInputBucketLoading',
+      'imagesPng',
+    ]),
     loading() {
-      return this.configLoading || this.contentLoading;
+      return (
+        this.userInputBucketLoading || this.configLoading || this.contentLoading
+      );
     },
     loadingText() {
       if (this.configLoading) {
@@ -153,6 +160,10 @@ export default {
 
       if (this.contentLoading) {
         return `Loading S3 Bucket from ${this.contentUrl}`;
+      }
+
+      if (this.userInputBucketLoading) {
+        return `Loading user input bucket`;
       }
 
       return 'Loading should be finished...';
@@ -173,7 +184,7 @@ export default {
     },
     userUpdateBucketUrl() {
       this.bucketUrlDialogOpen = false;
-      this.$store.dispatch(USER_INPUT_BUCKET_URL, this.bucketUrlUserInput);
+      this.$store.dispatch(USER_BUCKET_URL, this.bucketUrlUserInput);
       this.bucketUrlUserInput = null;
     },
   },
