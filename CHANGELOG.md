@@ -1,3 +1,9 @@
+## v1.4.3 (2022-11-22)
+
+### Fix
+
+- bucket user input - autofocus, error handling, keep url after submit
+
 ## v1.4.2 (2022-11-10)
 
 ### Fix
