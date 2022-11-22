@@ -197,8 +197,16 @@ export default {
       .then(() => {
         commit(USER_BUCKET_URL_SUCCESS, newUrl);
       })
-      .catch(() => {
-        commit(USER_BUCKET_URL_ERROR);
+      .catch((err) => {
+        let errString = err.toString().substring(7);
+        if (errString === 'Network Error') {
+          errString =
+            'Either a network issue, or the bucket is not configured for access (CORS).';
+        } else if (errString === 'timeout of 2000ms exceeded') {
+          errString =
+            'Timed out. Either the url does not exist, or the connection is slow.';
+        }
+        commit(USER_BUCKET_URL_ERROR, errString);
       });
   },
 };

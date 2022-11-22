@@ -110,8 +110,8 @@ export default {
     state.userInputBucketLoading = false;
     state.userInputBucketError = false;
   },
-  [USER_BUCKET_URL_ERROR](state) {
+  [USER_BUCKET_URL_ERROR](state, errorString) {
     state.userInputBucketLoading = false;
-    state.userInputBucketError = true;
+    state.userInputBucketError = errorString;
   },
 };

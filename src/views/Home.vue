@@ -122,7 +122,9 @@ export default {
       // return this.configLoading;
     },
     hasError() {
-      return this.userInputBucketError || this.configError || this.contentError;
+      return this.userInputBucketError
+        ? true
+        : false || this.configError || this.contentError;
     },
     errorObject() {
       if (this.configError) {
@@ -141,8 +143,8 @@ export default {
 
       if (this.userInputBucketError) {
         return {
-          title: 'Bucket URL Error ',
-          message: `The provided bucket URL could not be loaded. Does it exist?`,
+          title: 'Bucket URL Error. Does it exist?',
+          message: this.userInputBucketError,
           color: `accent`,
         };
       }

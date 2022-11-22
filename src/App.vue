@@ -53,6 +53,7 @@
                       @keyup.enter="userUpdateBucketUrl"
                       label="Bucket URL"
                       hide-details="auto"
+                      autofocus
                     ></v-text-field>
                   </v-col>
                   <v-col cols="1">
@@ -185,7 +186,6 @@ export default {
     userUpdateBucketUrl() {
       this.bucketUrlDialogOpen = false;
       this.$store.dispatch(USER_BUCKET_URL, this.bucketUrlUserInput);
-      this.bucketUrlUserInput = null;
     },
   },
   components: {
