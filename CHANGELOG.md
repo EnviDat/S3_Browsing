@@ -1,3 +1,9 @@
+## v1.4.4 (2022-12-08)
+
+### Fix
+
+- add url param bucket to user input box on load
+
 ## v1.4.3 (2022-11-22)
 
 ### Fix

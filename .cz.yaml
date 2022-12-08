@@ -2,6 +2,6 @@ commitizen:
   annotated_tag: true
   changelog_file: CHANGELOG.md
   tag_format: v$major.$minor.$patch$prerelease
-  version: 1.4.3
+  version: 1.4.4
   version_files:
     - package.json:version
