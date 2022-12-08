@@ -149,6 +149,9 @@ export default {
       'userInputBucketLoading',
       'imagesPng',
     ]),
+    bucketUrlUserInput() {
+      return this.$route.query.bucket;
+    },
     loading() {
       return (
         this.userInputBucketLoading || this.configLoading || this.contentLoading
@@ -199,7 +202,6 @@ export default {
     snackColor: 'success',
     timeout: 2500,
     version: process.env.VUE_APP_VERSION,
-    bucketUrlUserInput: null,
     bucketUrlDialogOpen: null,
   }),
 };
