@@ -120,10 +120,10 @@ Better go for the local development option via chrome.
       "webDAVDomainHttps": "https://envicloud.wsl.ch/webdav/"
     }
 
-#### Example of the .cyberduckprofile xml
+#### Example of the .duck profile xml
 
 This is only relevant is the `showProtocols` options is `true`.
-Here is the xml of the cyberduckprofile which can be downloaded from the "Other Protocols" Card. As you can see the are some variables used, which have to be defined
+Here is the xml of the cyberduck profile which can be downloaded from the "Other Protocols" Card. As you can see the are some variables used, which have to be defined
 via .env files or json-config.
 
       `<?xml version="1.0" encoding="UTF-8"?>
@@ -133,14 +133,18 @@ via .env files or json-config.
             <string>${this.vendorUrl}</string>
             <key>Protocol</key>
             <string>s3</string>
-            <key>Default Nickname</key>
+            <key>Nickname</key>
             <string>${this.contentBucketName} - S3 Bucket</string>
-            <key>Default Hostname</key>
+            <key>Hostname</key>
             <string>${this.cyberduckHostName}</string>
-            <key>Default Path</key>
+            <key>Port</key>
+            <string>443</string>
+            <key>Path</key>
             <string>${urlPrefix}</string>
-            <key>Anonymous Configurable</key>
-            <true/>
+            <key>Username</key>
+            <string>anonymous</string>
+            <key>Comment</key>
+            <string>Downloaded from EnviDat S3 Browser</string>
           </dict>
         </plist>`;
 
@@ -159,7 +163,7 @@ The `urlPrefix` is a query parameter from the url
 | showProtocols        | If `true` the "Other Protocols" Card will be shown.                                                                                      | String | Optional                                     |
 | vendorUrl            | This is the institution or company which provides the cyberduck profile.                                                                 | String | Optional, needs `showProtocols` to be `true` |
 | cyberduckHostName    | The main domain for the cyberduck connection. Should include no subdomains.                                                              | String | Optional, needs `showProtocols` to be `true` |
-| cyberduckProfileName | The name of the downloaded file. It will be [cyberduckProfileName].cyberduckprofile .                                                    | String | Optional, needs `showProtocols` to be `true` |
+| cyberduckProfileName | The name of the downloaded file. It will be [cyberduckProfileName].duck .                                                                | String | Optional, needs `showProtocols` to be `true` |
 | webDAVDomainHttps    | The webDAV https url for browsing via webDAV.                                                                                            | String | Optional, needs `showProtocols` to be `true` |
 
 Here you get further information about the [cyberduck profile xml](https://trac.cyberduck.io/wiki/help/en/howto/profiles)
