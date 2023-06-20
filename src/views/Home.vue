@@ -179,7 +179,7 @@ export default {
             'Download a Cyberduck bookmark to access the files via the Cyberduck client.',
           image: this.imagesPng('./cyberduck-icon-64.png'),
           href: this.hrefCyberduckFile(prefix),
-          downloadFileName: `${this.cyberduckProfileName}.cyberduckprofile`,
+          downloadFileName: `${this.cyberduckProfileName}.duck`,
           moreInfoUrl: 'https://cyberduck.io/',
           showDescription: false,
           description:
