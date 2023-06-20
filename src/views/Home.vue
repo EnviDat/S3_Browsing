@@ -299,15 +299,15 @@ export default {
             <key>Nickname</key>
             <string>${this.contentBucketName} - S3 Bucket</string>
             <key>Hostname</key>
-            <string>${this.bucketUrl}</string>
+            <string>${this.cyberduckHostName}</string>
             <key>Port</key>
-	          <string>443</string>
+            <string>443</string>
             <key>Path</key>
             <string>${urlPrefix}</string>
             <key>Username</key>
-	          <string>anonymous</string>
+            <string>anonymous</string>
             <key>Comment</key>
-	          <string>Downloaded from EnviDat S3 Browser</string>
+            <string>Downloaded from EnviDat S3 Browser</string>
           </dict>
         </plist>`;
     },
