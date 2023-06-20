@@ -296,14 +296,18 @@ export default {
             <string>${this.vendorUrl}</string>
             <key>Protocol</key>
             <string>s3</string>
-            <key>Default Nickname</key>
+            <key>Nickname</key>
             <string>${this.contentBucketName} - S3 Bucket</string>
-            <key>Default Hostname</key>
+            <key>Hostname</key>
             <string>${this.bucketUrl}</string>
-            <key>Default Path</key>
+            <key>Port</key>
+	          <string>443</string>
+            <key>Path</key>
             <string>${urlPrefix}</string>
-            <key>Anonymous Configurable</key>
-            <true/>
+            <key>Username</key>
+	          <string>anonymous</string>
+            <key>Comment</key>
+	          <string>Downloaded from EnviDat S3 Browser</string>
           </dict>
         </plist>`;
     },
