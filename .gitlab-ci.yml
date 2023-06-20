@@ -30,7 +30,7 @@ webpack-build:
   before_script:
     - npm install
   script:
-    - npm run build
+    - npm run build --prod
 
 rclone-sync:
   stage: deploy
