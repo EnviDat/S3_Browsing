@@ -303,7 +303,7 @@ export default {
             <key>Port</key>
             <string>443</string>
             <key>Path</key>
-            <string>${urlPrefix}</string>
+            <string>/${this.contentBucketName}/${urlPrefix}</string>
             <key>Username</key>
             <string>anonymous</string>
             <key>Comment</key>
